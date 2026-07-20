@@ -54,7 +54,6 @@ Penelitian dan pengembangan sistem ini menggunakan metode **Prototyping**, denga
     1. Buka akun GitHub kamu di *browser*, buat repositori baru (klik tombol **New**). Beri nama (misalnya `repo-ilmiah-tfidf`), biarkan opsi "Add a README file" **tidak tercentang** (karena kita sudah buat sendiri).
     2. Buka terminal/CMD di dalam folder *project* Laravel kamu.
     3. Jalankan perintah ini secara berurutan:
-    ```
     # 1. Inisialisasi git di folder project
     git init
 
