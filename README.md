@@ -50,11 +50,11 @@ Penelitian dan pengembangan sistem ini menggunakan metode **Prototyping**, denga
     php artisan queue:work
 
 2. Proses Upload ke GitHub via Terminal
-
+    ```bash
     1. Buka akun GitHub kamu di *browser*, buat repositori baru (klik tombol **New**). Beri nama (misalnya `repo-ilmiah-tfidf`), biarkan opsi "Add a README file" **tidak tercentang** (karena kita sudah buat sendiri).
     2. Buka terminal/CMD di dalam folder *project* Laravel kamu.
     3. Jalankan perintah ini secara berurutan:
-    ```bash
+    ```
     # 1. Inisialisasi git di folder project
     git init
 
