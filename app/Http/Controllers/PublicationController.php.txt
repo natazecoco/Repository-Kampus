@@ -1,0 +1,220 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Publication; // Memanggil model Publication
+// Memanggil library NLP Sastrawi
+use Sastrawi\Stemmer\StemmerFactory; 
+use Sastrawi\StopWordRemover\StopWordRemoverFactory;
+
+class PublicationController extends Controller
+{
+
+    public function index(Request $request)
+    {
+        // 1. Menangkap teks yang diketik pengunjung di kotak pencarian
+        $search = $request->input('search');
+
+        // 2. Menyiapkan kerangka query dasar (memanggil relasi wadah dan diurutkan terbaru)
+        $query = Publication::with('container')->latest();
+
+        // 3. Jika pengunjung melakukan pencarian, tambahkan filter ke database
+        // Catatan: Pencarian index ini masih menggunakan pencarian kata dasar (LIKE). 
+        // TF-IDF hanya digunakan di halaman detail untuk fitur "Rekomendasi Dokumen Terkait".
+        if ($search) {
+            $query->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('author', 'like', '%' . $search . '%')
+                  ->orWhere('keywords', 'like', '%' . $search . '%');
+        }
+
+        // 4. Eksekusi pencarian dan ambil datanya
+        $publications = $query->get();
+
+        // 5. Kirim data yang sudah disaring ke halaman index
+        return view('index', compact('publications'));
+    }
+
+    // Fungsi baru untuk mengambil data detail satu skripsi/dokumen
+    public function show(Publication $publication)
+    {
+        $publication->load('container');
+
+        // AMBIL DARI DATABASE, BUKAN MENGHITUNG DARI NOL LAGI!
+        // Mengambil data rekomendasi yang sudah dihitung oleh Job, beserta relasi skripsinya
+        $recommendations = App\Models\Recommendation::where('publication_id', $publication->id)
+                            ->with('recommendedPublication') // Pastikan kamu buat relasi ini di model Recommendation
+                            ->orderByDesc('similarity_score')
+                            ->get();
+
+        return view('show', compact('publication', 'recommendations'));
+    }
+
+    // Fungsi Pembantu: Membersihkan teks (Text Preprocessing) menggunakan Sastrawi NLP
+    private function cleanText($text, $stemmer, $stopword)
+    {
+        // Cek jika teks kosong agar tidak menyebabkan error
+        if (empty($text)) return '';
+
+        // 1. Case Folding: Mengubah semua huruf menjadi huruf kecil
+        $text = strtolower($text);
+        
+        // 2. Punctuation Removal: Hanya menyisakan huruf, angka, dan spasi (membuang tanda baca)
+        $text = preg_replace('/[^a-z0-9 ]/', '', $text);
+        
+        // 3. Stopword Removal: Membuang kata hubung yang tidak punya bobot pencarian (dan, di, yang, dll)
+        $text = $stopword->remove($text);
+        
+        // 4. Stemming: Mengubah kata berimbuhan menjadi kata dasar (misal: "pembuatan" menjadi "buat")
+        $text = $stemmer->stem($text);
+
+        return $text;
+    }
+
+    // Mesin Kecerdasan Buatan (Content-Based Recommendation) menggunakan TF-IDF dan Cosine Similarity
+    private function calculateTFIDF($target, $others)
+    {
+        // --- OPTIMASI PERFORMA INISIALISASI SASTRAWI ---
+        // Kita memanggil 'pabrik' Sastrawi hanya SEKALI di luar perulangan (loop).
+        // Jika ditaruh di dalam loop, server akan sangat lambat karena harus membuka library berkali-kali.
+        $stopWordFactory = new StopWordRemoverFactory();
+        $stopword = $stopWordFactory->createStopWordRemover();
+
+        $stemmerFactory = new StemmerFactory();
+        $stemmer  = $stemmerFactory->createStemmer();
+        // -----------------------------------------------
+
+        $corpus = [];
+        
+        // --- REVISI FASE 2: PEMBOBOTAN TARGET ---
+        // Bobot: Judul diulang 3x, Kata Kunci diulang 2x, Abstrak 1x
+        $targetTextRaw = $target->title . ' ' . $target->title . ' ' . $target->title . ' ' . 
+                         $target->keywords . ' ' . $target->keywords . ' ' . 
+                         $target->abstract;
+        
+        // Teks mentah dimasukkan ke mesin cuci Sastrawi (fungsi cleanText) beserta alat pembersihnya
+        $targetTextClean = $this->cleanText($targetTextRaw, $stemmer, $stopword);
+
+        // Teks yang sudah bersih dan berupa kata dasar dimasukkan ke dalam wadah (corpus)
+        $corpus[$target->id] = $targetTextClean;
+
+        // Pre-processing untuk semua dokumen lainnya
+        foreach ($others as $other) {
+            
+            // --- REVISI FASE 2: PEMBOBOTAN DOKUMEN PEMBANDING ---
+            // Bobot yang sama harus diterapkan ke dokumen pembanding
+            $textRaw = $other->title . ' ' . $other->title . ' ' . $other->title . ' ' . 
+                       $other->keywords . ' ' . $other->keywords . ' ' . 
+                       $other->abstract;
+            
+            // Bersihkan teks menggunakan alat Sastrawi yang SAMA tanpa perlu inisialisasi ulang
+            $textClean = $this->cleanText($textRaw, $stemmer, $stopword);
+
+            $corpus[$other->id] = $textClean;
+        }
+
+        // --- Langkah 1: Term Frequency (TF) & Document Frequency (DF) ---
+        $df = [];
+        $tf = [];
+        $N = count($corpus); // Total jumlah dokumen yang diproses
+
+        foreach ($corpus as $id => $text) {
+            $words = explode(' ', $text);
+            $words = array_filter($words); // Buang array yang berupa spasi kosong
+            $totalWords = count($words);
+            
+            // Menghitung kemunculan setiap kata dalam satu dokumen
+            $wordCounts = array_count_values($words);
+
+            $tf[$id] = [];
+            $uniqueWords = array_unique($words);
+            
+            foreach ($uniqueWords as $word) {
+                // Menghitung TF murni (Jumlah kata X muncul dibagi total kata di dokumen tersebut)
+                $tf[$id][$word] = $wordCounts[$word] / $totalWords;
+
+                // Menghitung DF (Menghitung di berapa dokumen kata X ini muncul)
+                if (!isset($df[$word])) {
+                    $df[$word] = 0;
+                }
+                $df[$word]++;
+            }
+        }
+
+        // --- Langkah 2: Inverse Document Frequency (IDF) ---
+        $idf = [];
+        foreach ($df as $word => $count) {
+            // Logaritma natural dari (Total Dokumen dibagi DF)
+            // Semakin sering sebuah kata muncul di SEMUA dokumen, nilainya semakin mendekati nol
+            $idf[$word] = log($N / $count);
+        }
+
+        // --- Langkah 3: Bobot TF-IDF ---
+        $tfidf = [];
+        foreach ($tf as $id => $wordFreqs) {
+            foreach ($wordFreqs as $word => $val) {
+                // Kalikan nilai TF dan IDF untuk mendapatkan skor akhir bobot per kata
+                $tfidf[$id][$word] = $val * $idf[$word];
+            }
+        }
+
+        // --- Langkah 4: Cosine Similarity ---
+        // Mengukur sudut vektor antara dokumen target dengan dokumen lainnya
+        $targetVector = $tfidf[$target->id] ?? [];
+        $similarities = [];
+
+        foreach ($others as $other) {
+            $otherVector = $tfidf[$other->id] ?? [];
+            
+            $dotProduct = 0;
+            $normTarget = 0;
+            $normOther = 0;
+
+            // Kumpulkan vocabulary unik dari kedua dokumen yang sedang dibandingkan (Intersection)
+            $allWords = array_unique(array_merge(array_keys($targetVector), array_keys($otherVector)));
+
+            foreach ($allWords as $word) {
+                $valTarget = $targetVector[$word] ?? 0;
+                $valOther = $otherVector[$word] ?? 0;
+
+                // Hitung Dot Product (Hasil kali bobot kata yang sama antar dua dokumen)
+                $dotProduct += ($valTarget * $valOther);
+                
+                // Kuadratkan nilai bobot masing-masing dokumen
+                $normTarget += pow($valTarget, 2);
+                $normOther += pow($valOther, 2);
+            }
+
+            // Hitung akar kuadrat dari total bobot
+            $normTarget = sqrt($normTarget);
+            $normOther = sqrt($normOther);
+
+            // Mencegah error 'Division by Zero' jika tidak ada kata yang sama sekali
+            if ($normTarget * $normOther == 0) {
+                $similarity = 0;
+            } else {
+                // Rumus Cosine Similarity murni
+                $similarity = $dotProduct / ($normTarget * $normOther);
+            }
+
+            $similarities[$other->id] = $similarity;
+        }
+
+        // --- Langkah 5: Evaluasi dan Sorting ---
+        arsort($similarities); // Urutkan array berdasarkan skor kemiripan paling tinggi (descending)
+        $topIds = array_slice(array_keys($similarities), 0, 3); // Ambil Top-3 rekomendasi teratas (K=3)
+        
+        $recommendedDocs = collect();
+        foreach ($topIds as $id) {
+            if ($similarities[$id] > 0) { // Validasi tambahan: Hanya tampilkan jika benar-benar ada kemiripan (> 0)
+                $doc = $others->firstWhere('id', $id);
+                // Simpan nilai persentase akurasi sementara ke dalam objek dokumen agar bisa ditampilkan di View
+                $doc->similarity_score = $similarities[$id]; 
+                $recommendedDocs->push($doc);
+            }
+        }
+
+        // Kembalikan daftar dokumen hasil rekomendasi ke fungsi show()
+        return $recommendedDocs;
+    }
+}
