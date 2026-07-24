@@ -28,4 +28,9 @@ class Publication extends Model
             GenerateRecommendations::dispatch($publication);
         });
     }
+
+    public function files()
+    {
+        return $this->hasMany(PublicationFile::class)->orderBy('sort_order');
+    }
 }

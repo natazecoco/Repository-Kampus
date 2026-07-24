@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Publications\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -19,26 +20,66 @@ class PublicationForm
                     ->searchable()
                     ->preload()
                     ->required(),
-                TextInput::make('title')
-                    ->required(),
-                TextInput::make('author')
-                    ->required(),
-                TextInput::make('year')
-                    ->required(),
+
                 Select::make('type')
-                    ->options(['thesis' => 'Thesis', 'article' => 'Article', 'book' => 'Book'])
+                    ->options([
+                        'thesis' => 'Thesis / Skripsi',
+                        'article' => 'Artikel Jurnal',
+                        'book' => 'Buku',
+                    ])
                     ->default('thesis')
                     ->required(),
-                Textarea::make('abstract')
+
+                TextInput::make('title')
                     ->required()
-                    ->columnSpanFull(),
-                TextInput::make('keywords')
+                    ->maxLength(255),
+
+                TextInput::make('author')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('year')
+                    ->numeric()
                     ->required(),
-                FileUpload::make('file_path')
-                    ->label('Upload File PDF')
-                    ->directory('publications_pdf') // Folder tempat nyimpen file nanti
-                    ->acceptedFileTypes(['application/pdf']) // Kunci khusus file PDF saja
-                    ->maxSize(10240), // Batas maksimal ukuran file 10MB
+
+                Textarea::make('abstract')
+                    ->rows(5)
+                    ->required(),
+
+                TextInput::make('keywords')
+                    ->required()
+                    ->maxLength(500),
+
+                Repeater::make('files')
+                    ->relationship('files')
+                    ->schema([
+                        TextInput::make('title')
+                            ->label('Nama Bagian')
+                            ->placeholder('Cth: Bab 1: Pendahuluan')
+                            ->required()
+                            ->maxLength(255),
+
+                        Select::make('access_type')
+                            ->label('Hak Akses')
+                            ->options([
+                                'public' => 'Terbuka (Bebas Download)',
+                                'restricted' => 'Terkunci (Wajib Login)',
+                            ])
+                            ->default('restricted')
+                            ->required(),
+
+                        FileUpload::make('file_path')
+                            ->label('File PDF')
+                            ->disk('local')          
+                            ->visibility('private')  
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('publications_pdf')
+                            ->maxSize(10240)
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->orderColumn('sort_order')
+                    ->defaultItems(1),
             ]);
     }
 }

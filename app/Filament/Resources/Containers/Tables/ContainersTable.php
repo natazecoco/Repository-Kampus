@@ -17,7 +17,13 @@ class ContainersTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('type')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'university' => 'primary',
+                        'journal' => 'success',
+                        'publisher' => 'warning',
+                        default => 'gray',
+                    }),
                 TextColumn::make('identifier')
                     ->searchable(),
                 TextColumn::make('created_at')
