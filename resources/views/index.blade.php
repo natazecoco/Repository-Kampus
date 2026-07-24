@@ -14,7 +14,18 @@
                 <div class="flex-shrink-0 flex items-center">
                     <span class="text-2xl font-bold text-blue-700">Repo<span class="text-slate-800">Ilmiah</span></span>
                 </div>
-                <div>
+                <div class="flex items-center gap-4">
+                    @guest
+                        <a href="{{ route('student.login') }}" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Masuk Mahasiswa</a>
+                        <a href="{{ route('student.register') }}" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Daftar</a>
+                    @endguest
+                    @auth
+                        <span class="text-sm font-medium text-slate-700">Halo, {{ Auth::user()->name }}</span>
+                        <form action="{{ route('student.logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Logout</button>
+                        </form>
+                    @endauth
                     <a href="/admin" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Masuk Admin</a>
                 </div>
             </div>
