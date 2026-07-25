@@ -20,7 +20,7 @@ return new class extends Migration
             
             // Cek jika kolom 'role' belum ada, maka buat kolomnya
             if (!Schema::hasColumn('users', 'role')) {
-                $table->enum('role', ['admin', 'mahasiswa', 'umum'])->default('umum')->after('npm');
+                $table->enum('role', ['admin', 'student'])->default('student')->after('npm');
             }
         });
     }

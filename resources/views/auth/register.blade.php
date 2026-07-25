@@ -27,15 +27,14 @@
                 <label for="email" class="block text-sm font-medium text-gray-700">Alamat Email</label>
                 <input type="email" name="email" id="email" value="{{ old('email') }}" required 
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                <p class="text-xs text-gray-500 mt-1">Gunakan email <b>@student.gunadarma.ac.id</b> untuk akses khusus mahasiswa.</p>
                 @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
-
+ 
             <div>
-                <label for="npm" class="block text-sm font-medium text-gray-700">NPM (Opsional)</label>
-                <input type="text" name="npm" id="npm" value="{{ old('npm') }}" placeholder="Contoh: 12345678"
+                <label for="npm" class="block text-sm font-medium text-gray-700">NPM</label>
+                <input type="text" name="npm" id="npm" value="{{ old('npm') }}" placeholder="Contoh: 12345678" maxlength="8" inputmode="numeric" required
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                <p class="text-xs text-gray-500 mt-1">Wajib 8 digit angka bagi mahasiswa. Kosongkan jika pengunjung umum.</p>
+                <p class="text-xs text-gray-500 mt-1">NPM digunakan sebagai identitas login mahasiswa dan wajib 8 digit angka.</p>
                 @error('npm') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 

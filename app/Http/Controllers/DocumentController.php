@@ -11,27 +11,31 @@ class DocumentController extends Controller
     // 1. Menampilkan halaman UI/Viewer (HTML)
     public function viewer($id)
     {
-        // Cari berdasarkan ID file di tabel anak
-        $file = PublicationFile::findOrFail($id); 
-        
-        // Kita kirim variabel $file ke viewer.blade.php
+        $file = PublicationFile::findOrFail($id);
+
+        if ($file->access_type === 'restricted' && ! auth()->check()) {
+            return redirect()->route('login')->with('error', 'Akses ditolak. Anda harus login untuk membuka dokumen ini.');
+        }
+
         return view('pdf.viewer', compact('file'));
     }
 
-    // 2. Mengirimkan data file PDF secara rahasia (Streaming biner)
     public function stream($id)
     {
-        $file = PublicationFile::findOrFail($id); 
+        $file = PublicationFile::findOrFail($id);
 
-        // Cek apakah file benar-benar ada di brankas 'local'
-        if (!Storage::disk('local')->exists($file->file_path)) {
+        if ($file->access_type === 'restricted' && ! auth()->check()) {
+            abort(403, 'Akses dokumen terbatas. Silakan login terlebih dahulu.');
+        }
+
+        if (! Storage::disk('local')->exists($file->file_path)) {
             abort(404, 'File PDF tidak ditemukan di server.');
         }
 
-        // Kirim file sebagai stream murni untuk mengecoh downloader eksternal
         return response()->stream(function () use ($file) {
             $stream = Storage::disk('local')->readStream($file->file_path);
             fpassthru($stream);
+
             if (is_resource($stream)) {
                 fclose($stream);
             }

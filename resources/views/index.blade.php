@@ -6,36 +6,65 @@
     <title>Repositori Ilmiah - Universitas Gunadarma</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans">
+<body class="bg-slate-50 min-h-screen font-sans text-slate-800">
 
-    <nav class="bg-white shadow-sm border-b border-slate-200">
+    <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex-shrink-0 flex items-center">
+            <div class="flex justify-between h-16 items-center gap-4">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 uppercase tracking-[0.24em]">Gunadarma</span>
                     <span class="text-2xl font-bold text-blue-700">Repo<span class="text-slate-800">Ilmiah</span></span>
                 </div>
-                <div>
-                    <a href="/admin" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Masuk Admin</a>
+
+                <div class="flex items-center gap-3 text-sm">
+                    @guest
+                        <a href="{{ route('login') }}" class="font-medium text-slate-600 hover:text-blue-700 transition">Masuk Mahasiswa</a>
+                        <a href="{{ route('register') }}" class="font-medium text-slate-600 hover:text-blue-700 transition">Daftar</a>
+                    @endguest
+                    @auth
+                        <span class="hidden sm:inline text-slate-600">Halo, {{ Auth::user()->name }}</span>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="font-medium text-slate-600 hover:text-blue-700 transition">Logout</button>
+                        </form>
+                    @endauth
+                    <a href="/admin" class="rounded-full border border-slate-200 px-3 py-2 font-medium text-slate-700 hover:border-blue-600 hover:text-blue-700 transition">Masuk Admin</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="bg-blue-700 text-white py-16">
-        <div class="max-w-3xl mx-auto px-4 text-center">
-            <h1 class="text-4xl font-extrabold mb-4">Temukan Referensi Ilmiah Terbaik</h1>
-            <p class="text-blue-200 mb-8 text-lg">Jelajahi kumpulan skripsi, artikel, dan jurnal untuk mendukung penelitianmu.</p>
-            
-            <form action="/" method="GET" class="flex shadow-lg rounded-md overflow-hidden">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik judul, penulis, atau kata kunci..." class="flex-1 px-5 py-4 text-slate-800 focus:outline-none text-lg">
-                <button type="submit" class="bg-blue-800 px-8 py-4 font-bold hover:bg-blue-900 transition">Cari</button>
-            </form>
+    <section class="relative overflow-hidden bg-gradient-to-br from-blue-800 via-blue-700 to-indigo-700 text-white">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.24),transparent_18%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.16),transparent_24%)]"></div>
+        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+            <div class="max-w-3xl mx-auto text-center">
+                <span class="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.24em] border border-white/20 backdrop-blur">Repository Digital</span>
+                <h1 class="mt-5 text-4xl md:text-5xl lg:text-6xl font-black leading-tight">Temukan Referensi Ilmiah Terbaik</h1>
+                <p class="mt-4 text-base md:text-lg text-blue-100 max-w-2xl mx-auto">Jelajahi kumpulan skripsi, artikel, buku, dan karya ilmiah yang siap mendukung riset, tugas akhir, dan pengembangan akademikmu.</p>
+
+                <form action="/" method="GET" class="mt-8 flex flex-col sm:flex-row gap-3 shadow-2xl rounded-2xl overflow-hidden bg-white/10 p-2 backdrop-blur-sm border border-white/20">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, penulis, kata kunci, tahun, atau container..." class="flex-1 rounded-xl px-5 py-4 text-slate-800 placeholder:text-slate-400 focus:outline-none text-base">
+                    <button type="submit" class="rounded-xl bg-slate-950 px-6 py-4 font-bold hover:bg-slate-900 transition">Cari Dokumen</button>
+                </form>
+
+                <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-blue-50">
+                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Skripsi</span>
+                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Artikel</span>
+                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Buku</span>
+                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Akses Aman</span>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="flex justify-between items-end mb-6">
-            <h2 class="text-2xl font-bold text-slate-800">Koleksi Terbaru</h2>
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">Koleksi Terbaru</h2>
+                @if($search)
+                    <p class="text-sm text-slate-500 mt-1">Menampilkan hasil pencarian untuk: <span class="font-semibold text-slate-700">{{ $search }}</span></p>
+                @endif
+            </div>
         </div>
 
         @if($publications->isEmpty())
@@ -80,7 +109,7 @@
                         <!-- Footer Card: Indikator file akses -->
                         <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                @if($pub->file_path)
+                                @if($pub->files->count() > 0)
                                     <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         PDF
@@ -97,6 +126,10 @@
 
                     </article>
                 @endforeach
+            </div>
+
+            <div class="mt-8">
+                {{ $publications->links() }}
             </div>
         @endif
     </main>

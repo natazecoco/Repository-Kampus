@@ -32,11 +32,10 @@ class UserForm
                 Select::make('role')
                     ->options([
                         'admin' => 'Admin',
-                        'mahasiswa' => 'Mahasiswa',
-                        'umum' => 'Umum',
+                        'student' => 'Mahasiswa',
                     ])
                     ->required()
-                    ->default('umum'),
+                    ->default('student'),
                 
                 TextInput::make('password')
                     ->password()

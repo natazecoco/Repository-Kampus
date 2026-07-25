@@ -23,12 +23,12 @@
         <!-- Form Login -->
         <form action="{{ route('login') }}" method="POST" class="space-y-6">
             @csrf
-            
+             
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Alamat Email</label>
-                <input type="email" name="email" id="email" value="{{ old('email') }}" required 
+                <label for="npm" class="block text-sm font-medium text-gray-700">NPM</label>
+                <input type="text" name="npm" id="npm" value="{{ old('npm') }}" maxlength="8" inputmode="numeric" required 
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                @error('email')
+                @error('npm')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>

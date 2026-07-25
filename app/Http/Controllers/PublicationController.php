@@ -10,23 +10,28 @@ class PublicationController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
-        $query = Publication::with('container')->latest();
+        $search = trim((string) $request->input('search'));
+        $query = Publication::with(['container', 'files'])->latest();
 
-        if ($search) {
-            $query->where('title', 'like', '%' . $search . '%')
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
                   ->orWhere('author', 'like', '%' . $search . '%')
-                  ->orWhere('keywords', 'like', '%' . $search . '%');
+                  ->orWhere('keywords', 'like', '%' . $search . '%')
+                  ->orWhere('year', 'like', '%' . $search . '%')
+                  ->orWhereHas('container', function ($containerQuery) use ($search) {
+                      $containerQuery->where('name', 'like', '%' . $search . '%')
+                                     ->orWhere('identifier', 'like', '%' . $search . '%');
+                  });
+            });
         }
 
-        $publications = $query->get();
+        $publications = $query->paginate(12)->appends($request->only('search'));
 
-        // TAMBAHAN: Proses injeksi tag HTML span untuk highlight kata kunci pada abstrak
         foreach ($publications as $pub) {
             $pub->highlighted_abstract = $this->highlightKeyword($pub->abstract, $search);
         }
 
-        // UPDATE: Penambahan variabel $search pada compact untuk keperluan passing data ke view
         return view('index', compact('publications', 'search'));
     }
 
@@ -47,8 +52,10 @@ class PublicationController extends Controller
     private function highlightKeyword($text, $keyword) 
     {
         if (empty($keyword) || empty($text)) {
-            return $text;
+            return e($text);
         }
+
+        $safeText = e($text);
 
         // preg_quote digunakan untuk mengamankan karakter khusus dalam input pencarian
         $safeKeyword = preg_quote($keyword, '/');
@@ -58,6 +65,6 @@ class PublicationController extends Controller
         
         $replacement = '<span class="bg-yellow-100/80 text-yellow-900 px-1 rounded-sm font-medium">$1</span>';
 
-        return preg_replace($pattern, $replacement, $text);
+        return preg_replace($pattern, $replacement, $safeText);
     }
 }

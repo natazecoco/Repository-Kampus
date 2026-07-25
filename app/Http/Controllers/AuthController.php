@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -20,24 +19,39 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
+            'npm' => 'required|digits:8',
             'password' => 'required'
+        ], [
+            'npm.required' => 'NPM wajib diisi.',
+            'npm.digits' => 'NPM harus tepat 8 digit angka.',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt([
+            'npm' => $credentials['npm'],
+            'password' => $credentials['password'],
+        ])) {
+            $user = Auth::user();
+
+            if ($user?->role !== 'student' && $user?->role !== 'admin') {
+                Auth::logout();
+
+                return back()->withErrors([
+                    'npm' => 'Akun ini tidak memiliki akses ke login mahasiswa.',
+                ])->onlyInput('npm');
+            }
+
             $request->session()->regenerate();
-            
-            // Arahkan admin ke panel Filament, sisanya ke home
-            if (Auth::user()->role === 'admin') {
+
+            if ($user->role === 'admin') {
                 return redirect('/admin');
             }
-            
+
             return redirect()->route('home')->with('success', 'Berhasil login!');
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'npm' => 'NPM atau password salah.',
+        ])->onlyInput('npm');
     }
 
     // Menampilkan halaman register
@@ -52,28 +66,21 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'npm' => 'required|digits:8|unique:users,npm',
             'password' => 'required|min:8|confirmed',
-            // Validasi diubah: NPM boleh kosong, tapi kalau diisi WAJIB 8 digit angka
-            'npm' => 'nullable|digits:8|unique:users,npm' 
         ], [
-            // Pesan error kustom biar lebih jelas
+            'npm.required' => 'NPM wajib diisi.',
             'npm.digits' => 'NPM harus tepat 8 digit angka.',
             'npm.unique' => 'NPM ini sudah terdaftar di sistem.',
             'email.unique' => 'Email ini sudah digunakan.'
         ]);
-
-        // Logika Penentuan Role: Jika pakai email kampus, jadi mahasiswa
-        $role = 'umum';
-        if (Str::endsWith($request->email, '@student.gunadarma.ac.id')) {
-            $role = 'mahasiswa';
-        }
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'npm' => $request->npm,
-            'role' => $role,
+            'role' => 'student',
         ]);
 
         return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');

@@ -27,14 +27,12 @@ class UsersTable
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'danger',
-                        'mahasiswa' => 'info',
-                        'umum' => 'gray',
+                        'student' => 'info',
                         default => 'gray',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'admin' => 'heroicon-m-shield-check',
-                        'mahasiswa' => 'heroicon-m-academic-cap',
-                        'umum' => 'heroicon-m-user',
+                        'student' => 'heroicon-m-academic-cap',
                         default => 'heroicon-m-user',
                     }),
                 

@@ -1,26 +1,27 @@
+@php
+    $currentUser = auth()->user();
+    $isRestricted = $file->access_type === 'restricted';
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Document Viewer</title>
-    <!-- Memanggil library PDF.js dari CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         body {
-            background-color: #2c3e50;
+            background-color: #f8fafc;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             font-family: sans-serif;
-            
-            /* Fitur Anti-Maling CSS */
-            user-select: none; /* Mencegah text block/select */
+            user-select: none;
             -webkit-user-select: none;
         }
         .toolbar {
-            background-color: #1a252f;
+            background-color: #0f172a;
             width: 100%;
             padding: 15px 0;
             color: white;
@@ -28,10 +29,10 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
         .toolbar button {
-            background-color: #3498db;
+            background-color: #2563eb;
             color: white;
             border: none;
             padding: 8px 16px;
@@ -40,33 +41,58 @@
             margin: 0 10px;
             font-weight: bold;
         }
-        .toolbar button:hover { background-color: #2980b9; }
+        .toolbar button:hover { background-color: #1d4ed8; }
+        .viewer-shell {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0 40px;
+            position: relative;
+        }
         #pdf-render {
-            margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
             max-width: 100%;
-            /* Mematikan klik kanan khusus di area kertas PDF */
-            pointer-events: none; 
+            background: white;
+            pointer-events: none;
+        }
+        .watermark {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 50;
+            opacity: 0.3;
+            transform: rotate(-18deg);
+            color: #0f172a;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            background: rgba(255,255,255,0.65);
+            padding: 10px 14px;
+            border: 1px solid rgba(15, 23, 42, 0.15);
+            border-radius: 999px;
+            pointer-events: none;
         }
     </style>
 </head>
-<!-- oncontextmenu="return false;" mematikan klik kanan di seluruh layar -->
 <body oncontextmenu="return false;">
-
     <div class="toolbar">
         <button id="prev-page">⬅ Sebelumnya</button>
         <span>Halaman: <span id="page-num"></span> / <span id="page-count"></span></span>
         <button id="next-page">Selanjutnya ➡</button>
     </div>
 
-    <!-- Tempat PDF akan dirender menjadi gambar kanvas -->
-    <canvas id="pdf-render"></canvas>
+    <div class="viewer-shell">
+        <canvas id="pdf-render"></canvas>
+    </div>
+
+    @if($isRestricted && $currentUser)
+        <div class="watermark">
+            {{ $currentUser->name }} · {{ $currentUser->npm ?? 'NPM belum terisi' }} · {{ now()->format('d M Y') }}
+        </div>
+    @endif
 
     <script>
-        // Set lokasi worker PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        // Mengambil aliran (stream) data PDF dari rute Laravel
         const url = "{{ route('document.stream', ['id' => $file->id]) }}";
 
         let pdfDoc = null,
@@ -78,7 +104,6 @@
               canvas = document.getElementById('pdf-render'),
               ctx = canvas.getContext('2d');
 
-        // Fungsi render halaman
         const renderPage = num => {
             pageIsRendering = true;
 
@@ -87,7 +112,7 @@
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
 
-                const renderCtx = { canvasContext: ctx, viewport: viewport };
+                const renderCtx = { canvasContext: ctx, viewport };
 
                 page.render(renderCtx).promise.then(() => {
                     pageIsRendering = false;
@@ -121,25 +146,22 @@
             queueRenderPage(pageNum);
         };
 
-        // Muat Dokumen PDF
         pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
             pdfDoc = pdfDoc_;
             document.getElementById('page-count').textContent = pdfDoc.numPages;
             renderPage(pageNum);
         }).catch(err => {
-            console.error("Error loading PDF:", err);
-            alert("Gagal memuat dokumen. Pastikan Anda sudah login dan memiliki akses.");
+            console.error('Error loading PDF:', err);
+            alert('Gagal memuat dokumen. Pastikan Anda sudah login dan memiliki akses.');
         });
 
-        // Event listener tombol navigasi
         document.getElementById('prev-page').addEventListener('click', showPrevPage);
         document.getElementById('next-page').addEventListener('click', showNextPage);
 
-        // Mencegah screenshot via keyboard Print Screen
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'PrintScreen') {
-                navigator.clipboard.writeText('');
-                alert('Screenshot dinonaktifkan untuk keamanan dokumen!');
+        document.addEventListener('keydown', (e) => {
+            const blockedKeys = ['PrintScreen', 'F12', 'Meta', 'Control', 's', 'p'];
+            if ((e.ctrlKey || e.metaKey) && blockedKeys.includes(e.key)) {
+                e.preventDefault();
             }
         });
     </script>
