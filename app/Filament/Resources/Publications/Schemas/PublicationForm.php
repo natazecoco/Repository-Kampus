@@ -92,7 +92,16 @@ class PublicationForm
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->helperText('Pilih topik terstruktur untuk mendukung pencarian dan rekomendasi bacaan pelengkap.'),
+                    ->createOptionForm([
+                        \Filament\Forms\Components\TextInput::make('name')
+                            ->label('Nama topik')
+                            ->required()
+                            ->afterStateUpdated(fn ($state, $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
+                        \Filament\Forms\Components\TextInput::make('slug')
+                            ->label('Slug')
+                            ->required(),
+                    ])
+                    ->helperText('Pilih topik terstruktur untuk mendukung pencarian dan rekomendasi bacaan pelengkap. Ketik untuk mencari, atau buat topik baru.'),
 
                 Repeater::make('files')
                     ->label('Berkas Publikasi')

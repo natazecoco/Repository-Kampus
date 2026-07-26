@@ -45,7 +45,8 @@ class TopicMergeTest extends TestCase
 
         $source->mergeInto($target);
 
-        $this->assertDatabaseMissing('topics', ['id' => $source->id]);
+        // Now the source topic should still exist but be inactive and marked merged_into
+        $this->assertDatabaseHas('topics', ['id' => $source->id, 'is_active' => 0, 'merged_into' => $target->id]);
         $this->assertDatabaseHas('publication_topic', ['publication_id' => $p1->id, 'topic_id' => $target->id]);
         $this->assertDatabaseHas('publication_topic', ['publication_id' => $p2->id, 'topic_id' => $target->id]);
     }

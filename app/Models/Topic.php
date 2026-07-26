@@ -70,25 +70,79 @@ class Topic extends Model
             return;
         }
 
-        // Move each related publication to target
+        // Gather related publication ids
         $publicationIds = $this->publications()->pluck('publications.id')->all();
 
+        // Store backup for potential undo
+        \DB::table('topic_merge_backups')->insert([
+            'source_id' => $this->id,
+            'target_id' => $target->id,
+            'publication_ids' => json_encode($publicationIds),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Move relations: attach target and detach source
         foreach ($publicationIds as $pubId) {
             $publication = Publication::find($pubId);
-            if (! $publication) {
-                continue;
-            }
+            if (! $publication) continue;
 
-            // Attach target topic if not already attached
             if (! $publication->topics()->where('topics.id', $target->id)->exists()) {
                 $publication->topics()->attach($target->id);
             }
 
-            // Detach this topic from publication
             $publication->topics()->detach($this->id);
         }
 
-        // Finally delete this topic
-        $this->delete();
+        // Mark this topic as merged into target and deactivate it (do not delete)
+        $this->merged_into = $target->id;
+        $this->is_active = false;
+        $this->save();
+    }
+
+    /**
+     * Undo the latest merge for this topic if any.
+     */
+    public function undoMerge(): bool
+    {
+        $backup = \DB::table('topic_merge_backups')
+            ->where('source_id', $this->id)
+            ->where('undone', false)
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (! $backup) {
+            return false;
+        }
+
+        $publicationIds = json_decode($backup->publication_ids, true) ?? [];
+        $target = Topic::find($backup->target_id);
+
+        if (! $target) {
+            return false;
+        }
+
+        // Reattach publications to source and detach from target if needed
+        foreach ($publicationIds as $pubId) {
+            $publication = Publication::find($pubId);
+            if (! $publication) continue;
+
+            if (! $publication->topics()->where('topics.id', $this->id)->exists()) {
+                $publication->topics()->attach($this->id);
+            }
+
+            // Optionally detach from target only if it wasn't attached before; we can't know original state,
+            // so we will not detach from target to avoid data loss. (Admin can clean duplicates later.)
+        }
+
+        // Reactivate topic and clear merged_into
+        $this->merged_into = null;
+        $this->is_active = true;
+        $this->save();
+
+        // Mark backup undone
+        \DB::table('topic_merge_backups')->where('id', $backup->id)->update(['undone' => true, 'updated_at' => now()]);
+
+        return true;
     }
 }

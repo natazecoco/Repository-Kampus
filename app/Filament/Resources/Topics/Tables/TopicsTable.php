@@ -17,8 +17,11 @@ class TopicsTable
                 TextColumn::make('name')->label('Topik')->searchable()->sortable(),
                 TextColumn::make('parent.name')->label('Topik Induk')->placeholder('Topik utama')->searchable(),
                 TextColumn::make('publications_count')->counts('publications')->label('Publikasi')->badge(),
+                TextColumn::make('is_active')->label('Aktif')->boolean()->sortable(),
+                TextColumn::make('merged_into')->label('Merged Into')->formatStateUsing(fn($state) => $state ? \App\Models\Topic::find($state)?->name : null)->sortable(),
                 TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->reorderable('sort_order')
             ->recordActions([
                 EditAction::make()
                     ->visible(fn () => auth()->user()?->role === 'admin'),
@@ -56,6 +59,26 @@ class TopicsTable
                                 ->success()
                                 ->title('Topik berhasil digabung')
                                 ->send();
+
+                            // Create a convenient undo action via notification (link to admin topics list where undo is available)
+                            \Filament\Notifications\Notification::make()
+                                ->info()
+                                ->title('Undo tersedia')
+                                ->body('Buka admin Topik untuk membatalkan gabungan (lihat topik sumber yang dinonaktifkan).')
+                                ->send();
+                        }
+                    }),
+                \Filament\Tables\Actions\Action::make('undoMerge')
+                    ->label('Batalkan gabungan')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->visible(fn($record) => ! $record->is_active && $record->merged_into !== null && auth()->user()?->role === 'admin')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $ok = $record->undoMerge();
+                        if ($ok) {
+                            \Filament\Notifications\Notification::make()->success()->title('Pembatalan gabungan berhasil')->send();
+                        } else {
+                            \Filament\Notifications\Notification::make()->danger()->title('Tidak ada backup untuk dibatalkan')->send();
                         }
                     }),
             ])
