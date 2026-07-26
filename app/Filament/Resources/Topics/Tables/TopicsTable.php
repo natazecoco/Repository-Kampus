@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Topics\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -17,7 +18,7 @@ class TopicsTable
                 TextColumn::make('name')->label('Topik')->searchable()->sortable(),
                 TextColumn::make('parent.name')->label('Topik Induk')->placeholder('Topik utama')->searchable(),
                 TextColumn::make('publications_count')->counts('publications')->label('Publikasi')->badge(),
-                TextColumn::make('is_active')->label('Aktif')->boolean()->sortable(),
+                BooleanColumn::make('is_active')->label('Aktif')->sortable(),
                 TextColumn::make('merged_into')->label('Merged Into')->formatStateUsing(fn($state) => $state ? \App\Models\Topic::find($state)?->name : null)->sortable(),
                 TextColumn::make('merged_at')->label('Merged At')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('merged_by')->label('Merged By')->formatStateUsing(fn($state) => $state ? \App\Models\User::find($state)?->name : null)->sortable()->toggleable(isToggledHiddenByDefault: true),
