@@ -24,13 +24,13 @@ class TopicsTable
             ->reorderable('sort_order')
             ->recordActions([
                 EditAction::make()
-                    ->visible(fn () => auth()->user()?->role === 'admin'),
+                    ->visible(fn ($record) => auth()->user()?->can('update', $record)),
 
                 \Filament\Tables\Actions\Action::make('toggleActive')
                     ->label(fn($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
                     ->icon(fn($record) => $record->is_active ? 'heroicon-o-eye-off' : 'heroicon-o-eye')
                     ->requiresConfirmation()
-                    ->visible(fn () => auth()->user()?->role === 'admin')
+                    ->visible(fn ($record) => auth()->user()?->can('toggleActive', $record))
                     ->action(function ($record) {
                         $record->is_active = ! $record->is_active;
                         $record->save();
@@ -43,7 +43,7 @@ class TopicsTable
                 \Filament\Tables\Actions\Action::make('merge')
                     ->label('Gabungkan')
                     ->icon('heroicon-o-duplicate')
-                    ->visible(fn () => auth()->user()?->role === 'admin')
+                    ->visible(fn ($record) => auth()->user()?->can('merge', $record))
                     ->form([
                         \Filament\Forms\Components\Select::make('target')
                             ->label('Gabungkan ke')
@@ -99,7 +99,9 @@ class TopicsTable
 
                         foreach ($records as $record) {
                             if ($record->id === $target->id) continue;
-                            $record->mergeInto($target);
+                            if (auth()->user()?->can('merge', $record)) {
+                                $record->mergeInto($target);
+                            }
                         }
 
                         \Filament\Notifications\Notification::make()
