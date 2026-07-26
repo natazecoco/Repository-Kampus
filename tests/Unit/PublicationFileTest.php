@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use App\Models\PublicationFile;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Models\User;
+use Tests\TestCase;
 
 class PublicationFileTest extends TestCase
 {
@@ -26,7 +26,7 @@ class PublicationFileTest extends TestCase
         $file = new PublicationFile();
         $file->visibility = 'admin';
 
-        $admin = $this->createUserMock('admin');
+        $admin = $this->createUser('admin');
 
         $this->assertTrue($file->canBeViewedBy($admin));
     }
@@ -36,7 +36,7 @@ class PublicationFileTest extends TestCase
         $file = new PublicationFile();
         $file->visibility = 'authenticated';
 
-        $user = $this->createUserMock('student');
+        $user = $this->createUser('student');
 
         $this->assertTrue($file->canBeViewedBy($user));
     }
@@ -65,15 +65,10 @@ class PublicationFileTest extends TestCase
         $this->assertFalse($file2->canBeDownloadedBy(null));
     }
 
-    private function createUserMock(string $role): Authenticatable
+    private function createUser(string $role): User
     {
-        $mock = $this->getMockBuilder(Authenticatable::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        // add dynamic role property
-        $mock->role = $role;
-
-        return $mock;
+        return User::factory()->make([
+            'role' => $role,
+        ]);
     }
 }

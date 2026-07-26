@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Publications\Schemas;
 
 use App\Models\Publication;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -40,40 +41,27 @@ class PublicationForm
                     ->helperText('Jenis karya menentukan template berkas. Template hanya diterapkan pada berkas yang masih kosong.')
                     ->required(),
 
-                // Informasi kelengkapan bagian wajib berdasarkan template yang berlaku
-                \Filament\Forms\Components\Placeholder::make('required_sections_check')
+                Placeholder::make('required_sections_check')
                     ->label('Pemeriksaan bagian wajib')
                     ->content(function (Get $get) {
                         $type = $get('type') ?? 'thesis';
                         $files = $get('files') ?? [];
 
-                        $present = array_map(fn($f) => $f['section'] ?? null, $files);
-
-                        $required = \App\Models\Publication::requiredSectionsForType($type);
-
+                        $present = array_map(fn ($f) => $f['section'] ?? null, $files);
+                        $required = Publication::requiredSectionsForType($type);
                         $missing = array_values(array_diff($required, $present));
-
                         $countMissing = count($missing);
 
                         if ($countMissing === 0) {
                             return '<span style="color:green">✓ Semua bagian wajib ada menurut template saat ini.</span>';
                         }
 
-                        $labels = array_map(fn($k) => static::sectionOptions()[$k] ?? $k, $missing);
-
+                        $labels = array_map(fn ($k) => static::sectionOptions()[$k] ?? $k, $missing);
                         $list = implode(', ', $labels);
 
                         return "<strong style=\"color:#b45309\">⚠ {$countMissing} bagian wajib belum ada:</strong> {$list}.\n\nSilakan tambahkan bagian-bagian ini sebelum menyimpan jika kamu ingin memastikan kelengkapan publikasi.";
                     })
                     ->reactive(),
-
-                    ->options([
-                        'thesis' => 'Thesis / Skripsi',
-                        'article' => 'Artikel Jurnal',
-                        'book' => 'Buku',
-                    ])
-                    ->default('thesis')
-                    ->required(),
 
                 TextInput::make('title')
                     ->required()
@@ -144,34 +132,10 @@ class PublicationForm
                             ->helperText('Aktifkan hanya untuk dokumen yang memang berlisensi atau berizin untuk diunduh.')
                             ->default(false),
 
-                    ->required(),
-
-                TextInput::make('keywords')
-                    ->required()
-                    ->maxLength(500),
-
-                Repeater::make('files')
-                    ->relationship('files')
-                    ->schema([
-                        TextInput::make('title')
-                            ->label('Nama Bagian')
-                            ->placeholder('Cth: Bab 1: Pendahuluan')
-                            ->required()
-                            ->maxLength(255),
-
-                        Select::make('access_type')
-                            ->label('Hak Akses')
-                            ->options([
-                                'public' => 'Terbuka (Bebas Download)',
-                                'restricted' => 'Terkunci (Wajib Login)',
-                            ])
-                            ->default('restricted')
-                            ->required(),
-
                         FileUpload::make('file_path')
                             ->label('File PDF')
-                            ->disk('local')          
-                            ->visibility('private')  
+                            ->disk('local')
+                            ->visibility('private')
                             ->acceptedFileTypes(['application/pdf'])
                             ->directory('publications_pdf')
                             ->maxSize(10240)
@@ -185,7 +149,6 @@ class PublicationForm
             ]);
     }
 
-    /** @return array<string, string> */
     public static function sectionOptions(): array
     {
         return [
@@ -217,7 +180,6 @@ class PublicationForm
         ];
     }
 
-    /** @return array<int, array<string, mixed>> */
     private static function fileTemplate(?string $type): array
     {
         if (in_array($type, ['article', 'book', 'proceeding', 'report'], true)) {
@@ -256,9 +218,5 @@ class PublicationForm
             'visibility' => $section[1],
             'allow_download' => false,
         ], $sections);
-    }
-}
-                    ->defaultItems(1),
-            ]);
     }
 }
