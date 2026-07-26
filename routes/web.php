@@ -7,6 +7,7 @@ use App\Http\Controllers\PublicationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicationController::class, 'index'])->name('home');
+Route::get('/topic/{slug}', [PublicationController::class, 'index'])->name('topic.show');
 Route::get('/publication/{publication}', [PublicationController::class, 'show'])->name('publications.show');
 Route::get('/publication/{publication}/read', [DocumentController::class, 'publicationViewer'])->name('publications.viewer');
 

@@ -63,7 +63,7 @@
                     Semua topik
                 </a>
                 @foreach($topics as $topic)
-                    <a href="{{ route('home', ['search' => request('search'), 'topic' => $topic->slug]) }}" class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition {{ $activeTopic && $activeTopic->id === $topic->id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
+                    <a href="{{ route('topic.show', $topic->slug) }}" class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition {{ $activeTopic && $activeTopic->id === $topic->id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
                         <span>{{ $topic->name }}</span>
                         <span class="rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold">{{ $topic->publications_count }}</span>
                     </a>

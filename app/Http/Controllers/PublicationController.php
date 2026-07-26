@@ -12,7 +12,8 @@ class PublicationController extends Controller
     public function index(Request $request)
     {
         $search = trim((string) $request->input('search'));
-        $topicSlug = trim((string) $request->input('topic'));
+        // Accept topic from query string (home) or route parameter (topic page)
+        $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
         $query = Publication::with(['container', 'files', 'topics'])->latest();
 
         if ($search !== '') {
