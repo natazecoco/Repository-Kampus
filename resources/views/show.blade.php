@@ -11,7 +11,7 @@
     <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center gap-4">
-                <div class="flex-shrink-0 flex items-center">
+                <div class="flex items-center gap-3">
                     <a href="/" class="text-2xl font-bold text-blue-700">Repo<span class="text-slate-800">Ilmiah</span></a>
                 </div>
                 <div class="flex items-center gap-4">
@@ -20,16 +20,10 @@
                         <a href="{{ route('student.login') }}" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Masuk Mahasiswa</a>
                     @endguest
                     @auth
-                        <span class="text-sm font-medium text-slate-700">Halo, {{ Auth::user()->name }}</span>
-                        <form action="{{ route('student.logout') }}" method="POST">
+                        <span class="text-sm font-medium text-slate-700">Halo, {{ auth()->user()->name }}</span>
+                        <form action="{{ route('student.logout') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Logout</button>
-                <div class="flex items-center gap-3 text-sm">
-                    <a href="/" class="font-medium text-slate-600 hover:text-blue-700 transition">← Kembali ke Beranda</a>
-                    @auth
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="font-medium text-slate-600 hover:text-blue-700 transition">Logout</button>
                         </form>
                     @endauth
                 </div>
@@ -69,7 +63,7 @@
                 @endif
                 <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                     <p class="text-[11px] uppercase tracking-[0.22em] font-bold text-slate-400">Status Akses</p>
-                    <p class="mt-2 text-sm font-semibold text-slate-800">{{ $publication->files->contains(fn ($file) => $file->access_type === 'restricted') ? 'Terdapat file terbatas' : 'Semua dokumen publik' }}</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-800">{{ $publication->files->contains(fn ($file) => $file->isRestricted()) ? 'Terdapat file terbatas' : 'Semua dokumen publik' }}</p>
                 </div>
             </div>
 
@@ -111,7 +105,7 @@
                                 <li class="px-4 py-4 md:px-5 md:py-5 hover:bg-white transition-colors">
                                     <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            @if($file->access_type === 'public')
+                                            @if($file->isPublic())
                                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
                                                     <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
                                                 </span>
@@ -120,17 +114,17 @@
                                                     <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                                                 </span>
                                             @endif
-                                            
+                                             
                                             <div class="min-w-0">
                                                 <h4 class="text-sm font-bold text-slate-800 truncate">{{ $file->title }}</h4>
-                                                <span class="mt-1 inline-block text-[10px] uppercase tracking-wider font-semibold {{ $file->access_type === 'public' ? 'text-emerald-600' : 'text-amber-600' }}">
-                                                    {{ $file->access_type === 'public' ? 'Akses Terbuka' : 'Akses Terbatas' }}
+                                                <span class="mt-1 inline-block text-[10px] uppercase tracking-wider font-semibold {{ $file->isPublic() ? 'text-emerald-600' : 'text-amber-600' }}">
+                                                    {{ $file->visibility_label }}
                                                 </span>
                                             </div>
                                         </div>
-
-                                        <div class="shrink-0 md:ml-4">
-                                            @if($file->access_type === 'public')
+ 
+                                        <div class="shrink-0 md:ml-4 flex flex-col gap-2 items-end md:items-end">
+                                            @if($file->isPublic())
                                                 <a href="{{ route('file.akses', $file->id) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
                                                     Lihat File
                                                 </a>
@@ -145,6 +139,12 @@
                                                         Login Dulu
                                                     </span>
                                                 @endauth
+                                            @endif
+
+                                            @if($file->allow_download && $file->canBeDownloadedBy(auth()->user()))
+                                                <a href="{{ route('file.akses', ['file' => $file->id, 'download' => 1]) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-50 text-emerald-700 text-xs font-bold rounded-lg hover:bg-green-100 transition-colors border border-emerald-200">
+                                                    Unduh PDF
+                                                </a>
                                             @endif
                                         </div>
                                     </div>

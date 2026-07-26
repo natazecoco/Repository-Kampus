@@ -13,7 +13,7 @@ class DocumentController extends Controller
     {
         $file = PublicationFile::findOrFail($id);
 
-        if ($file->access_type === 'restricted' && ! auth()->check()) {
+        if (! $file->canBeViewedBy(auth()->user())) {
             return redirect()->route('login')->with('error', 'Akses ditolak. Anda harus login untuk membuka dokumen ini.');
         }
 
@@ -24,7 +24,7 @@ class DocumentController extends Controller
     {
         $file = PublicationFile::findOrFail($id);
 
-        if ($file->access_type === 'restricted' && ! auth()->check()) {
+        if (! $file->canBeViewedBy(auth()->user())) {
             abort(403, 'Akses dokumen terbatas. Silakan login terlebih dahulu.');
         }
 

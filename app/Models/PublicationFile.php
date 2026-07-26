@@ -9,12 +9,9 @@ class PublicationFile extends Model
 {
     protected $guarded = [];
 
-    protected function casts(): array
-    {
-        return [
-            'allow_download' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'allow_download' => 'boolean',
+    ];
 
     public function publication()
     {
@@ -39,9 +36,22 @@ class PublicationFile extends Model
         return $this->allow_download && $this->canBeViewedBy($user);
     }
 
+    public function isPublic(): bool
+    {
+        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
+            'public' => true,
+            default => false,
+        };
+    }
+
+    public function isRestricted(): bool
+    {
+        return ! $this->isPublic();
+    }
+
     public function getVisibilityLabelAttribute(): string
     {
-        return match ($this->visibility ?? 'authenticated') {
+        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
             'public' => 'Publik',
             'authenticated' => 'Mahasiswa internal',
             'admin' => 'Admin saja',

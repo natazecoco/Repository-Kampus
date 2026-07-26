@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Storage;
 
 class FileAccessController extends Controller
 {
-    public function show(PublicationFile $file)
+    public function show(Request $request, PublicationFile $file)
     {
-        if ($file->access_type === 'restricted' && ! auth()->check()) {
+        if (! $file->canBeViewedBy(auth()->user())) {
             return redirect()->route('login')->with('error', 'Akses ditolak. Anda harus login untuk membaca dokumen ini.');
         }
 
@@ -19,6 +19,11 @@ class FileAccessController extends Controller
         }
 
         $path = Storage::disk('local')->path($file->file_path);
+
+        $download = $request->query('download');
+        if ($download && $file->canBeDownloadedBy(auth()->user())) {
+            return response()->download($path, $file->title . '.pdf');
+        }
 
         return response()->file($path, [
             'Content-Type' => 'application/pdf',

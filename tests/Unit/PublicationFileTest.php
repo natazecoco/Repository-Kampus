@@ -65,6 +65,23 @@ class PublicationFileTest extends TestCase
         $this->assertFalse($file2->canBeDownloadedBy(null));
     }
 
+    public function test_visibility_helpers_return_expected_values()
+    {
+        $publicFile = new PublicationFile();
+        $publicFile->visibility = 'public';
+
+        $this->assertTrue($publicFile->isPublic());
+        $this->assertFalse($publicFile->isRestricted());
+        $this->assertSame('Publik', $publicFile->visibility_label);
+
+        $restrictedFile = new PublicationFile();
+        $restrictedFile->visibility = 'authenticated';
+
+        $this->assertFalse($restrictedFile->isPublic());
+        $this->assertTrue($restrictedFile->isRestricted());
+        $this->assertSame('Mahasiswa internal', $restrictedFile->visibility_label);
+    }
+
     private function createUser(string $role): User
     {
         return User::factory()->make([
