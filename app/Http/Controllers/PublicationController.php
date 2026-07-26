@@ -32,7 +32,8 @@ class PublicationController extends Controller
 
         if ($topicSlug !== '') {
             $query->whereHas('topics', function ($topicQuery) use ($topicSlug): void {
-                $topicQuery->where('slug', $topicSlug)
+                $topicQuery->active()
+                    ->where('slug', $topicSlug)
                     ->orWhere('name', $topicSlug);
             });
         }

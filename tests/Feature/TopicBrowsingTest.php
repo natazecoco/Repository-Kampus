@@ -49,6 +49,21 @@ class TopicBrowsingTest extends TestCase
         $response->assertDontSeeText('Publikasi B');
     }
 
+    public function test_inactive_topic_route_does_not_show_publications(): void
+    {
+        $inactiveTopic = Topic::create(['name' => 'Topik Nonaktif', 'slug' => 'topik-nonaktif', 'is_active' => false, 'sort_order' => 5]);
+
+        $container = Container::create(['name' => 'Perpustakaan', 'type' => 'university', 'identifier' => 'perpus']);
+        $publication = Publication::create(['title' => 'Publikasi Rahasia', 'author' => 'Rina', 'year' => '2025', 'abstract' => 'Abstrak rahasia.', 'keywords' => 'rahasia', 'container_id' => $container->id]);
+        $publication->topics()->attach($inactiveTopic->id);
+
+        $response = $this->get(route('topic.show', $inactiveTopic->slug));
+
+        $response->assertStatus(200);
+        $response->assertDontSeeText('Publikasi Rahasia');
+        $response->assertSeeText('Belum ada dokumen yang diunggah ke repositori.');
+    }
+
     public function test_inactive_topics_do_not_appear_in_topic_list(): void
     {
         Topic::create(['name' => 'Topik Aktif', 'slug' => 'topik-aktif', 'is_active' => true, 'sort_order' => 1]);
