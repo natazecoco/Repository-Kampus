@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,6 +16,7 @@ class Topic extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'sort_order' => 'integer',
+        'merged_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -39,6 +41,11 @@ class Topic extends Model
     public function publications(): BelongsToMany
     {
         return $this->belongsToMany(Publication::class);
+    }
+
+    public function mergedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'merged_by');
     }
 
     // Scopes
@@ -90,18 +97,24 @@ class Topic extends Model
             $publication->topics()->detach($this->id);
         }
 
-        // Store backup for potential undo, including list of added attachments
+        $actorId = auth()->id();
+
+        // Store backup for potential undo, including list of added attachments and audit info
         \DB::table('topic_merge_backups')->insert([
             'source_id' => $this->id,
             'target_id' => $target->id,
             'publication_ids' => json_encode($publicationIds),
             'added_publication_ids' => json_encode($added),
+            'merged_by' => $actorId,
+            'merged_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         // Mark this topic as merged into target and deactivate it (do not delete)
         $this->merged_into = $target->id;
+        $this->merged_by = $actorId;
+        $this->merged_at = now();
         $this->is_active = false;
         $this->save();
     }
@@ -145,8 +158,10 @@ class Topic extends Model
             }
         }
 
-        // Reactivate topic and clear merged_into
+        // Reactivate topic and clear merged_into and audit metadata
         $this->merged_into = null;
+        $this->merged_by = null;
+        $this->merged_at = null;
         $this->is_active = true;
         $this->save();
 

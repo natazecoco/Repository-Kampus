@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\StudentAuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileAccessController;
 use App\Http\Controllers\PublicationController;
+use App\Http\Controllers\TopicBulkController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,13 @@ Route::get('/publication/{publication}/read', [DocumentController::class, 'publi
 Route::get('/dokumen/{file}', [FileAccessController::class, 'show'])->name('file.akses');
 
 Route::get('/document/{file}/stream', [DocumentController::class, 'stream'])->name('document.stream');
+
+Route::middleware(['auth'])->prefix('admin/topics')->group(function () {
+    Route::get('/export', [TopicBulkController::class, 'export'])->name('admin.topics.export');
+    Route::get('/import', [TopicBulkController::class, 'showImport'])->name('admin.topics.import');
+    Route::post('/import', [TopicBulkController::class, 'import'])->name('admin.topics.import.process');
+    Route::get('/duplicates', [TopicBulkController::class, 'duplicates'])->name('admin.topics.duplicates');
+});
 
 // Student (mahasiswa) auth routes
 Route::middleware('guest')->group(function () {

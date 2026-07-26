@@ -43,9 +43,9 @@ class PublicationController extends Controller
             $pub->highlighted_abstract = $this->highlightKeyword($pub->abstract, $search);
         }
 
-        $topics = Topic::withCount('publications')->orderBy('name')->get();
+        $topics = Topic::active()->withCount('publications')->orderBy('name')->get();
         $activeTopic = $topicSlug !== ''
-            ? Topic::where('slug', $topicSlug)->orWhere('name', $topicSlug)->first()
+            ? Topic::active()->where('slug', $topicSlug)->orWhere('name', $topicSlug)->first()
             : null;
 
         return view('index', compact('publications', 'search', 'topics', 'activeTopic'));
