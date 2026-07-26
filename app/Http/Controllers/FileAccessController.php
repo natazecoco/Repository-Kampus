@@ -11,8 +11,9 @@ class FileAccessController extends Controller
 {
     public function show(Request $request, PublicationFile $file)
     {
-        if (! $file->canBeViewedBy(auth()->user())) {
-            return redirect()->route('login')->with('error', 'Akses ditolak. Anda harus login untuk membaca dokumen ini.');
+        // Rute ini diperlakukan sebagai akses/unduh berkas legacy: periksa izin download terlebih dahulu
+        if (! $file->canBeDownloadedBy(auth()->user())) {
+            abort(403, 'Akses/unduh file ditolak.');
         }
 
         if (! Storage::disk('local')->exists($file->file_path)) {
@@ -22,7 +23,7 @@ class FileAccessController extends Controller
         $path = Storage::disk('local')->path($file->file_path);
 
         $download = $request->query('download');
-        if ($download && $file->canBeDownloadedBy(auth()->user())) {
+        if ($download) {
             return response()->download($path, $file->title . '.pdf');
         }
 

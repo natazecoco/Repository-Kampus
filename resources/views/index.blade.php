@@ -27,20 +27,6 @@
                             <button type="submit" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Logout</button>
                         </form>
                     @endauth
-                    <a href="/admin" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Masuk Admin</a>
-
-                <div class="flex items-center gap-3 text-sm">
-                    @guest
-                        <a href="{{ route('login') }}" class="font-medium text-slate-600 hover:text-blue-700 transition">Masuk Mahasiswa</a>
-                        <a href="{{ route('register') }}" class="font-medium text-slate-600 hover:text-blue-700 transition">Daftar</a>
-                    @endguest
-                    @auth
-                        <span class="hidden sm:inline text-slate-600">Halo, {{ Auth::user()->name }}</span>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="font-medium text-slate-600 hover:text-blue-700 transition">Logout</button>
-                        </form>
-                    @endauth
                     <a href="/admin" class="rounded-full border border-slate-200 px-3 py-2 font-medium text-slate-700 hover:border-blue-600 hover:text-blue-700 transition">Masuk Admin</a>
                 </div>
             </div>
@@ -71,6 +57,26 @@
     </section>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm mb-6">
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('home', ['search' => request('search')]) }}" class="inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold {{ $activeTopic ? 'bg-slate-100 text-slate-700' : 'bg-blue-600 text-white' }} transition">
+                    Semua topik
+                </a>
+                @foreach($topics as $topic)
+                    <a href="{{ route('home', ['search' => request('search'), 'topic' => $topic->slug]) }}" class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition {{ $activeTopic && $activeTopic->id === $topic->id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
+                        <span>{{ $topic->name }}</span>
+                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold">{{ $topic->publications_count }}</span>
+                    </a>
+                @endforeach
+            </div>
+            @if($activeTopic)
+                <p class="mt-3 text-sm text-slate-500">
+                    Menampilkan publikasi yang terkait dengan topik <span class="font-semibold text-slate-700">{{ $activeTopic->name }}</span>.
+                    <a href="{{ route('home', ['search' => request('search')]) }}" class="ml-1 font-semibold text-blue-600 hover:text-blue-700">Reset filter</a>
+                </p>
+            @endif
+        </div>
+
         <div class="flex justify-between items-end mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">Koleksi Terbaru</h2>

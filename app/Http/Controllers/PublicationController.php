@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Publication;
+use App\Models\Recommendation;
+use App\Models\Topic;
 use Illuminate\Http\Request;
-use App\Models\Publication; 
-use App\Models\Recommendation; // Panggil model Recommendation di sini
 
 class PublicationController extends Controller
 {
     public function index(Request $request)
     {
         $search = trim((string) $request->input('search'));
+        $topicSlug = trim((string) $request->input('topic'));
         $query = Publication::with(['container', 'files', 'topics'])->latest();
 
         if ($search !== '') {
@@ -27,13 +29,25 @@ class PublicationController extends Controller
             });
         }
 
-        $publications = $query->paginate(12)->appends($request->only('search'));
+        if ($topicSlug !== '') {
+            $query->whereHas('topics', function ($topicQuery) use ($topicSlug): void {
+                $topicQuery->where('slug', $topicSlug)
+                    ->orWhere('name', $topicSlug);
+            });
+        }
+
+        $publications = $query->paginate(12)->appends($request->only(['search', 'topic']));
 
         foreach ($publications as $pub) {
             $pub->highlighted_abstract = $this->highlightKeyword($pub->abstract, $search);
         }
 
-        return view('index', compact('publications', 'search'));
+        $topics = Topic::withCount('publications')->orderBy('name')->get();
+        $activeTopic = $topicSlug !== ''
+            ? Topic::where('slug', $topicSlug)->orWhere('name', $topicSlug)->first()
+            : null;
+
+        return view('index', compact('publications', 'search', 'topics', 'activeTopic'));
     }
 
     public function show(Publication $publication)

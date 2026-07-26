@@ -2,10 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Container;
 use App\Models\Publication;
 use App\Models\PublicationFile;
+use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -22,6 +23,53 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
+    }
+
+    public function test_home_page_can_filter_publications_by_topic(): void
+    {
+        $topic = Topic::create([
+            'name' => 'Kecerdasan Buatan',
+            'slug' => 'kecerdasan-buatan',
+        ]);
+
+        $otherTopic = Topic::create([
+            'name' => 'Sistem Informasi',
+            'slug' => 'sistem-informasi',
+        ]);
+
+        $container = Container::create([
+            'name' => 'Repository Test',
+            'type' => 'university',
+        ]);
+
+        $matchingPublication = Publication::create([
+            'container_id' => $container->id,
+            'type' => 'thesis',
+            'title' => 'Publikasi AI',
+            'author' => 'Penulis AI',
+            'year' => 2026,
+            'abstract' => 'Abstrak untuk pengujian filter topik.',
+            'keywords' => 'topik, ai',
+        ]);
+        $matchingPublication->topics()->attach($topic->id);
+
+        $otherPublication = Publication::create([
+            'container_id' => $container->id,
+            'type' => 'thesis',
+            'title' => 'Publikasi SI',
+            'author' => 'Penulis SI',
+            'year' => 2026,
+            'abstract' => 'Abstrak untuk pengujian filter topik lainnya.',
+            'keywords' => 'topik, si',
+        ]);
+        $otherPublication->topics()->attach($otherTopic->id);
+
+        $response = $this->get(route('home', ['topic' => $topic->slug]));
+
+        $response->assertOk();
+        $response->assertSee($matchingPublication->title);
+        $response->assertDontSee($otherPublication->title);
+        $response->assertSee($topic->name);
     }
 
     public function test_a_registered_user_is_a_student_and_can_log_in_with_npm(): void
