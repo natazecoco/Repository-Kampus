@@ -1,167 +1,120 @@
 @php
     $currentUser = auth()->user();
-    $isRestricted = $file->access_type === 'restricted';
+    $isWatermarked = $file->visibility !== 'public' && $currentUser;
 @endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Document Viewer</title>
+    <title>{{ $file->title }} - {{ $publication->title }}</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
-        body {
-            background-color: #f8fafc;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        .toolbar {
-            background-color: #0f172a;
-            width: 100%;
-            padding: 15px 0;
-            color: white;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-        .toolbar button {
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 0 10px;
-            font-weight: bold;
-        }
-        .toolbar button:hover { background-color: #1d4ed8; }
-        .viewer-shell {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 20px 0 40px;
-            position: relative;
-        }
-        #pdf-render {
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
-            max-width: 100%;
-            background: white;
-            pointer-events: none;
-        }
-        .watermark {
-            position: fixed;
-            right: 16px;
-            bottom: 16px;
-            z-index: 50;
-            opacity: 0.3;
-            transform: rotate(-18deg);
-            color: #0f172a;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            background: rgba(255,255,255,0.65);
-            padding: 10px 14px;
-            border: 1px solid rgba(15, 23, 42, 0.15);
-            border-radius: 999px;
-            pointer-events: none;
-        }
+        body { background: #f8fafc; margin: 0; color: #0f172a; font-family: system-ui, sans-serif; }
+        .toolbar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 20px; background: #0f172a; color: white; box-shadow: 0 4px 12px rgb(15 23 42 / 20%); }
+        .toolbar strong { margin-right: auto; max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .toolbar button { border: 0; border-radius: 6px; padding: 8px 12px; background: #2563eb; color: white; cursor: pointer; font-weight: 700; }
+        .toolbar button:hover { background: #1d4ed8; }
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr); min-height: calc(100vh - 68px); }
+        .file-nav { border-bottom: 1px solid #e2e8f0; background: white; padding: 14px; }
+        .file-nav h2 { margin: 0 0 8px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #64748b; }
+        .file-nav a { display: inline-block; margin: 4px 4px 4px 0; padding: 8px 10px; border-radius: 6px; color: #334155; font-size: 13px; text-decoration: none; }
+        .file-nav a:hover, .file-nav a.active { background: #dbeafe; color: #1d4ed8; font-weight: 700; }
+        .viewer-shell { display: flex; justify-content: center; padding: 24px; }
+        #pdf-render { max-width: 100%; background: white; box-shadow: 0 10px 25px rgb(15 23 42 / 18%); pointer-events: none; }
+        .watermark { position: fixed; right: 16px; bottom: 16px; z-index: 30; opacity: .35; transform: rotate(-18deg); background: rgb(255 255 255 / 70%); border: 1px solid rgb(15 23 42 / 15%); border-radius: 999px; padding: 10px 14px; color: #0f172a; font-size: 12px; font-weight: 700; letter-spacing: .05em; pointer-events: none; }
+        @media (min-width: 960px) { .layout { grid-template-columns: 280px minmax(0, 1fr); } .file-nav { border-bottom: 0; border-right: 1px solid #e2e8f0; } .file-nav a { display: block; margin: 2px 0; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
     <div class="toolbar">
-        <button id="prev-page">⬅ Sebelumnya</button>
-        <span>Halaman: <span id="page-num"></span> / <span id="page-count"></span></span>
-        <button id="next-page">Selanjutnya ➡</button>
+        <strong title="{{ $publication->title }}">{{ $publication->title }}</strong>
+        <button id="prev-page" type="button">← Sebelumnya</button>
+        <span>Halaman <span id="page-num">-</span> / <span id="page-count">-</span></span>
+        <button id="next-page" type="button">Selanjutnya →</button>
     </div>
 
-    <div class="viewer-shell">
-        <canvas id="pdf-render"></canvas>
-    </div>
+    <main class="layout">
+        <nav class="file-nav" aria-label="Bagian dokumen">
+            <h2>Bagian yang dapat diakses</h2>
+            @foreach($files as $documentFile)
+                <a class="{{ $documentFile->is($file) ? 'active' : '' }}" href="{{ route('publications.viewer', ['publication' => $publication, 'file' => $documentFile]) }}">
+                    {{ $documentFile->title }}
+                </a>
+            @endforeach
+        </nav>
 
-    @if($isRestricted && $currentUser)
-        <div class="watermark">
-            {{ $currentUser->name }} · {{ $currentUser->npm ?? 'NPM belum terisi' }} · {{ now()->format('d M Y') }}
+        <div class="viewer-shell">
+            <canvas id="pdf-render"></canvas>
         </div>
+    </main>
+
+    @if($isWatermarked)
+        <div class="watermark">{{ $currentUser->name }} · {{ $currentUser->npm ?? 'NPM belum terisi' }} · {{ now()->format('d M Y') }}</div>
     @endif
 
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const url = "{{ route('document.stream', ['id' => $file->id]) }}";
+        const url = @json(route('document.stream', $file));
+        const canvas = document.getElementById('pdf-render');
+        const context = canvas.getContext('2d');
+        let pdfDocument = null;
+        let pageNumber = 1;
+        let isRendering = false;
+        let pendingPage = null;
 
-        let pdfDoc = null,
-            pageNum = 1,
-            pageIsRendering = false,
-            pageNumIsPending = null;
-
-        const scale = 1.5,
-              canvas = document.getElementById('pdf-render'),
-              ctx = canvas.getContext('2d');
-
-        const renderPage = num => {
-            pageIsRendering = true;
-
-            pdfDoc.getPage(num).then(page => {
-                const viewport = page.getViewport({ scale });
+        function renderPage(number) {
+            isRendering = true;
+            pdfDocument.getPage(number).then((page) => {
+                const viewport = page.getViewport({ scale: 1.5 });
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
 
-                const renderCtx = { canvasContext: ctx, viewport };
-
-                page.render(renderCtx).promise.then(() => {
-                    pageIsRendering = false;
-                    if (pageNumIsPending !== null) {
-                        renderPage(pageNumIsPending);
-                        pageNumIsPending = null;
-                    }
-                });
-
-                document.getElementById('page-num').textContent = num;
+                return page.render({ canvasContext: context, viewport }).promise;
+            }).then(() => {
+                isRendering = false;
+                if (pendingPage !== null) {
+                    const nextPage = pendingPage;
+                    pendingPage = null;
+                    renderPage(nextPage);
+                }
             });
-        };
 
-        const queueRenderPage = num => {
-            if (pageIsRendering) {
-                pageNumIsPending = num;
-            } else {
-                renderPage(num);
+            document.getElementById('page-num').textContent = number;
+        }
+
+        function queueRenderPage(number) {
+            if (isRendering) {
+                pendingPage = number;
+                return;
             }
-        };
 
-        const showPrevPage = () => {
-            if (pageNum <= 1) return;
-            pageNum--;
-            queueRenderPage(pageNum);
-        };
+            renderPage(number);
+        }
 
-        const showNextPage = () => {
-            if (pageNum >= pdfDoc.numPages) return;
-            pageNum++;
-            queueRenderPage(pageNum);
-        };
-
-        pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
-            pdfDoc = pdfDoc_;
-            document.getElementById('page-count').textContent = pdfDoc.numPages;
-            renderPage(pageNum);
-        }).catch(err => {
-            console.error('Error loading PDF:', err);
-            alert('Gagal memuat dokumen. Pastikan Anda sudah login dan memiliki akses.');
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (pageNumber > 1) {
+                queueRenderPage(--pageNumber);
+            }
         });
 
-        document.getElementById('prev-page').addEventListener('click', showPrevPage);
-        document.getElementById('next-page').addEventListener('click', showNextPage);
+        document.getElementById('next-page').addEventListener('click', () => {
+            if (pdfDocument && pageNumber < pdfDocument.numPages) {
+                queueRenderPage(++pageNumber);
+            }
+        });
 
-        document.addEventListener('keydown', (e) => {
-            const blockedKeys = ['PrintScreen', 'F12', 'Meta', 'Control', 's', 'p'];
-            if ((e.ctrlKey || e.metaKey) && blockedKeys.includes(e.key)) {
-                e.preventDefault();
+        pdfjsLib.getDocument({ url, disableAutoFetch: true, disableStream: true }).promise
+            .then((pdf) => {
+                pdfDocument = pdf;
+                window.document.getElementById('page-count').textContent = pdfDocument.numPages;
+                renderPage(pageNumber);
+            })
+            .catch(() => alert('Gagal memuat dokumen. Periksa akses atau ketersediaan berkas.'));
+
+        document.addEventListener('keydown', (event) => {
+            if ((event.ctrlKey || event.metaKey) && ['s', 'p'].includes(event.key.toLowerCase())) {
+                event.preventDefault();
             }
         });
     </script>

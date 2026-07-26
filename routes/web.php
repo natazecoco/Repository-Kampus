@@ -9,6 +9,12 @@ use App\Http\Controllers\DocumentController; // <-- Ini tambahan baru untuk PDF 
 
 Route::get('/', [PublicationController::class, 'index'])->name('home');
 Route::get('/publication/{publication}', [PublicationController::class, 'show'])->name('publications.show');
+Route::get('/publication/{publication}/read', [DocumentController::class, 'publicationViewer'])->name('publications.viewer');
+
+// Rute akses file PDF yang lama (dibiarkan saja kalau masih dipakai bagian lain)
+Route::get('/dokumen/{file}', [FileAccessController::class, 'show'])->name('file.akses');
+
+Route::get('/document/{file}/stream', [DocumentController::class, 'stream'])->name('document.stream');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [StudentAuthController::class, 'showLoginForm'])->name('student.login');
@@ -18,11 +24,6 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [StudentAuthController::class, 'logout'])->name('student.logout');
-// Rute untuk detail publikasi
-Route::get('/publication/{publication}', [PublicationController::class, 'show'])->name('publications.show');
-
-// Rute akses file PDF yang lama (dibiarkan saja kalau masih dipakai bagian lain)
-Route::get('/dokumen/{file}', [FileAccessController::class, 'show'])->name('file.akses');
 
 // Route untuk pengunjung yang belum login (Guest)
 Route::middleware('guest')->group(function () {
@@ -36,11 +37,4 @@ Route::middleware('guest')->group(function () {
 // Route untuk yang sudah login (Auth)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    // === ROUTE BARU UNTUK PDF VIEWER ANTI-MALING ===
-    // 1. Membuka halaman HTML viewer
-    Route::get('/document/{id}/view', [DocumentController::class, 'viewer'])->name('document.viewer');
-    
-    // 2. Mengalirkan (stream) data PDF secara rahasia
-    Route::get('/document/{id}/stream', [DocumentController::class, 'stream'])->name('document.stream');
 });

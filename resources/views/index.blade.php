@@ -112,6 +112,14 @@
                                 {{ $pub->container ? $pub->container->name : 'Wadah tidak diketahui' }}
                             </span>
                         </div>
+
+                        @if($pub->topics->isNotEmpty())
+                            <div class="flex flex-wrap gap-1.5 mb-4">
+                                @foreach($pub->topics->take(3) as $topic)
+                                    <span class="text-[10px] font-bold uppercase tracking-wide text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-md">{{ $topic->name }}</span>
+                                @endforeach
+                            </div>
+                        @endif
                         
                         <!-- TAMBAHAN: Menampilkan abstrak dokumen yang sudah difilter highlight -->
                         {{-- Sintaks {!! !!} (raw echo) digunakan untuk merender tag span dari proses preg_replace --}}

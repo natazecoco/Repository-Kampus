@@ -2,31 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PublicationFile; // Kita panggil model anaknya, bukan Publication lagi
-use Illuminate\Http\Request;
+use App\Models\Publication;
+use App\Models\PublicationFile;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
-    // 1. Menampilkan halaman UI/Viewer (HTML)
-    public function viewer($id)
+    public function publicationViewer(Publication $publication)
     {
-        $file = PublicationFile::findOrFail($id);
+        $files = $publication->files
+            ->filter(fn (PublicationFile $file): bool => $file->canBeViewedBy(auth()->user()))
+            ->values();
 
-        if (! $file->canBeViewedBy(auth()->user())) {
-            return redirect()->route('login')->with('error', 'Akses ditolak. Anda harus login untuk membuka dokumen ini.');
-        }
+        abort_if($files->isEmpty(), 403, 'Anda tidak memiliki akses ke dokumen publikasi ini.');
 
-        return view('pdf.viewer', compact('file'));
+        $file = $files->firstWhere('id', (int) request('file')) ?? $files->first();
+
+        return view('pdf.viewer', compact('publication', 'files', 'file'));
     }
 
-    public function stream($id)
+    public function stream(PublicationFile $file)
     {
-        $file = PublicationFile::findOrFail($id);
-
-        if (! $file->canBeViewedBy(auth()->user())) {
-            abort(403, 'Akses dokumen terbatas. Silakan login terlebih dahulu.');
-        }
+        abort_unless($file->canBeViewedBy(auth()->user()), 403, 'Akses dokumen terbatas.');
 
         if (! Storage::disk('local')->exists($file->file_path)) {
             abort(404, 'File PDF tidak ditemukan di server.');
@@ -41,7 +38,7 @@ class DocumentController extends Controller
             }
         }, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="dokumen-terenkripsi.pdf"',
+            'Content-Disposition' => 'inline; filename="dokumen.pdf"',
             'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
             'Pragma' => 'no-cache',
         ]);

@@ -11,7 +11,7 @@ class PublicationController extends Controller
     public function index(Request $request)
     {
         $search = trim((string) $request->input('search'));
-        $query = Publication::with(['container', 'files'])->latest();
+        $query = Publication::with(['container', 'files', 'topics'])->latest();
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -22,7 +22,8 @@ class PublicationController extends Controller
                   ->orWhereHas('container', function ($containerQuery) use ($search) {
                       $containerQuery->where('name', 'like', '%' . $search . '%')
                                      ->orWhere('identifier', 'like', '%' . $search . '%');
-                  });
+                  })
+                  ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->where('name', 'like', '%' . $search . '%'));
             });
         }
 
@@ -37,11 +38,11 @@ class PublicationController extends Controller
 
     public function show(Publication $publication)
     {
-        $publication->load('container');
+        $publication->load(['container', 'files', 'topics']);
 
         // AMBIL DARI DATABASE, BUKAN MENGHITUNG DARI NOL LAGI!
         $recommendations = Recommendation::where('publication_id', $publication->id)
-                            ->with('recommendedPublication') 
+                            ->with('recommendedPublication.topics')
                             ->orderByDesc('similarity_score')
                             ->get();
 

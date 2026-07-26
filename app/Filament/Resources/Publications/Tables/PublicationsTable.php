@@ -55,19 +55,11 @@ class PublicationsTable
                 //
             ])
             ->recordActions([
-                // Tombol Lihat PDF dengan namespace Action yang sudah diperbaiki
-                Action::make('view_pdf')
-                    ->label('Lihat PDF')
+                Action::make('view_publication')
+                    ->label('Baca Publikasi')
                     ->icon('heroicon-o-eye')
                     ->color('info')
-                    ->url(function ($record) {
-                        $firstFile = $record->files->first();
-                        
-                        if ($firstFile) {
-                            return route('document.viewer', ['id' => $firstFile->id]);
-                        }
-                        return null;
-                    })
+                    ->url(fn ($record): string => route('publications.viewer', $record))
                     ->openUrlInNewTab()
                     ->visible(fn ($record) => $record->files->isNotEmpty()),
 

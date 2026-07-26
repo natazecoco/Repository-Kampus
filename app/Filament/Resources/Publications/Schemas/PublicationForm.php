@@ -47,7 +47,7 @@ class PublicationForm
                         $type = $get('type') ?? 'thesis';
                         $files = $get('files') ?? [];
 
-                        $present = array_map(fn ($f) => $f['section'] ?? null, $files);
+                        $present = array_map(fn($f) => $f['section'] ?? null, $files);
                         $required = Publication::requiredSectionsForType($type);
                         $missing = array_values(array_diff($required, $present));
                         $countMissing = count($missing);
@@ -56,7 +56,7 @@ class PublicationForm
                             return '<span style="color:green">✓ Semua bagian wajib ada menurut template saat ini.</span>';
                         }
 
-                        $labels = array_map(fn ($k) => static::sectionOptions()[$k] ?? $k, $missing);
+                        $labels = array_map(fn($k) => static::sectionOptions()[$k] ?? $k, $missing);
                         $list = implode(', ', $labels);
 
                         return "<strong style=\"color:#b45309\">⚠ {$countMissing} bagian wajib belum ada:</strong> {$list}.\n\nSilakan tambahkan bagian-bagian ini sebelum menyimpan jika kamu ingin memastikan kelengkapan publikasi.";
