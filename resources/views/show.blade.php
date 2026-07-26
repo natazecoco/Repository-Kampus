@@ -90,9 +90,42 @@
                     <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Topik Repository</h2>
                     <div class="flex flex-wrap gap-2">
                         @foreach($publication->topics as $topic)
-                            <a href="{{ route('home', ['search' => $topic->name]) }}" class="bg-indigo-50 text-indigo-700 text-xs px-3 py-1 rounded-md border border-indigo-200 font-medium hover:bg-indigo-100">
+                            <a href="{{ route('topic.show', $topic->slug) }}" class="bg-indigo-50 text-indigo-700 text-xs px-3 py-1 rounded-md border border-indigo-200 font-medium hover:bg-indigo-100">
                                 {{ $topic->name }}
                             </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            @if($recommendations->isNotEmpty())
+                <div class="mb-8">
+                    <div class="flex items-center justify-between gap-4 mb-3">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800">Rekomendasi Bacaan</h2>
+                            <p class="text-sm text-slate-500">Dokumen lain yang mirip dengan publikasi ini berdasarkan konten dan kata kunci.</p>
+                        </div>
+                        <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{ $recommendations->count() }} rekomendasi</span>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        @foreach($recommendations as $recommendation)
+                            @if($recommendation->recommendedPublication)
+                                <a href="{{ route('publications.show', $recommendation->recommendedPublication->id) }}" class="group block rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-blue-300 hover:shadow-sm">
+                                    <div class="flex items-center justify-between gap-3 mb-3">
+                                        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Rekomendasi</div>
+                                        <div class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">{{ round($recommendation->similarity_score * 100) }}%</div>
+                                    </div>
+                                    <h3 class="text-base font-bold text-slate-900 line-clamp-2 mb-2">{{ $recommendation->recommendedPublication->title }}</h3>
+                                    <p class="text-sm text-slate-500">{{ $recommendation->recommendedPublication->author }} · {{ $recommendation->recommendedPublication->year }}</p>
+                                    @if($recommendation->recommendedPublication->topics->isNotEmpty())
+                                        <div class="mt-4 flex flex-wrap gap-2">
+                                            @foreach($recommendation->recommendedPublication->topics->take(2) as $topic)
+                                                <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600 bg-slate-100 px-2 py-1 rounded-md">{{ $topic->name }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </a>
+                            @endif
                         @endforeach
                     </div>
                 </div>
