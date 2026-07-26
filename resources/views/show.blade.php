@@ -14,6 +14,16 @@
                 <div class="flex-shrink-0 flex items-center">
                     <a href="/" class="text-2xl font-bold text-blue-700">Repo<span class="text-slate-800">Ilmiah</span></a>
                 </div>
+                <div class="flex items-center gap-4">
+                    <a href="/" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">← Kembali ke Beranda</a>
+                    @guest
+                        <a href="{{ route('student.login') }}" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Masuk Mahasiswa</a>
+                    @endguest
+                    @auth
+                        <span class="text-sm font-medium text-slate-700">Halo, {{ Auth::user()->name }}</span>
+                        <form action="{{ route('student.logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Logout</button>
                 <div class="flex items-center gap-3 text-sm">
                     <a href="/" class="font-medium text-slate-600 hover:text-blue-700 transition">← Kembali ke Beranda</a>
                     @auth
