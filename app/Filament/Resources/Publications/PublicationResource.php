@@ -9,6 +9,7 @@ use App\Filament\Resources\Publications\Schemas\PublicationForm;
 use App\Filament\Resources\Publications\Tables\PublicationsTable;
 use App\Models\Publication;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -18,7 +19,11 @@ class PublicationResource extends Resource
 {
     protected static ?string $model = Publication::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
+
+    protected static ?string $navigationLabel = 'Publikasi';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Repository';
 
     protected static ?string $recordTitleAttribute = 'title';
 

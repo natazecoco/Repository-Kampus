@@ -13,11 +13,17 @@ class ContainerForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
                 Select::make('type')
-                    ->options(['university' => 'University', 'journal' => 'Journal', 'publisher' => 'Publisher'])
+                    ->options([
+                        'university' => 'University', 
+                        'journal' => 'Journal', 
+                        'publisher' => 'Publisher'
+                    ])
                     ->required(),
-                TextInput::make('identifier'),
+                TextInput::make('identifier')
+                    ->maxLength(255),
             ]);
     }
 }

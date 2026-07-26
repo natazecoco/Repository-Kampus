@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Containers\Tables;
+namespace App\Filament\Resources\Users\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 
-class ContainersTable
+class UsersTable
 {
     public static function configure(Table $table): Table
     {
@@ -16,35 +14,40 @@ class ContainersTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('type')
+                
+                TextColumn::make('email')
+                    ->searchable()
+                    ->copyable(), // Disederhanakan: aman dari perubahan API Filament 5
+                
+                TextColumn::make('npm')
+                    ->label('NPM')
+                    ->searchable(),
+                
+                TextColumn::make('role')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'university' => 'primary',
-                        'journal' => 'success',
-                        'publisher' => 'warning',
+                        'admin' => 'danger',
+                        'student' => 'info',
                         default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'admin' => 'heroicon-m-shield-check',
+                        'student' => 'heroicon-m-academic-cap',
+                        default => 'heroicon-m-user',
                     }),
-                TextColumn::make('identifier')
-                    ->searchable(),
+                
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
             ->recordActions([
                 EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 }

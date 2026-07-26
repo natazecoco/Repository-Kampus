@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Publications\Tables;
 
+// Kembali menggunakan namespace Filament\Actions yang benar untuk versimu
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,32 +16,32 @@ class PublicationsTable
     {
         return $table
             ->columns([
-                TextColumn::make('container_id')
-                    ->numeric()
+                TextColumn::make('container.name')
+                    ->label('Container')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable()
-                    ->limit(50), // Membatasi panjang teks judul agar tabel tetap rapi
+                    ->limit(50),
                 TextColumn::make('author')
                     ->searchable(),
                 TextColumn::make('year'),
                 TextColumn::make('type')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'thesis' => 'primary',
+                        'article' => 'success',
+                        'book' => 'warning',
+                        default => 'gray',
+                    }),
                 TextColumn::make('keywords')
                     ->searchable(),
-                TextColumn::make('file_path')
-                    ->label('File PDF')
-                    // Mengubah teks path mentah menjadi tulisan "Download" yang rapi
-                    ->formatStateUsing(fn ($state) => $state ? 'Download' : 'Tidak Ada File')
-                    // Memberikan ikon unduh otomatis jika filenya ada
-                    ->icon(fn ($state) => $state ? 'heroicon-o-arrow-down-tray' : null)
-                    // Memberikan warna biru (primary) untuk link aktif
-                    ->color(fn ($state) => $state ? 'primary' : 'gray')
-                    // Membuat kolom bisa diklik langsung menuju ke file aslinya
-                    ->url(fn ($record) => $record->file_path ? asset('storage/' . $record->file_path) : null)
-                    // Mengatur agar file terbuka di tab baru saat diklik
-                    ->openUrlInNewTab(),
+                TextColumn::make('files_count')
+                    ->counts('files')
+                    ->label('Jumlah Dokumen')
+                    ->badge()
+                    ->color('success'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -53,6 +55,22 @@ class PublicationsTable
                 //
             ])
             ->recordActions([
+                // Tombol Lihat PDF dengan namespace Action yang sudah diperbaiki
+                Action::make('view_pdf')
+                    ->label('Lihat PDF')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->url(function ($record) {
+                        $firstFile = $record->files->first();
+                        
+                        if ($firstFile) {
+                            return route('document.viewer', ['id' => $firstFile->id]);
+                        }
+                        return null;
+                    })
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => $record->files->isNotEmpty()),
+
                 EditAction::make(),
             ])
             ->toolbarActions([

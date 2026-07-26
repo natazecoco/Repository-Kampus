@@ -124,17 +124,19 @@ class GenerateRecommendations implements ShouldQueue
         arsort($similarities);
         $topIds = array_slice(array_keys($similarities), 0, 3); // Top 3
 
-        // Hapus rekomendasi lama untuk skripsi ini agar tidak terjadi duplikasi saat di-update
         Recommendation::where('publication_id', $target->id)->delete();
 
-        // Simpan 3 rekomendasi terbaik yang baru
         foreach ($topIds as $id) {
             if ($similarities[$id] > 0) {
-                Recommendation::create([
-                    'publication_id' => $target->id,
-                    'recommended_id' => $id,
-                    'similarity_score' => $similarities[$id],
-                ]);
+                Recommendation::updateOrCreate(
+                    [
+                        'publication_id' => $target->id,
+                        'recommended_id' => $id,
+                    ],
+                    [
+                        'similarity_score' => $similarities[$id],
+                    ]
+                );
             }
         }
     }

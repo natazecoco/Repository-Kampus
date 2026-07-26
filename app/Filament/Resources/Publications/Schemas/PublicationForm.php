@@ -67,6 +67,14 @@ class PublicationForm
                     })
                     ->reactive(),
 
+                    ->options([
+                        'thesis' => 'Thesis / Skripsi',
+                        'article' => 'Artikel Jurnal',
+                        'book' => 'Buku',
+                    ])
+                    ->default('thesis')
+                    ->required(),
+
                 TextInput::make('title')
                     ->required()
                     ->maxLength(255),
@@ -135,6 +143,30 @@ class PublicationForm
                             ->label('Izinkan unduh PDF')
                             ->helperText('Aktifkan hanya untuk dokumen yang memang berlisensi atau berizin untuk diunduh.')
                             ->default(false),
+
+                    ->required(),
+
+                TextInput::make('keywords')
+                    ->required()
+                    ->maxLength(500),
+
+                Repeater::make('files')
+                    ->relationship('files')
+                    ->schema([
+                        TextInput::make('title')
+                            ->label('Nama Bagian')
+                            ->placeholder('Cth: Bab 1: Pendahuluan')
+                            ->required()
+                            ->maxLength(255),
+
+                        Select::make('access_type')
+                            ->label('Hak Akses')
+                            ->options([
+                                'public' => 'Terbuka (Bebas Download)',
+                                'restricted' => 'Terkunci (Wajib Login)',
+                            ])
+                            ->default('restricted')
+                            ->required(),
 
                         FileUpload::make('file_path')
                             ->label('File PDF')
@@ -224,5 +256,9 @@ class PublicationForm
             'visibility' => $section[1],
             'allow_download' => false,
         ], $sections);
+    }
+}
+                    ->defaultItems(1),
+            ]);
     }
 }
