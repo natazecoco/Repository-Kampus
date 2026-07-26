@@ -38,6 +38,9 @@ class TopicMergeTest extends TestCase
         $source = Topic::create(['name' => 'Source', 'slug' => 'source-topic']);
         $target = Topic::create(['name' => 'Target', 'slug' => 'target-topic']);
 
+        // p1 is already attached to target to simulate existing relation
+        $p1->topics()->attach($target->id);
+
         $p1->topics()->attach($source->id);
         $p2->topics()->attach($source->id);
 
