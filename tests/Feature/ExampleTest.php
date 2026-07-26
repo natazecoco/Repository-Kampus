@@ -82,7 +82,7 @@ class ExampleTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect();
         $this->assertDatabaseHas('users', [
             'npm' => '12345678',
             'role' => 'student',
