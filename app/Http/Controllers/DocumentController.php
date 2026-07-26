@@ -23,6 +23,7 @@ class DocumentController extends Controller
 
     public function stream(PublicationFile $file)
     {
+<<<<<<< HEAD
         // Periksa hak akses tampilan terlebih dahulu agar tidak membocorkan keberadaan file
         abort_unless($file->canBeViewedBy(auth()->user()), 403, 'Akses dokumen terbatas.');
 
@@ -36,6 +37,9 @@ class DocumentController extends Controller
 
             return response()->download(Storage::disk('local')->path($file->file_path), $file->title . '.pdf');
         }
+=======
+        abort_unless($file->canBeViewedBy(auth()->user()), 403, 'Akses dokumen terbatas.');
+>>>>>>> 5d6bb8c (Add merge audit metadata (merged_by, merged_at) and surface in admin\n\n- Add migrations to store merged_by and merged_at in topic_merge_backups and topics\n- Record current user and timestamp when merging topics\n- Clear audit fields on undo merge\n- Show merged metadata in Topics table UI\n- Add safe route fallbacks for student.login/student.register for test environments\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>)
 
         if (! Storage::disk('local')->exists($file->file_path)) {
             abort(404, 'File PDF tidak ditemukan di server.');
@@ -52,7 +56,11 @@ class DocumentController extends Controller
             }
         }, 200, [
             'Content-Type' => 'application/pdf',
+<<<<<<< HEAD
             'Content-Disposition' => 'inline; filename="' . $filename . '"',
+=======
+            'Content-Disposition' => 'inline; filename="dokumen.pdf"',
+>>>>>>> 5d6bb8c (Add merge audit metadata (merged_by, merged_at) and surface in admin\n\n- Add migrations to store merged_by and merged_at in topic_merge_backups and topics\n- Record current user and timestamp when merging topics\n- Clear audit fields on undo merge\n- Show merged metadata in Topics table UI\n- Add safe route fallbacks for student.login/student.register for test environments\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>)
             'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
             'Pragma' => 'no-cache',
         ]);
