@@ -1,0 +1,2663 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Bookmark extends Model
+{
+    protected $guarded = [];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function publication(): BelongsTo
+    {
+        return $this->belongsTo(Publication::class);
+    }
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Container extends Model
+{
+    // Mengizinkan semua kolom diisi (mass assignment)
+    protected $guarded = [];
+
+    // Relasi: Satu Container punya Banyak Publication
+    public function publications()
+    {
+        return $this->hasMany(Publication::class);
+    }
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Jobs\GenerateRecommendations;
+
+class Publication extends Model
+{
+    protected $guarded = [];
+
+    public const TYPE_LABELS = [
+        'thesis' => 'Skripsi / Tesis / Disertasi',
+        'scientific_paper' => 'Penulisan Ilmiah',
+        'article' => 'Artikel Jurnal',
+        'book' => 'Buku',
+        'proceeding' => 'Prosiding',
+        'report' => 'Laporan Penelitian',
+    ];
+
+    // Relasi: Banyak Publication dimiliki oleh Satu Container
+    public function container()
+    {
+        return $this->belongsTo(Container::class);
+    }
+
+    // Fungsi ini akan otomatis berjalan saat ada kejadian (event) di database
+    protected static function booted()
+    {
+        // Berjalan SATU KALI saat ada skripsi BARU ditambah
+        static::created(function ($publication) {
+            GenerateRecommendations::dispatch($publication);
+        });
+
+        // Berjalan setiap kali skripsi DIEDIT (misal judulnya direvisi)
+        static::updated(function ($publication) {
+            GenerateRecommendations::dispatch($publication);
+        });
+    }
+
+    public function files()
+    {
+        return $this->hasMany(PublicationFile::class)->orderBy('sort_order');
+    }
+
+    public function topics(): BelongsToMany
+    {
+        return $this->belongsToMany(Topic::class);
+    }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    public function getTypeLabelAttribute(): string
+    {
+        return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);
+    }
+
+    /**
+     * Return list of required section keys for a given publication type.
+     * These reflect reasonable defaults based on typical campus repository templates.
+     *
+     * @return array<int, string>
+     */
+    public static function requiredSectionsForType(?string $type): array
+    {
+        $type = $type ?? 'thesis';
+
+        // Defaults inspired by the list you provided (bintang = wajib)
+        $thesisRequired = [
+            'cover',
+            'originality_statement',
+            'approval_sheet',
+            'abstract_id',
+            'table_of_contents',
+            'chapter_1',
+            'chapter_2',
+            'chapter_3',
+            'bibliography',
+            'presentation',
+        ];
+
+        switch ($type) {
+            case 'scientific_paper':
+                // Penulisan ilmiah: mirip skripsi tapi lebih ringkas
+                return $thesisRequired;
+
+            case 'article':
+            case 'book':
+            case 'proceeding':
+            case 'report':
+                // Dokumen tunggal: minimal dokumen lengkap dan daftar pustaka
+                return [
+                    'full_document',
+                    'abstract_id',
+                    'bibliography',
+                ];
+
+            case 'thesis':
+            default:
+                return $thesisRequired;
+        }
+    }
+
+    /**
+     * Return missing required section keys for this publication using persisted files.
+     *
+     * @return array<int, string>
+     */
+    public function missingRequiredSections(): array
+    {
+        $present = $this->files()->pluck('section')->filter()->values()->all();
+
+        $required = self::requiredSectionsForType($this->type ?? null);
+
+        return array_values(array_diff($required, $present));
+    }
+
+    /**
+     * Same as missingRequiredSections but based on incoming form data array (files as array).
+     * Useful when validating form state before the record is persisted.
+     *
+     * @param  array<int, array<string,mixed>>  $filesData
+     * @return array<int, string>
+     */
+    public static function missingRequiredSectionsFromArray(?string $type, array $filesData = []): array
+    {
+        $present = array_values(array_filter(array_map(fn($f) => $f['section'] ?? null, $filesData)));
+
+        $required = self::requiredSectionsForType($type);
+
+        return array_values(array_diff($required, $present));
+    }
+}
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable;
+
+class PublicationFile extends Model
+{
+    protected $guarded = [];
+
+    protected $casts = [
+        'allow_download' => 'boolean',
+    ];
+
+    public function publication()
+    {
+        return $this->belongsTo(Publication::class);
+    }
+
+    public function canBeViewedBy(?Authenticatable $user): bool
+    {
+        if ($user?->role === 'admin') {
+            return true;
+        }
+
+        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
+            'public' => true,
+            'authenticated' => $user !== null,
+            default => false,
+        };
+    }
+
+    public function canBeDownloadedBy(?Authenticatable $user): bool
+    {
+        return $this->allow_download && $this->canBeViewedBy($user);
+    }
+
+    public function isPublic(): bool
+    {
+        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
+            'public' => true,
+            default => false,
+        };
+    }
+
+    public function isRestricted(): bool
+    {
+        return ! $this->isPublic();
+    }
+
+    public function getVisibilityLabelAttribute(): string
+    {
+        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
+            'public' => 'Publik',
+            'authenticated' => 'Mahasiswa internal',
+            'admin' => 'Admin saja',
+            default => 'Terbatas',
+        };
+    }
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Recommendation extends Model
+{
+    protected $guarded = [];
+
+    // Relasi: Banyak Recommendation dimiliki oleh Satu Publication
+    public function publication()
+    {
+        return $this->belongsTo(Publication::class);
+    }
+
+    // Relasi: Banyak Recommendation dimiliki oleh Satu Publication yang direkomendasikan
+    public function recommendedPublication()
+    {
+        return $this->belongsTo(Publication::class, 'recommended_id');
+    }
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+
+class Topic extends Model
+{
+    protected $guarded = [];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'sort_order' => 'integer',
+        'merged_at' => 'datetime',
+    ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Topic $topic): void {
+            if (blank($topic->slug)) {
+                $topic->slug = Str::slug($topic->name);
+            }
+        });
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order')->orderBy('name');
+    }
+
+    public function ancestorIds(): array
+    {
+        $ids = [];
+        $current = $this->parent()->with('parent')->first();
+
+        while ($current) {
+            if (in_array($current->id, $ids, true)) {
+                break;
+            }
+
+            $ids[] = $current->id;
+            $current = $current->parent()->with('parent')->first();
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    public function relatedTopicIds(): array
+    {
+        $ids = [$this->id];
+
+        foreach ($this->ancestorIds() as $ancestorId) {
+            $ids[] = $ancestorId;
+        }
+
+        foreach ($this->children()->pluck('id') as $childId) {
+            $ids[] = $childId;
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    public function publications(): BelongsToMany
+    {
+        return $this->belongsToMany(Publication::class);
+    }
+
+    public function userPreferences()
+    {
+        return $this->hasMany(UserTopicPreference::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_topic_preferences');
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    // Admin helpers
+    public function activate(): void
+    {
+        $this->is_active = true;
+        $this->save();
+    }
+
+    public function deactivate(): void
+    {
+        $this->is_active = false;
+        $this->save();
+    }
+
+    /**
+     * Merge this topic into another topic.
+     * Moves publications relations to the $target and deletes this topic.
+     */
+    public function mergeInto(Topic $target): void
+    {
+        if ($this->id === $target->id) {
+            return;
+        }
+
+        // Gather related publication ids
+        $publicationIds = $this->publications()->pluck('publications.id')->all();
+
+        // Determine which publications will be newly attached to target
+        $added = [];
+
+        foreach ($publicationIds as $pubId) {
+            $publication = Publication::find($pubId);
+            if (! $publication) continue;
+
+            $already = $publication->topics()->where('topics.id', $target->id)->exists();
+            if (! $already) {
+                $publication->topics()->attach($target->id);
+                $added[] = $pubId;
+            }
+
+            // Detach this topic from publication
+            $publication->topics()->detach($this->id);
+        }
+
+        // Determine actor
+        $actorId = auth()->id() ?? null;
+
+        // Store backup for potential undo, including list of added attachments and audit info
+        \DB::table('topic_merge_backups')->insert([
+            'source_id' => $this->id,
+            'target_id' => $target->id,
+            'publication_ids' => json_encode($publicationIds),
+            'added_publication_ids' => json_encode($added),
+            'merged_by' => $actorId,
+            'merged_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Mark this topic as merged into target and deactivate it (do not delete)
+        $this->merged_into = $target->id;
+        $this->merged_by = $actorId;
+        $this->merged_at = now();
+        $this->is_active = false;
+        $this->save();
+    }
+
+    /**
+     * Undo the latest merge for this topic if any.
+     */
+    public function undoMerge(): bool
+    {
+        $backup = \DB::table('topic_merge_backups')
+            ->where('source_id', $this->id)
+            ->where('undone', false)
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (! $backup) {
+            return false;
+        }
+
+        $publicationIds = json_decode($backup->publication_ids, true) ?? [];
+        $added = json_decode($backup->added_publication_ids ?? '[]', true) ?? [];
+        $target = Topic::find($backup->target_id);
+
+        if (! $target) {
+            return false;
+        }
+
+        // Reattach publications to source and detach from target only for those that were newly added
+        foreach ($publicationIds as $pubId) {
+            $publication = Publication::find($pubId);
+            if (! $publication) continue;
+
+            // Reattach to source if missing
+            if (! $publication->topics()->where('topics.id', $this->id)->exists()) {
+                $publication->topics()->attach($this->id);
+            }
+
+            // Detach from target only if it was added by the merge
+            if (in_array($pubId, $added, true)) {
+                $publication->topics()->detach($target->id);
+            }
+        }
+
+        // Reactivate topic and clear merged_into and audit fields
+        $this->merged_into = null;
+        $this->merged_by = null;
+        $this->merged_at = null;
+        $this->is_active = true;
+        $this->save();
+
+        // Mark backup undone
+        \DB::table('topic_merge_backups')->where('id', $backup->id)->update(['undone' => true, 'updated_at' => now()]);
+
+        return true;
+    }
+}
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+#[Fillable(['name', 'email', 'npm', 'role', 'password'])]
+#[Hidden(['password', 'remember_token'])]
+class User extends Authenticatable implements FilamentUser
+{
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'role' => 'string',
+            'password' => 'hashed',
+        ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    public function topicPreferences()
+    {
+        return $this->hasMany(UserTopicPreference::class);
+    }
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class UserTopicPreference extends Model
+{
+    protected $guarded = [];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function topic(): BelongsTo
+    {
+        return $this->belongsTo(Topic::class);
+    }
+}
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
+class AuthController extends Controller
+{
+    // Menampilkan halaman login
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+
+    // Proses login
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'npm' => 'required|digits:8',
+            'password' => 'required'
+        ], [
+            'npm.required' => 'NPM wajib diisi.',
+            'npm.digits' => 'NPM harus tepat 8 digit angka.',
+        ]);
+
+        if (Auth::attempt([
+            'npm' => $credentials['npm'],
+            'password' => $credentials['password'],
+        ])) {
+            $user = Auth::user();
+
+            if ($user?->role !== 'student' && $user?->role !== 'admin') {
+                Auth::logout();
+
+                return back()->withErrors([
+                    'npm' => 'Akun ini tidak memiliki akses ke login mahasiswa.',
+                ])->onlyInput('npm');
+            }
+
+            $request->session()->regenerate();
+
+            if ($user->role === 'admin') {
+                return redirect('/admin');
+            }
+
+            return redirect()->route('home')->with('success', 'Berhasil login!');
+        }
+
+        return back()->withErrors([
+            'npm' => 'NPM atau password salah.',
+        ])->onlyInput('npm');
+    }
+
+    // Menampilkan halaman register
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    // Proses register
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'npm' => 'required|digits:8|unique:users,npm',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'npm.required' => 'NPM wajib diisi.',
+            'npm.digits' => 'NPM harus tepat 8 digit angka.',
+            'npm.unique' => 'NPM ini sudah terdaftar di sistem.',
+            'email.unique' => 'Email ini sudah digunakan.'
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'npm' => $request->npm,
+            'role' => 'student',
+        ]);
+
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
+    }
+
+    // Proses logout
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Berhasil logout.');
+    }
+}
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Bookmark;
+use App\Models\Publication;
+use App\Models\Topic;
+use App\Models\UserTopicPreference;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+
+class BookmarkController extends Controller
+{
+    public function index(Request $request)
+    {
+        $bookmarks = Bookmark::with(['publication.container', 'publication.topics'])
+            ->where('user_id', $request->user()->id)
+            ->latest()
+            ->get();
+
+        $preferredTopics = $request->user()->topicPreferences()->with('topic')->get();
+
+        return view('bookmarks.index', compact('bookmarks', 'preferredTopics'));
+    }
+
+    public function __invoke(Request $request)
+    {
+        if (! $request->user()) {
+            return Redirect::back()->with('message', 'Silakan login dulu untuk menyimpan bookmark.');
+        }
+
+        $publication = Publication::findOrFail($request->input('publication_id'));
+
+        $bookmark = Bookmark::where('user_id', $request->user()->id)
+            ->where('publication_id', $publication->id)
+            ->first();
+
+        if ($bookmark) {
+            $bookmark->delete();
+
+            return Redirect::back()->with('message', 'Bookmark dihapus.');
+        }
+
+        Bookmark::create([
+            'user_id' => $request->user()->id,
+            'publication_id' => $publication->id,
+        ]);
+
+        return Redirect::back()->with('message', 'Bookmark disimpan.');
+    }
+
+    public function preference(Request $request, Topic $topic)
+    {
+        if (! $request->user()) {
+            return Redirect::back()->with('message', 'Silakan login dulu.');
+        }
+
+        $existing = UserTopicPreference::where('user_id', $request->user()->id)
+            ->where('topic_id', $topic->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+
+            return Redirect::back()->with('message', 'Preferensi topik dihapus.');
+        }
+
+        UserTopicPreference::create([
+            'user_id' => $request->user()->id,
+            'topic_id' => $topic->id,
+            'preference_type' => 'interest',
+        ]);
+
+        return Redirect::back()->with('message', 'Preferensi topik disimpan.');
+    }
+}
+<?php
+
+namespace App\Http\Controllers;
+
+abstract class Controller
+{
+    //
+}
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Publication;
+use App\Models\PublicationFile;
+use Illuminate\Support\Facades\Storage;
+
+class DocumentController extends Controller
+{
+    public function publicationViewer(Publication $publication)
+    {
+        $files = $publication->files
+            ->filter(fn (PublicationFile $file): bool => $file->canBeViewedBy(auth()->user()))
+            ->values();
+
+        abort_if($files->isEmpty(), 403, 'Anda tidak memiliki akses ke dokumen publikasi ini.');
+
+        $file = $files->firstWhere('id', (int) request('file')) ?? $files->first();
+
+        return view('pdf.viewer', compact('publication', 'files', 'file'));
+    }
+
+    public function stream(PublicationFile $file)
+    {
+        abort_unless($file->canBeViewedBy(auth()->user()), 403, 'Akses dokumen terbatas.');
+
+        if ((bool) request()->query('download')) {
+            abort_unless($file->canBeDownloadedBy(auth()->user()), 403, 'Download tidak diizinkan.');
+
+            if (! Storage::disk('local')->exists($file->file_path)) {
+                abort(404, 'File PDF tidak ditemukan di server.');
+            }
+
+            return response()->download(Storage::disk('local')->path($file->file_path), $file->title . '.pdf');
+        }
+
+        if (! Storage::disk('local')->exists($file->file_path)) {
+            abort(404, 'File PDF tidak ditemukan di server.');
+        }
+
+        $filename = $file->title ? ($file->title . '.pdf') : basename($file->file_path);
+
+        return response()->stream(function () use ($file) {
+            $stream = Storage::disk('local')->readStream($file->file_path);
+            fpassthru($stream);
+
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+        ]);
+    }
+}
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\PublicationFile;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class FileAccessController extends Controller
+{
+    public function show(Request $request, PublicationFile $file)
+    {
+        // Rute ini diperlakukan sebagai akses/unduh berkas legacy: periksa izin download terlebih dahulu
+        if (! $file->canBeDownloadedBy(auth()->user())) {
+            abort(403, 'Akses/unduh file ditolak.');
+        }
+
+        if (! Storage::disk('local')->exists($file->file_path)) {
+            abort(404, 'File tidak ditemukan di server.');
+        }
+
+        $path = Storage::disk('local')->path($file->file_path);
+
+        $download = $request->query('download');
+        if ($download) {
+            return response()->download($path, $file->title . '.pdf');
+        }
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $file->title . '.pdf"',
+        ]);
+    }
+}
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Publication;
+use App\Models\Recommendation;
+use App\Models\Topic;
+use Illuminate\Http\Request;
+
+class PublicationController extends Controller
+{
+    public function index(Request $request)
+    {
+        $search = trim((string) $request->input('search'));
+        $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
+        $query = Publication::with(['container', 'files', 'topics'])->latest();
+        $semanticTerms = [];
+
+        $personalizedRecommendations = collect();
+        if ($request->user()) {
+            $preferredTopicIds = $request->user()->topicPreferences()->pluck('topic_id');
+            $bookmarkedPublicationIds = $request->user()->bookmarks()->pluck('publication_id');
+
+            $candidateQuery = Publication::with(['container', 'topics'])
+                ->whereNotIn('id', $bookmarkedPublicationIds)
+                ->where(function ($q) use ($preferredTopicIds, $bookmarkedPublicationIds) {
+                    $q->whereHas('topics', fn ($topicQuery) => $topicQuery->whereIn('topics.id', $preferredTopicIds))
+                      ->orWhereIn('id', $bookmarkedPublicationIds);
+                });
+
+            if ($preferredTopicIds->isNotEmpty()) {
+                $personalizedRecommendations = $candidateQuery->limit(4)->get();
+            }
+        }
+
+        if ($search !== '') {
+            $semanticTerms = $this->expandSearchTerms($search);
+            $query->where(function ($q) use ($search, $semanticTerms) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('author', 'like', '%' . $search . '%')
+                  ->orWhere('keywords', 'like', '%' . $search . '%')
+                  ->orWhere('year', 'like', '%' . $search . '%')
+                  ->orWhere('abstract', 'like', '%' . $search . '%')
+                  ->orWhereHas('container', function ($containerQuery) use ($search) {
+                      $containerQuery->where('name', 'like', '%' . $search . '%')
+                                     ->orWhere('identifier', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->where('name', 'like', '%' . $search . '%'));
+
+                foreach ($semanticTerms as $term) {
+                    $q->orWhere('title', 'like', '%' . $term . '%')
+                      ->orWhere('abstract', 'like', '%' . $term . '%')
+                      ->orWhere('keywords', 'like', '%' . $term . '%')
+                      ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->where('name', 'like', '%' . $term . '%'));
+                }
+            });
+        }
+
+        if ($topicSlug !== '') {
+            $query->whereHas('topics', function ($topicQuery) use ($topicSlug): void {
+                $topicQuery->where('slug', $topicSlug)
+                    ->orWhere('name', $topicSlug);
+            });
+        }
+
+        $publications = $query->paginate(12)->appends($request->only(['search', 'topic']));
+
+        foreach ($publications as $pub) {
+            $pub->highlighted_abstract = $this->highlightKeyword($pub->abstract, $search);
+        }
+
+        $topics = Topic::withCount('publications')->active()->orderBy('sort_order')->orderBy('name')->get();
+        $activeTopic = $topicSlug !== ''
+            ? Topic::where('slug', $topicSlug)->orWhere('name', $topicSlug)->first()
+            : null;
+        $taxonomyTopics = $topics->whereNull('parent_id');
+
+        return view('index', compact('publications', 'search', 'topics', 'activeTopic', 'personalizedRecommendations', 'taxonomyTopics', 'semanticTerms'));
+    }
+
+    public function show(Publication $publication)
+    {
+        $publication->load(['container', 'files', 'topics']);
+
+        $recommendations = Recommendation::where('publication_id', $publication->id)
+                            ->with('recommendedPublication.topics')
+                            ->orderByDesc('similarity_score')
+                            ->get();
+
+        if ($recommendations->isEmpty()) {
+            $candidatePublications = Publication::query()
+                ->where('id', '!=', $publication->id)
+                ->with(['topics', 'container'])
+                ->latest()
+                ->limit(10)
+                ->get();
+
+            $recommendations = $candidatePublications->map(function (Publication $candidate) use ($publication) {
+                $score = 0;
+                $sharedTopics = $candidate->topics->pluck('id')->intersect($publication->topics->pluck('id'));
+
+                if ($sharedTopics->isNotEmpty()) {
+                    $score += 2;
+                }
+
+                if ($publication->keywords && $candidate->keywords && str_contains(strtolower($publication->keywords), strtolower($candidate->keywords))) {
+                    $score += 1;
+                }
+
+                if ($publication->author && $candidate->author && strtolower($publication->author) === strtolower($candidate->author)) {
+                    $score += 1;
+                }
+
+                return (object) [
+                    'recommendedPublication' => $candidate,
+                    'similarity_score' => $score,
+                    'knowledge_overlap' => $sharedTopics->count(),
+                ];
+            })->filter(fn ($item) => $item->similarity_score > 0)
+              ->sortByDesc('similarity_score')
+              ->take(10);
+        }
+
+        // --- PEMISAHAN 5 KATEGORI REKOMENDASI ---
+
+        // 1. Dokumen Paling Mirip (Berdasarkan skor tertinggi / TF-IDF)
+        $similarRecommendations = $recommendations->sortByDesc('similarity_score')->take(3);
+
+        // 2. Bacaan Pelengkap (Berdasarkan irisan topik / knowledge overlap > 0)
+        $complementaryRecommendations = $recommendations->filter(function ($item) {
+            return isset($item->knowledge_overlap) && $item->knowledge_overlap > 0;
+        })->take(3);
+
+        // 3. Konsep Dasar (Dokumen yang terhubung via topik induk / parent topics)
+        $parentTopicIds = $publication->topics->pluck('parent_id')->filter()->unique();
+        $basicConcepts = Publication::where('id', '!=', $publication->id)
+            ->whereHas('topics', function ($q) use ($parentTopicIds) {
+                $q->whereIn('id', $parentTopicIds);
+            })
+            ->with('topics')
+            ->limit(3)
+            ->get();
+
+        // 4. Metode Serupa (Dokumen dengan tipe / jenis publikasi yang sama)
+        $similarMethods = Publication::where('id', '!=', $publication->id)
+            ->where('type', $publication->type)
+            ->with('topics')
+            ->limit(3)
+            ->get();
+
+        // 5. Bacaan Lanjutan (Dokumen yang terhubung via topik anak / child topics)
+        $publicationTopicIds = $publication->topics->pluck('id');
+        $childTopicIds = Topic::whereIn('parent_id', $publicationTopicIds)->pluck('id');
+        $advancedReadings = Publication::where('id', '!=', $publication->id)
+            ->whereHas('topics', function ($q) use ($childTopicIds) {
+                $q->whereIn('id', $childTopicIds);
+            })
+            ->with('topics')
+            ->limit(3)
+            ->get();
+
+        return view('show', compact(
+            'publication', 
+            'recommendations', 
+            'similarRecommendations', 
+            'complementaryRecommendations', 
+            'basicConcepts', 
+            'similarMethods', 
+            'advancedReadings'
+        ));
+    }
+
+    private function expandSearchTerms(string $search): array
+    {
+        $terms = preg_split('/\s+/', strtolower(trim($search))) ?: [];
+        $terms = array_values(array_filter($terms));
+        $expanded = [];
+
+        $synonyms = [
+            'ai' => ['artificial intelligence', 'machine learning'],
+            'machine' => ['machine learning'],
+            'learning' => ['machine learning', 'deep learning'],
+            'recommendation' => ['recommendation systems', 'recommender'],
+            'systems' => ['system', 'recommendation systems'],
+            'deep' => ['deep learning'],
+        ];
+
+        foreach ($terms as $term) {
+            $expanded[] = $term;
+            $expanded = array_merge($expanded, $synonyms[$term] ?? []);
+
+            $topicMatches = Topic::active()->where(function ($query) use ($term): void {
+                $query->where('name', 'like', '%' . $term . '%')
+                    ->orWhere('slug', 'like', '%' . $term . '%');
+            })->get();
+
+            foreach ($topicMatches as $topic) {
+                $expanded[] = $topic->name;
+                $expanded[] = $topic->slug;
+
+                foreach ($topic->ancestorIds() as $ancestorId) {
+                    $ancestor = Topic::find($ancestorId);
+                    if ($ancestor) {
+                        $expanded[] = $ancestor->name;
+                        $expanded[] = $ancestor->slug;
+                    }
+                }
+
+                foreach ($topic->children()->pluck('name') as $childName) {
+                    $expanded[] = $childName;
+                }
+            }
+        }
+
+        return array_values(array_unique(array_filter($expanded)));
+    }
+
+    private function highlightKeyword($text, $keyword) 
+    {
+        if (empty($keyword) || empty($text)) {
+            return e($text);
+        }
+
+        $safeText = e($text);
+        $safeKeyword = preg_quote($keyword, '/');
+        $pattern = "/($safeKeyword)/i"; 
+        $replacement = '<span class="bg-yellow-100/80 text-yellow-900 px-1 rounded-sm font-medium">$1</span>';
+
+        return preg_replace($pattern, $replacement, $safeText);
+    }
+}
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
+class StudentAuthController extends Controller
+{
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'npm' => ['required', 'string', 'digits:8'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if (! Auth::attempt([
+            'npm' => $credentials['npm'],
+            'password' => $credentials['password'],
+        ], $request->boolean('remember'))) {
+            throw ValidationException::withMessages([
+                'npm' => ['NPM atau password salah.'],
+            ]);
+        }
+
+        $user = Auth::user();
+
+        if ($user?->role !== 'student') {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'npm' => ['Akun ini tidak dapat masuk melalui halaman login mahasiswa.'],
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('/');
+    }
+
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    public function dashboard(Request $request)
+    {
+        $user = $request->user();
+        $bookmarks = $user->bookmarks()->with(['publication.container', 'publication.topics'])->latest()->get();
+        $preferredTopics = $user->topicPreferences()->with('topic')->get();
+
+        return view('auth.dashboard', compact('user', 'bookmarks', 'preferredTopics'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->fill($data);
+
+        if (! empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
+
+        return redirect()->route('student.dashboard')->with('message', 'Profil berhasil diperbarui.');
+    }
+
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'npm' => ['required', 'string', 'digits:8', 'unique:users,npm'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'npm' => $data['npm'],
+            'role' => 'student',
+            'password' => Hash::make($data['password']),
+        ]);
+
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('/');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+}
+<?php
+
+namespace App\Jobs;
+
+use App\Jobs\GenerateRecommendations;
+use App\Models\Publication;
+use App\Models\Recommendation;
+use App\Services\RecommendationScorer;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+
+class GenerateRecommendations implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $publication;
+
+    // Menerima data skripsi yang akan dicarikan rekomendasinya
+    public function __construct(Publication $publication)
+    {
+        $this->publication = $publication;
+    }
+
+    // Fungsi handle() ini adalah tombol "START" dari pekerja belakang layar
+    public function handle(): void
+    {
+        $target = $this->publication;
+        $others = Publication::where('id', '!=', $target->id)->get();
+
+        if ($others->isEmpty()) {
+            return;
+        }
+
+        $scorer = app(RecommendationScorer::class);
+        $scoredCandidates = $scorer->scoreCandidates($target, $others, $target->created_by_user ?? null);
+
+        Recommendation::where('publication_id', $target->id)->delete();
+
+        foreach (array_slice($scoredCandidates, 0, 3) as $entry) {
+            if ($entry['score'] <= 0) {
+                continue;
+            }
+
+            Recommendation::updateOrCreate(
+                [
+                    'publication_id' => $target->id,
+                    'recommended_id' => $entry['publication']->id,
+                ],
+                [
+                    'similarity_score' => $entry['score'],
+                ]
+            );
+        }
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Containers;
+
+use App\Filament\Resources\Containers\Pages\CreateContainer;
+use App\Filament\Resources\Containers\Pages\EditContainer;
+use App\Filament\Resources\Containers\Pages\ListContainers;
+use App\Filament\Resources\Containers\Schemas\ContainerForm;
+use App\Filament\Resources\Containers\Tables\ContainersTable;
+use App\Models\Container;
+use BackedEnum;
+use UnitEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class ContainerResource extends Resource
+{
+    protected static ?string $model = Container::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
+
+    protected static ?string $navigationLabel = 'Container';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Repository';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function form(Schema $schema): Schema
+    {
+        return ContainerForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return ContainersTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListContainers::route('/'),
+            'create' => CreateContainer::route('/create'),
+            'edit' => EditContainer::route('/{record}/edit'),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Containers\Pages;
+
+use App\Filament\Resources\Containers\ContainerResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateContainer extends CreateRecord
+{
+    protected static string $resource = ContainerResource::class;
+}
+<?php
+
+namespace App\Filament\Resources\Containers\Pages;
+
+use App\Filament\Resources\Containers\ContainerResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditContainer extends EditRecord
+{
+    protected static string $resource = ContainerResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Containers\Pages;
+
+use App\Filament\Resources\Containers\ContainerResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+
+class ListContainers extends ListRecords
+{
+    protected static string $resource = ContainerResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make(),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Containers\Schemas;
+
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
+
+class ContainerForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Select::make('type')
+                    ->options([
+                        'university' => 'University', 
+                        'journal' => 'Journal', 
+                        'publisher' => 'Publisher'
+                    ])
+                    ->required(),
+                TextInput::make('identifier')
+                    ->maxLength(255),
+            ]);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Containers\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class ContainersTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('name')
+                    ->searchable(),
+                TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'university' => 'primary',
+                        'journal' => 'success',
+                        'publisher' => 'warning',
+                        default => 'gray',
+                    }),
+                TextColumn::make('identifier')
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications;
+
+use App\Filament\Resources\Publications\Pages\CreatePublication;
+use App\Filament\Resources\Publications\Pages\EditPublication;
+use App\Filament\Resources\Publications\Pages\ListPublications;
+use App\Filament\Resources\Publications\Schemas\PublicationForm;
+use App\Filament\Resources\Publications\Tables\PublicationsTable;
+use App\Models\Publication;
+use BackedEnum;
+use UnitEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class PublicationResource extends Resource
+{
+    protected static ?string $model = Publication::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
+
+    protected static ?string $navigationLabel = 'Publikasi';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Repository';
+
+    protected static ?string $recordTitleAttribute = 'title';
+
+    public static function form(Schema $schema): Schema
+    {
+        return PublicationForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return PublicationsTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListPublications::route('/'),
+            'create' => CreatePublication::route('/create'),
+            'edit' => EditPublication::route('/{record}/edit'),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Pages;
+
+use App\Filament\Resources\Publications\PublicationResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreatePublication extends CreateRecord
+{
+    protected static string $resource = PublicationResource::class;
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Pages;
+
+use App\Filament\Resources\Publications\PublicationResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditPublication extends EditRecord
+{
+    protected static string $resource = PublicationResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Pages;
+
+use App\Filament\Resources\Publications\PublicationResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+
+class ListPublications extends ListRecords
+{
+    protected static string $resource = PublicationResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make(),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Schemas;
+
+use App\Models\Publication;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+
+class PublicationForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Select::make('container_id')
+                    ->relationship('container', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+
+                Select::make('type')
+                    ->options(Publication::TYPE_LABELS)
+                    ->default('thesis')
+                    ->live()
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                        if (filled($get('files'))) {
+                            return;
+                        }
+
+                        $set('files', static::fileTemplate($state));
+                    })
+                    ->helperText('Jenis karya menentukan template berkas. Template hanya diterapkan pada berkas yang masih kosong.')
+                    ->required(),
+
+                Placeholder::make('required_sections_check')
+                    ->label('Pemeriksaan bagian wajib')
+                    ->content(function (Get $get) {
+                        $type = $get('type') ?? 'thesis';
+                        $files = $get('files') ?? [];
+
+                        $present = array_map(fn($f) => $f['section'] ?? null, $files);
+                        $required = Publication::requiredSectionsForType($type);
+                        $missing = array_values(array_diff($required, $present));
+                        $countMissing = count($missing);
+
+                        if ($countMissing === 0) {
+                            return '<span style="color:green">✓ Semua bagian wajib ada menurut template saat ini.</span>';
+                        }
+
+                        $labels = array_map(fn($k) => static::sectionOptions()[$k] ?? $k, $missing);
+                        $list = implode(', ', $labels);
+
+                        return "<strong style=\"color:#b45309\">⚠ {$countMissing} bagian wajib belum ada:</strong> {$list}.\n\nSilakan tambahkan bagian-bagian ini sebelum menyimpan jika kamu ingin memastikan kelengkapan publikasi.";
+                    })
+                    ->reactive(),
+
+                TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('author')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('year')
+                    ->numeric()
+                    ->required(),
+
+                Textarea::make('abstract')
+                    ->rows(5)
+                    ->required(),
+
+                TagsInput::make('keywords')
+                    ->label('Kata Kunci')
+                    ->separator(',')
+                    ->splitKeys(['Tab', 'Enter'])
+                    ->helperText('Tekan Enter atau Tab setelah setiap kata kunci. Tag ini digunakan oleh pencarian dan rekomendasi dokumen.')
+                    ->required(),
+
+                Select::make('topics')
+                    ->label('Topik Repository')
+                    ->relationship('topics', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        \Filament\Forms\Components\TextInput::make('name')
+                            ->label('Nama topik')
+                            ->required()
+                            ->afterStateUpdated(fn ($state, $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
+                        \Filament\Forms\Components\TextInput::make('slug')
+                            ->label('Slug')
+                            ->required(),
+                    ])
+                    ->helperText('Pilih topik terstruktur untuk mendukung pencarian dan rekomendasi bacaan pelengkap. Ketik untuk mencari, atau buat topik baru.'),
+
+                Repeater::make('files')
+                    ->label('Berkas Publikasi')
+                    ->relationship('files')
+                    ->default(fn (Get $get): array => static::fileTemplate($get('type') ?? 'thesis'))
+                    ->schema([
+                        Select::make('section')
+                            ->label('Bagian')
+                            ->options(static::sectionOptions())
+                            ->searchable()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, ?string $state): void {
+                                if (filled($state)) {
+                                    $set('title', static::sectionOptions()[$state] ?? $state);
+                                }
+                            })
+                            ->required(),
+
+                        TextInput::make('title')
+                            ->label('Nama Bagian')
+                            ->placeholder('Contoh: Bab I – Pendahuluan')
+                            ->required()
+                            ->maxLength(255),
+
+                        Select::make('visibility')
+                            ->label('Siapa yang dapat membaca')
+                            ->options([
+                                'public' => 'Publik',
+                                'authenticated' => 'Mahasiswa internal (wajib login)',
+                                'admin' => 'Admin saja',
+                            ])
+                            ->default('authenticated')
+                            ->required(),
+
+                        Toggle::make('allow_download')
+                            ->label('Izinkan unduh PDF')
+                            ->helperText('Aktifkan hanya untuk dokumen yang memang berlisensi atau berizin untuk diunduh.')
+                            ->default(false),
+
+                        FileUpload::make('file_path')
+                            ->label('File PDF')
+                            ->disk('local')
+                            ->visibility('private')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('publications_pdf')
+                            ->maxSize(10240)
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->orderColumn('sort_order')
+                    ->defaultItems(1)
+                    ->addActionLabel('Tambah berkas atau bagian lain')
+                    ->helperText('Karya akademik menggunakan template per bagian. Artikel dan buku dapat diunggah sebagai satu dokumen lengkap.'),
+            ]);
+    }
+
+    public static function sectionOptions(): array
+    {
+        return [
+            'full_document' => 'Dokumen lengkap',
+            'cover' => 'Cover Penulisan',
+            'originality_statement' => 'Pernyataan Orisinalitas dan Publikasi',
+            'approval_sheet' => 'Lembar Pengesahan',
+            'abstract_id' => 'Abstrak Bahasa Indonesia',
+            'abstract_en' => 'Abstract Bahasa Inggris',
+            'preface' => 'Kata Pengantar',
+            'table_of_contents' => 'Daftar Isi',
+            'list_of_tables' => 'Daftar Tabel',
+            'list_of_figures' => 'Daftar Gambar',
+            'list_of_formulas' => 'Daftar Rumus',
+            'list_of_appendices' => 'Daftar Lampiran',
+            'chapter_1' => 'Bab I – Pendahuluan',
+            'chapter_2' => 'Bab II – Tinjauan Pustaka',
+            'chapter_3' => 'Bab III – Metodologi',
+            'chapter_4' => 'Bab IV – Hasil dan Pembahasan',
+            'chapter_5' => 'Bab V – Kesimpulan',
+            'chapter_6' => 'Bab VI',
+            'bibliography' => 'Daftar Pustaka',
+            'appendix' => 'Lampiran',
+            'application_test_statement' => 'Pernyataan Uji Coba Aplikasi',
+            'program_listing' => 'Listing Program',
+            'program_output' => 'Output Program',
+            'presentation' => 'Dokumen Presentasi Sidang',
+            'other' => 'Berkas Lainnya',
+        ];
+    }
+
+    private static function fileTemplate(?string $type): array
+    {
+        if (in_array($type, ['article', 'book', 'proceeding', 'report'], true)) {
+            return [[
+                'section' => 'full_document',
+                'title' => 'Dokumen lengkap',
+                'visibility' => 'public',
+                'allow_download' => false,
+            ]];
+        }
+
+        $sections = [
+            ['cover', 'public'],
+            ['originality_statement', 'admin'],
+            ['approval_sheet', 'admin'],
+            ['abstract_id', 'public'],
+            ['abstract_en', 'public'],
+            ['preface', 'authenticated'],
+            ['table_of_contents', 'authenticated'],
+            ['list_of_tables', 'authenticated'],
+            ['list_of_figures', 'authenticated'],
+            ['list_of_formulas', 'authenticated'],
+            ['list_of_appendices', 'authenticated'],
+            ['chapter_1', 'authenticated'],
+            ['chapter_2', 'authenticated'],
+            ['chapter_3', 'authenticated'],
+            ['chapter_4', 'authenticated'],
+            ['chapter_5', 'authenticated'],
+            ['bibliography', 'authenticated'],
+            ['appendix', 'admin'],
+        ];
+
+        return array_map(fn (array $section): array => [
+            'section' => $section[0],
+            'title' => static::sectionOptions()[$section[0]],
+            'visibility' => $section[1],
+            'allow_download' => false,
+        ], $sections);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Tables;
+
+// Kembali menggunakan namespace Filament\Actions yang benar untuk versimu
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class PublicationsTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('container.name')
+                    ->label('Container')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(50),
+                TextColumn::make('author')
+                    ->searchable(),
+                TextColumn::make('year'),
+                TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'thesis' => 'primary',
+                        'article' => 'success',
+                        'book' => 'warning',
+                        default => 'gray',
+                    }),
+                TextColumn::make('keywords')
+                    ->searchable(),
+                TextColumn::make('files_count')
+                    ->counts('files')
+                    ->label('Jumlah Dokumen')
+                    ->badge()
+                    ->color('success'),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                Action::make('view_publication')
+                    ->label('Baca Publikasi')
+                    ->icon('heroicon-s-eye')
+                    ->color('info')
+                    ->url(fn ($record): string => route('publications.viewer', $record))
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => $record->files->isNotEmpty()),
+
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Topics;
+
+use App\Filament\Resources\Topics\Pages\CreateTopic;
+use App\Filament\Resources\Topics\Pages\EditTopic;
+use App\Filament\Resources\Topics\Pages\ListTopics;
+use App\Filament\Resources\Topics\Schemas\TopicForm;
+use App\Filament\Resources\Topics\Tables\TopicsTable;
+use App\Models\Topic;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use UnitEnum;
+
+class TopicResource extends Resource
+{
+    protected static ?string $model = Topic::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
+
+    protected static ?string $navigationLabel = 'Topik';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Repository';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function form(Schema $schema): Schema
+    {
+        return TopicForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return TopicsTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListTopics::route('/'),
+            'create' => CreateTopic::route('/create'),
+            'edit' => EditTopic::route('/{record}/edit'),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Topics\Pages;
+
+use App\Filament\Resources\Topics\TopicResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateTopic extends CreateRecord
+{
+    protected static string $resource = TopicResource::class;
+}
+<?php
+
+namespace App\Filament\Resources\Topics\Pages;
+
+use App\Filament\Resources\Topics\TopicResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditTopic extends EditRecord
+{
+    protected static string $resource = TopicResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [DeleteAction::make()];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Topics\Pages;
+
+use App\Filament\Resources\Topics\TopicResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+
+class ListTopics extends ListRecords
+{
+    protected static string $resource = TopicResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [CreateAction::make()];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Topics\Schemas;
+
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Schema;
+
+class TopicForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema->components([
+            TextInput::make('name')
+                ->label('Nama Topik')
+                ->required()
+                ->unique(ignoreRecord: true)
+                ->maxLength(255),
+            TextInput::make('slug')
+                ->label('Slug')
+                ->required()
+                ->unique(ignoreRecord: true),
+            Select::make('parent_id')
+                ->label('Topik Induk')
+                ->relationship('parent', 'name')
+                ->searchable()
+                ->preload()
+                ->nullable(),
+            TextInput::make('sort_order')
+                ->label('Urutan')
+                ->numeric()
+                ->default(0),
+            Textarea::make('description')
+                ->label('Penjelasan Singkat')
+                ->rows(3)
+                ->maxLength(1000),
+            Toggle::make('is_active')
+                ->label('Aktif')
+                ->default(true),
+        ]);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Topics\Tables;
+
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class TopicsTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('name')->label('Topik')->searchable()->sortable(),
+                TextColumn::make('parent.name')->label('Topik Induk')->placeholder('Topik utama')->searchable(),
+                TextColumn::make('publications_count')->counts('publications')->label('Publikasi')->badge(),
+                TextColumn::make('is_active')
+                    ->label('Aktif')
+                    ->formatStateUsing(fn ($state) => $state ? 'Ya' : 'Tidak')
+                    ->sortable(),
+                TextColumn::make('merged_into')->label('Merged Into')->formatStateUsing(fn($state) => $state ? \App\Models\Topic::find($state)?->name : null)->sortable(),
+                TextColumn::make('merged_at')->label('Merged At')->dateTime()->formatStateUsing(fn($state) => $state ? (string) \Carbon\Carbon::parse($state)->setTimezone(config('app.timezone')) : null)->sortable(),
+                TextColumn::make('merged_by')->label('Merged By')->formatStateUsing(fn($state) => $state ? \App\Models\User::find($state)?->name : null)->sortable(),
+                TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->reorderable('sort_order')
+            ->recordActions([
+                EditAction::make()
+                    ->visible(fn ($record) => auth()->user()?->can('update', $record)),
+
+                Action::make('toggleActive')
+                    ->label(fn($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
+                    ->icon(fn($record) => $record->is_active ? 'heroicon-s-eye-slash' : 'heroicon-s-eye')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => auth()->user()?->can('toggleActive', $record))
+                    ->action(function ($record) {
+                        $record->is_active = ! $record->is_active;
+                        $record->save();
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title($record->is_active ? 'Topik diaktifkan' : 'Topik dinonaktifkan')
+                            ->send();
+                    }),
+
+                Action::make('merge')
+                    ->label('Gabungkan')
+                    ->icon('heroicon-s-square-2-stack')
+                    ->visible(fn ($record) => auth()->user()?->can('merge', $record))
+                    ->form([
+                        \Filament\Forms\Components\Select::make('target')
+                            ->label('Gabungkan ke')
+                            ->options(fn () => \App\Models\Topic::pluck('name', 'id')->toArray())
+                            ->required(),
+                    ])
+                    ->requiresConfirmation()
+                    ->action(function ($record, array $data) {
+                        $target = \App\Models\Topic::find($data['target']);
+                        if ($target && $target->id !== $record->id) {
+                            $record->mergeInto($target);
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Topik berhasil digabung')
+                                ->send();
+
+                            // Create a convenient undo action via notification (link to admin topics list where undo is available)
+                            \Filament\Notifications\Notification::make()
+                                ->info()
+                                ->title('Undo tersedia')
+                                ->body('Buka admin Topik untuk membatalkan gabungan (lihat topik sumber yang dinonaktifkan).')
+                                ->send();
+                        }
+                    }),
+                Action::make('undoMerge')
+                    ->label('Batalkan gabungan')
+                    ->icon('heroicon-s-arrow-uturn-left')
+                    ->visible(fn($record) => ! $record->is_active && $record->merged_into !== null && auth()->user()?->role === 'admin')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $ok = $record->undoMerge();
+                        if ($ok) {
+                            \Filament\Notifications\Notification::make()->success()->title('Pembatalan gabungan berhasil')->send();
+                        } else {
+                            \Filament\Notifications\Notification::make()->danger()->title('Tidak ada backup untuk dibatalkan')->send();
+                        }
+                    }),
+            ])
+            ->bulkActions([
+                BulkAction::make('merge')
+                    ->label('Gabungkan ke topik lain')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('target')
+                            ->label('Topik target')
+                            ->options(fn () => \App\Models\Topic::pluck('name', 'id')->toArray())
+                            ->required(),
+                    ])
+                    ->action(function ($records, array $data) {
+                        $target = \App\Models\Topic::find($data['target']);
+                        if (! $target) {
+                            return;
+                        }
+
+                        foreach ($records as $record) {
+                            if ($record->id === $target->id) continue;
+                            if (auth()->user()?->can('merge', $record)) {
+                                $record->mergeInto($target);
+                            }
+                        }
+
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Bulk merge selesai')
+                            ->send();
+                    })
+                    ->requiresConfirmation(),
+                BulkActionGroup::make([DeleteBulkAction::make()]),
+            ]);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Users;
+
+use App\Filament\Resources\Users\Pages\CreateUser;
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Filament\Resources\Users\Schemas\UserForm;
+use App\Filament\Resources\Users\Tables\UsersTable;
+use App\Models\User;
+use BackedEnum;
+use UnitEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class UserResource extends Resource
+{
+    protected static ?string $model = User::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
+
+    protected static ?string $navigationLabel = 'Pengguna';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Akses & Keamanan';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function form(Schema $schema): Schema
+    {
+        return UserForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return UsersTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Users\Pages;
+
+use App\Filament\Resources\Users\UserResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateUser extends CreateRecord
+{
+    protected static string $resource = UserResource::class;
+}
+<?php
+
+namespace App\Filament\Resources\Users\Pages;
+
+use App\Filament\Resources\Users\UserResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditUser extends EditRecord
+{
+    protected static string $resource = UserResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Users\Pages;
+
+use App\Filament\Resources\Users\UserResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+
+class ListUsers extends ListRecords
+{
+    protected static string $resource = UserResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make(),
+        ];
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Users\Schemas;
+
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Hash;
+
+class UserForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                
+                TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255),
+                
+                TextInput::make('npm')
+                    ->label('NPM')
+                    ->length(8)
+                    ->rule('digits:8')
+                    ->unique(ignoreRecord: true),
+                
+                Select::make('role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'student' => 'Mahasiswa',
+                    ])
+                    ->required()
+                    ->default('student'),
+                
+                TextInput::make('password')
+                    ->password()
+                    ->dehydrateStateUsing(fn (?string $state) => filled($state) ? Hash::make($state) : null)
+                    ->dehydrated(fn (?string $state) => filled($state)),
+            ]);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Users\Tables;
+
+use Filament\Tables\Table;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+
+class UsersTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('name')
+                    ->searchable(),
+                
+                TextColumn::make('email')
+                    ->searchable()
+                    ->copyable(), // Disederhanakan: aman dari perubahan API Filament 5
+                
+                TextColumn::make('npm')
+                    ->label('NPM')
+                    ->searchable(),
+                
+                TextColumn::make('role')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'danger',
+                        'student' => 'info',
+                        default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'admin' => 'heroicon-s-shield-check',
+                        'student' => 'heroicon-s-academic-cap',
+                        default => 'heroicon-s-user',
+                    }),
+                
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ]);
+    }
+}
+<?php
+
+namespace App\Policies;
+
+use App\Models\Topic;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class TopicPolicy
+{
+    use HandlesAuthorization;
+
+    public function before(?User $user, $ability)
+    {
+        if (! $user) {
+            return false;
+        }
+
+        // Super-admin pattern: if role is 'admin' allow everything
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        return null;
+    }
+
+    public function viewAny(User $user): bool
+    {
+        return $user->role === 'admin' || $user->role === 'editor' || $user->role === 'student';
+    }
+
+    public function view(User $user, Topic $topic): bool
+    {
+        return $this->viewAny($user);
+    }
+
+    public function create(User $user): bool
+    {
+        return in_array($user->role, ['admin', 'editor'], true);
+    }
+
+    public function update(User $user, Topic $topic): bool
+    {
+        return in_array($user->role, ['admin', 'editor'], true);
+    }
+
+    public function delete(User $user, Topic $topic): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    // Custom abilities
+    public function merge(User $user, Topic $topic): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    public function toggleActive(User $user, Topic $topic): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    public function undoMerge(User $user, Topic $topic): bool
+    {
+        return $user->role === 'admin';
+    }
+}
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        //
+    }
+}
+<?php
+
+namespace App\Providers;
+
+use App\Models\Topic;
+use App\Policies\TopicPolicy;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+
+class AuthServiceProvider extends ServiceProvider
+{
+    protected $policies = [
+        Topic::class => TopicPolicy::class,
+    ];
+
+    public function register(): void
+    {
+        //
+    }
+
+    public function boot(): void
+    {
+        $this->registerPolicies();
+    }
+}
+<?php
+
+namespace App\Providers\Filament;
+
+use Filament\Http\Middleware\Authenticate;
+use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Pages\Dashboard;
+use Filament\Panel;
+use Filament\PanelProvider;
+use Filament\Support\Colors\Color;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+
+class AdminPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->default()
+            ->id('admin')
+            ->path('admin')
+            ->login()
+            ->brandName('RepoIlmiah Admin')
+            ->colors([
+                'primary' => Color::Blue,
+                'success' => Color::Emerald,
+                'warning' => Color::Amber,
+                'danger' => Color::Rose,
+            ])
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->pages([
+                Dashboard::class,
+            ])
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->widgets([
+                AccountWidget::class,
+                FilamentInfoWidget::class,
+            ])
+            ->middleware([
+                EncryptCookies::class,
+                AddQueuedCookiesToResponse::class,
+                StartSession::class,
+                AuthenticateSession::class,
+                ShareErrorsFromSession::class,
+                PreventRequestForgery::class,
+                SubstituteBindings::class,
+                DisableBladeIconComponents::class,
+                DispatchServingFilamentEvent::class,
+            ])
+            ->authMiddleware([
+                Authenticate::class,
+            ]);
+    }
+}
+<?php
+
+namespace App\Services;
+
+use App\Models\Publication;
+use App\Models\Topic;
+use App\Models\User;
+use Sastrawi\Stemmer\StemmerFactory;
+use Sastrawi\StopWordRemover\StopWordRemoverFactory;
+
+class RecommendationScorer
+{
+    /**
+     * Menghitung skor kemiripan kandidat publikasi terhadap target.
+     * Mengembalikan array terstruktur yang memuat skor teks dan irisan taksonomi.
+     */
+    public function scoreCandidates(Publication $target, iterable $candidates, ?User $user = null): array
+    {
+        $candidateCollection = collect($candidates)->filter(fn ($candidate) => $candidate instanceof Publication && $candidate->id !== $target->id);
+
+        if ($candidateCollection->isEmpty()) {
+            return [];
+        }
+
+        $stopWordFactory = new StopWordRemoverFactory();
+        $stopword = $stopWordFactory->createStopWordRemover();
+
+        $stemmerFactory = new StemmerFactory();
+        $stemmer = $stemmerFactory->createStemmer();
+
+        $documents = collect();
+        $documents->put($target->id, $this->prepareText($target, $stemmer, $stopword));
+
+        foreach ($candidateCollection as $candidate) {
+            $documents->put($candidate->id, $this->prepareText($candidate, $stemmer, $stopword));
+        }
+
+        $df = [];
+        $tf = [];
+        $documentIds = $documents->keys()->all();
+        $N = count($documentIds);
+
+        foreach ($documents as $documentId => $text) {
+            $words = array_filter(explode(' ', $text));
+            $totalWords = count($words);
+
+            if ($totalWords === 0) {
+                continue;
+            }
+
+            $wordCounts = array_count_values($words);
+            $tf[$documentId] = [];
+            $uniqueWords = array_unique($words);
+
+            foreach ($uniqueWords as $word) {
+                $tf[$documentId][$word] = $wordCounts[$word] / $totalWords;
+                $df[$word] = ($df[$word] ?? 0) + 1;
+            }
+        }
+
+        $idf = [];
+        foreach ($df as $word => $count) {
+            $idf[$word] = log($N / $count);
+        }
+
+        $tfidf = [];
+        foreach ($tf as $documentId => $wordFreqs) {
+            foreach ($wordFreqs as $word => $value) {
+                $tfidf[$documentId][$word] = $value * ($idf[$word] ?? 0);
+            }
+        }
+
+        $targetVector = $tfidf[$target->id] ?? [];
+        $scores = [];
+
+        // Preload topik target dan konteksnya untuk menghindari query berulang
+        $targetTopicIds = $target->topics()->pluck('topics.id')->all();
+        $targetContext = $this->expandTopicContextIds($targetTopicIds);
+
+        foreach ($candidateCollection as $candidate) {
+            $candidateVector = $tfidf[$candidate->id] ?? [];
+            $dotProduct = 0;
+            $normTarget = 0;
+            $normCandidate = 0;
+
+            $allWords = array_unique(array_merge(array_keys($targetVector), array_keys($candidateVector)));
+            foreach ($allWords as $word) {
+                $targetValue = $targetVector[$word] ?? 0;
+                $candidateValue = $candidateVector[$word] ?? 0;
+
+                $dotProduct += $targetValue * $candidateValue;
+                $normTarget += pow($targetValue, 2);
+                $normCandidate += pow($candidateValue, 2);
+            }
+
+            $normTarget = sqrt($normTarget);
+            $normCandidate = sqrt($normCandidate);
+
+            $textSimilarity = ($normTarget * $normCandidate === 0) ? 0 : $dotProduct / ($normTarget * $normCandidate);
+            
+            // Hitung Knowledge Overlap menggunakan context yang sudah di-expand
+            $candidateTopicIds = $candidate->topics()->pluck('topics.id')->all();
+            $candidateContext = $this->expandTopicContextIds($candidateTopicIds);
+            $knowledgeOverlap = count(array_intersect($targetContext, $candidateContext));
+            
+            $knowledgeBonus = 0;
+            if ($knowledgeOverlap > 0) {
+                $knowledgeBonus = 0.25 + min($knowledgeOverlap, 3) * 0.1;
+            }
+
+            $finalScore = $textSimilarity + $knowledgeBonus;
+
+            if ($user) {
+                $finalScore += $this->userPreferenceBonus($user, $candidate, $candidateTopicIds);
+            }
+
+            $scores[] = [
+                'publication' => $candidate,
+                'score' => round($finalScore, 4),
+                'text_similarity' => round($textSimilarity, 4),
+                'knowledge_overlap' => $knowledgeOverlap,
+            ];
+        }
+
+        usort($scores, fn ($left, $right) => $right['score'] <=> $left['score']);
+
+        return $scores;
+    }
+
+    public function knowledgeOverlap(Publication $target, Publication $candidate): int
+    {
+        $targetTopics = $target->topics()->pluck('topics.id')->all();
+        $candidateTopics = $candidate->topics()->pluck('topics.id')->all();
+
+        $targetContext = $this->expandTopicContextIds($targetTopics);
+        $candidateContext = $this->expandTopicContextIds($candidateTopics);
+
+        return count(array_intersect($targetContext, $candidateContext));
+    }
+
+    private function prepareText(Publication $publication, $stemmer, $stopword): string
+    {
+        $rawText = trim(implode(' ', array_filter([
+            $publication->title,
+            $publication->keywords,
+            $publication->abstract,
+        ])));
+
+        if ($rawText === '') {
+            return '';
+        }
+
+        $text = strtolower($rawText);
+        $text = preg_replace('/[^a-z0-9 ]/', '', $text);
+        $text = $stopword->remove($text);
+
+        return $stemmer->stem($text);
+    }
+
+    private function userPreferenceBonus(User $user, Publication $candidate, ?array $candidateTopicIds = null): float
+    {
+        $preferenceTopicIds = $user->topicPreferences()->pluck('topic_id')->all();
+        if ($preferenceTopicIds === []) {
+            return 0.0;
+        }
+
+        $candidateTopicIds = $candidateTopicIds ?? $candidate->topics()->pluck('topics.id')->all();
+        $sharedPreferences = array_intersect($preferenceTopicIds, $candidateTopicIds);
+
+        if ($sharedPreferences === []) {
+            return 0.0;
+        }
+
+        return min(count($sharedPreferences) * 0.18, 0.54);
+    }
+
+    private function expandTopicContextIds(array $topicIds): array
+    {
+        if (empty($topicIds)) {
+            return [];
+        }
+
+        // Optimasi: Tarik seluruh topik terkait sekaligus untuk mencegah N+1 query problem
+        $topics = Topic::whereIn('id', $topicIds)->with(['parent.parent', 'children'])->get();
+        $contextIds = [];
+
+        foreach ($topics as $topic) {
+            $contextIds[] = $topic->id;
+            
+            // Masukkan ID dari relasi relatedTopicIds secara aman
+            $contextIds = array_merge($contextIds, [$topic->id]);
+            if ($topic->parent_id) {
+                $contextIds[] = $topic->parent_id;
+            }
+            foreach ($topic->children as $child) {
+                $contextIds[] = $child->id;
+            }
+        }
+
+        return array_values(array_unique(array_filter($contextIds)));
+    }
+}

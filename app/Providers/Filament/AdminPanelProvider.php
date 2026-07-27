@@ -28,9 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('RepoIlmiah Admin')
+            ->brandName('Admin Repo UG')
             ->colors([
-                'primary' => Color::Blue,
+                // Menggunakan warna ungu khas Gunadarma untuk tema utama
+                'primary' => Color::hex('#4b2163'),
                 'success' => Color::Emerald,
                 'warning' => Color::Amber,
                 'danger' => Color::Rose,

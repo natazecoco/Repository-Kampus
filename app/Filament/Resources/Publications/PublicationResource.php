@@ -27,6 +27,12 @@ class PublicationResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    // TAMBAHAN: Agar pencarian global juga melacak author dan keywords
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'author', 'keywords'];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PublicationForm::configure($schema);
