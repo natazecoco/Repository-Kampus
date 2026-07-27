@@ -18,8 +18,9 @@
             {{ $pub->author }} <span class="text-slate-300 mx-1">|</span> <span class="text-slate-500 font-normal">{{ $pub->container ? $pub->container->name : 'Universitas Gunadarma' }}</span>
         </p>
 
+        <!-- Abstrak (Dengan Fallback) -->
         <p class="mt-4 text-sm leading-relaxed text-slate-500 line-clamp-2">
-            {!! $pub->highlighted_abstract ?? 'Abstrak tidak tersedia untuk dokumen ini.' !!}
+            {!! $pub->highlighted_abstract ?? $pub->abstract ?? 'Abstrak tidak tersedia untuk dokumen ini.' !!}
         </p>
 
         <div class="mt-5 flex flex-wrap items-center gap-4 relative z-10">
@@ -44,16 +45,28 @@
         </div>
     </div>
 
-    <!-- Aksi Kanan (Bookmark) -->
-    <div class="absolute right-4 top-8 z-10 sm:static sm:pt-1">
+    <!-- Aksi Kanan (Bookmark / Hapus) -->
+    <div class="absolute right-4 top-8 z-20 sm:static sm:pt-1">
         @auth
-            <form action="{{ route('bookmarks.toggle') }}" method="POST">
-                @csrf
-                <input type="hidden" name="publication_id" value="{{ $pub->id }}">
-                <button type="submit" class="text-2xl text-slate-300 hover:text-gundar-accent transition" title="Simpan ke koleksi">
-                    {{ $pub->bookmarks()->where('user_id', auth()->id())->exists() ? '★' : '☆' }}
-                </button>
-            </form>
+            @if(isset($isBookmarkPage) && $isBookmarkPage)
+                <!-- TAMPILAN DI HALAMAN BOOKMARK (Tombol Hapus) -->
+                <form action="{{ route('bookmarks.toggle') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="publication_id" value="{{ $pub->id }}">
+                    <button type="submit" class="rounded bg-rose-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 shadow-sm relative z-30">
+                        Hapus
+                    </button>
+                </form>
+            @else
+                <!-- TAMPILAN DI BERANDA/PENCARIAN (Tombol Bintang) -->
+                <form action="{{ route('bookmarks.toggle') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="publication_id" value="{{ $pub->id }}">
+                    <button type="submit" class="text-2xl text-slate-300 hover:text-gundar-accent transition relative z-30" title="Simpan ke koleksi">
+                        {{ $pub->bookmarks()->where('user_id', auth()->id())->exists() ? '★' : '☆' }}
+                    </button>
+                </form>
+            @endif
         @endauth
     </div>
 </article>
