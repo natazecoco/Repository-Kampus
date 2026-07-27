@@ -49,6 +49,11 @@ class Publication extends Model
         return $this->belongsToMany(Topic::class);
     }
 
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
     public function getTypeLabelAttribute(): string
     {
         return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);

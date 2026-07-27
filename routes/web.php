@@ -5,6 +5,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileAccessController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookmarkController;
 use Illuminate\Support\Facades\Route;
 
 // Ensure legacy named route exists in test environments where route registration ordering may differ
@@ -41,6 +42,14 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/student/logout', [StudentAuthController::class, 'logout'])->name('student.logout');
 Route::post('/mahasiswa/logout', [StudentAuthController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [StudentAuthController::class, 'dashboard'])->name('student.dashboard');
+    Route::post('/dashboard/profile', [StudentAuthController::class, 'updateProfile'])->name('student.profile.update');
+    Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index');
+    Route::post('/bookmarks', BookmarkController::class)->name('bookmarks.toggle');
+    Route::post('/topics/{topic}/preference', [BookmarkController::class, 'preference'])->name('topics.preference');
+});
 
 // Route untuk pengunjung yang belum login (Guest) - generic auth (if used)
 Route::middleware('guest')->group(function () {

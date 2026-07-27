@@ -1,165 +1,113 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repositori Ilmiah - Universitas Gunadarma</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 min-h-screen font-sans text-slate-800">
+@extends('layouts.app')
 
-    <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center gap-4">
-                <div class="flex-shrink-0 flex items-center gap-3">
-                    <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 uppercase tracking-[0.24em]">Gunadarma</span>
-                    <span class="text-2xl font-bold text-blue-700">Repo<span class="text-slate-800">Ilmiah</span></span>
-                </div>
-                <div class="flex items-center gap-4">
-                    @guest
-                        <a href="{{ route('student.login') }}" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Masuk Mahasiswa</a>
-                        <a href="{{ route('student.register') }}" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Daftar</a>
-                    @endguest
-                    @auth
-                        <span class="text-sm font-medium text-slate-700">Halo, {{ Auth::user()->name }}</span>
-                        <form action="{{ route('student.logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition">Logout</button>
-                        </form>
-                    @endauth
-                    <a href="/admin" class="rounded-full border border-slate-200 px-3 py-2 font-medium text-slate-700 hover:border-blue-600 hover:text-blue-700 transition">Masuk Admin</a>
-                </div>
+@section('content')
+        
+    <!-- TYPOGRAPHY HERO SECTION (DI TENGAH) -->
+    <section class="mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 lg:px-8 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-gundar-primary justify-center">
+                <span class="h-1.5 w-1.5 rounded-full bg-gundar-accent"></span>
+                Universitas Gunadarma
+                <span class="h-1.5 w-1.5 rounded-full bg-gundar-accent"></span>
             </div>
-        </div>
-    </nav>
+            <h1 class="text-4xl font-black leading-[1.1] tracking-tight text-gundar-dark sm:text-6xl lg:text-7xl">
+                Katalog <span class="text-transparent bg-clip-text bg-gradient-to-r from-gundar-primary to-[#a855f7]">Pengetahuan</span> <br> & Karya Ilmiah.
+            </h1>
+            <p class="mt-6 mx-auto max-w-2xl text-lg leading-relaxed text-slate-500">
+                Akses perpustakaan digital terintegrasi. Temukan referensi riset, jurnal, dan skripsi dengan pencarian cerdas berbasis semantik.
+            </p>
 
-    <section class="relative overflow-hidden bg-gradient-to-br from-blue-800 via-blue-700 to-indigo-700 text-white">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.24),transparent_18%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.16),transparent_24%)]"></div>
-        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-            <div class="max-w-3xl mx-auto text-center">
-                <span class="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.24em] border border-white/20 backdrop-blur">Repository Digital</span>
-                <h1 class="mt-5 text-4xl md:text-5xl lg:text-6xl font-black leading-tight">Temukan Referensi Ilmiah Terbaik</h1>
-                <p class="mt-4 text-base md:text-lg text-blue-100 max-w-2xl mx-auto">Jelajahi kumpulan skripsi, artikel, buku, dan karya ilmiah yang siap mendukung riset, tugas akhir, dan pengembangan akademikmu.</p>
-
-                <form action="/" method="GET" class="mt-8 flex flex-col sm:flex-row gap-3 shadow-2xl rounded-2xl overflow-hidden bg-white/10 p-2 backdrop-blur-sm border border-white/20">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, penulis, kata kunci, tahun, atau container..." class="flex-1 rounded-xl px-5 py-4 text-slate-800 placeholder:text-slate-400 focus:outline-none text-base">
-                    <button type="submit" class="rounded-xl bg-slate-950 px-6 py-4 font-bold hover:bg-slate-900 transition">Cari Dokumen</button>
-                </form>
-
-                <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-blue-50">
-                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Skripsi</span>
-                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Artikel</span>
-                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Buku</span>
-                    <span class="rounded-full bg-white/10 px-3 py-1 border border-white/20">Akses Aman</span>
+            <!-- MINIMALIST SEARCH -->
+            <form action="/" method="GET" class="mt-10 mx-auto max-w-3xl">
+                <div class="flex items-center rounded-full border-2 border-slate-200 bg-white p-1.5 transition-all focus-within:border-gundar-primary/50 focus-within:shadow-[0_0_20px_rgba(118,58,151,0.1)]">
+                    <div class="pl-4 pr-2 text-slate-400">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, penulis, abstrak..." class="w-full bg-transparent py-3 text-lg text-gundar-dark placeholder:text-slate-400 focus:outline-none">
+                    <button type="submit" class="shrink-0 rounded-full bg-gundar-primary px-8 py-3.5 font-bold text-white transition hover:bg-[#5e2e79]">Cari</button>
                 </div>
-            </div>
+            </form>
         </div>
     </section>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm mb-6">
-            <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('home', ['search' => request('search')]) }}" class="inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold {{ $activeTopic ? 'bg-slate-100 text-slate-700' : 'bg-blue-600 text-white' }} transition">
-                    Semua topik
-                </a>
-                @foreach($topics as $topic)
-                    <a href="{{ route('topic.show', $topic->slug) }}" class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition {{ $activeTopic && $activeTopic->id === $topic->id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                        <span>{{ $topic->name }}</span>
-                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold">{{ $topic->publications_count }}</span>
-                    </a>
-                @endforeach
-            </div>
-            @if($activeTopic)
-                <p class="mt-3 text-sm text-slate-500">
-                    Menampilkan publikasi yang terkait dengan topik <span class="font-semibold text-slate-700">{{ $activeTopic->name }}</span>.
-                    <a href="{{ route('home', ['search' => request('search')]) }}" class="ml-1 font-semibold text-blue-600 hover:text-blue-700">Reset filter</a>
-                </p>
-            @endif
-        </div>
+    <!-- LAYOUT: SIDEBAR (KIRI) & CONTENT (KANAN) -->
+    <main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:grid lg:grid-cols-12 lg:gap-16">
+            
+            <!-- PANGGIL SIDEBAR DARI FOLDER PARTIALS -->
+            @include('partials.sidebar')
 
-        <div class="flex justify-between items-end mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-800">Koleksi Terbaru</h2>
-                @if($search)
-                    <p class="text-sm text-slate-500 mt-1">Menampilkan hasil pencarian untuk: <span class="font-semibold text-slate-700">{{ $search }}</span></p>
-                @endif
-            </div>
-        </div>
-
-        @if($publications->isEmpty())
-            <div class="bg-white p-10 text-center rounded-lg border border-slate-200 shadow-sm">
-                <p class="text-slate-500 text-lg">Belum ada dokumen yang diunggah ke repositori.</p>
-            </div>
-        @else
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($publications as $pub)
-                    
-                    <!-- UPDATE: Implementasi Card UI Modern Editorial dengan navigasi klik menyeluruh -->
-                    <article onclick="window.location.href='{{ route('publications.show', $pub->id) }}'" class="group bg-white border border-slate-200/60 rounded-xl p-6 transition-all duration-300 hover:shadow-md hover:border-slate-300 hover:bg-slate-50/30 cursor-pointer flex flex-col h-full">
-                        
-                        <!-- Header Card: Menampilkan metadata rilis dokumen -->
-                        <div class="text-[11px] font-bold tracking-widest text-slate-400 uppercase mb-3 flex items-center gap-2">
-                            <span>{{ $pub->year ?? 'Tahun N/A' }}</span>
-                            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                            <span class="text-slate-500">{{ $pub->type ?? 'JURNAL' }}</span> 
-                        </div>
-
-                        <!-- Tipografi Judul: Menggunakan rumpun Serif -->
-                        <h3 class="text-xl font-bold text-slate-900 mb-2 line-clamp-2 font-serif group-hover:text-blue-700 transition" title="{{ $pub->title }}">
-                            <a href="{{ route('publications.show', $pub->id) }}">
-                                {{ $pub->title }}
-                            </a>
-                        </h3>
-                        
-                        <!-- Metadata Penulis dan Kontainer -->
-                        <div class="text-sm text-slate-500 mb-4 font-medium">
-                            Oleh: {{ $pub->author }} <br>
-                            <span class="text-xs font-normal text-slate-400">
-                                {{ $pub->container ? $pub->container->name : 'Wadah tidak diketahui' }}
-                            </span>
-                        </div>
-
-                        @if($pub->topics->isNotEmpty())
-                            <div class="flex flex-wrap gap-1.5 mb-4">
-                                @foreach($pub->topics->take(3) as $topic)
-                                    <span class="text-[10px] font-bold uppercase tracking-wide text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-md">{{ $topic->name }}</span>
+            <!-- KOLOM KANAN (Daftar Dokumen) -->
+            <div class="lg:col-span-8">
+                
+                <!-- Rekomendasi Personal -->
+                @auth
+                    @if($personalizedRecommendations->isNotEmpty())
+                        <div class="mb-8 rounded-3xl bg-gundar-primary/5 p-6 border border-gundar-primary/10">
+                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gundar-primary">Disarankan Untuk Anda</h3>
+                            <p class="mt-1 text-xs text-slate-500">Berdasarkan dokumen tersimpan dan riwayat topik.</p>
+                            
+                            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                                @foreach($personalizedRecommendations as $item)
+                                    <a href="{{ route('publications.show', $item) }}" class="group block bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-gundar-primary transition">
+                                        <h4 class="text-sm font-bold text-gundar-dark leading-tight group-hover:text-gundar-primary transition line-clamp-2">{{ $item->title }}</h4>
+                                        <p class="mt-2 text-xs text-slate-500">{{ $item->author }}</p>
+                                    </a>
                                 @endforeach
                             </div>
-                        @endif
-                        
-                        <!-- TAMBAHAN: Menampilkan abstrak dokumen yang sudah difilter highlight -->
-                        {{-- Sintaks {!! !!} (raw echo) digunakan untuk merender tag span dari proses preg_replace --}}
-                        <p class="font-sans text-sm text-slate-600 leading-relaxed line-clamp-3 mb-6 flex-grow">
-                            {!! $pub->highlighted_abstract ?? 'Abstrak tidak tersedia.' !!}
-                        </p>
-                        
-                        <!-- Footer Card: Indikator file akses -->
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                @if($pub->files->count() > 0)
-                                    <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        PDF
-                                    </span>
-                                @else
-                                    <span class="text-xs font-medium text-slate-400 italic">No PDF</span>
-                                @endif
-                            </div>
-                            
-                            <span class="text-sm font-medium text-blue-600 opacity-0 transition-opacity group-hover:opacity-100">
-                                Baca detail &rarr;
-                            </span>
                         </div>
+                    @endif
+                @endauth
 
-                    </article>
-                @endforeach
+                <div class="mb-6 flex items-end justify-between border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-xl font-black text-gundar-dark">Jurnal & Publikasi</h2>
+                        @if($search)
+                            <p class="mt-1 text-sm text-slate-500">Hasil pencarian untuk: <span class="font-bold text-gundar-primary">"{{ $search }}"</span></p>
+                        @elseif($activeTopic)
+                            <p class="mt-1 text-sm text-slate-500">Kategori: <span class="font-bold text-gundar-primary">{{ $activeTopic->name }}</span></p>
+                        @else
+                            <p class="mt-1 text-sm text-slate-500">Terbaru diunggah ke dalam sistem.</p>
+                        @endif
+                    </div>
+                    @if($search || $activeTopic)
+                        <a href="{{ route('home') }}" class="text-sm font-semibold text-gundar-accent hover:underline">Hapus Filter</a>
+                    @endif
+                </div>
+
+                <!-- Notifikasi Pencarian Semantik -->
+                @if($search && !empty($semanticTerms))
+                    <div class="mb-8 rounded-xl bg-indigo-50 border border-indigo-100 p-4 flex gap-3 shadow-sm">
+                        <span class="text-xl">💡</span>
+                        <p class="text-sm text-indigo-800">
+                            Sistem pencarian semantik memperluas istilah Anda dengan kata terkait: 
+                            <span class="font-bold">{{ implode(', ', $semanticTerms) }}</span>.
+                        </p>
+                    </div>
+                @endif
+
+                @if($publications->isEmpty())
+                    <div class="py-12 text-center">
+                        <span class="text-4xl">📭</span>
+                        <h3 class="mt-4 text-lg font-bold text-gundar-dark">Tidak ditemukan</h3>
+                        <p class="text-slate-500">Coba gunakan kata kunci yang lebih umum.</p>
+                    </div>
+                @else
+                    <!-- LOOPING ITEM JURNAL MENGGUNAKAN PARTIALS -->
+                    <div class="flex flex-col">
+                        @foreach($publications as $pub)
+                            @include('partials.publication-item', ['pub' => $pub])
+                        @endforeach
+                    </div>
+
+                    <!-- Paginasi -->
+                    <div class="mt-12">
+                        {{ $publications->links() }}
+                    </div>
+                @endif
             </div>
 
-            <div class="mt-8">
-                {{ $publications->links() }}
-            </div>
-        @endif
+        </div>
     </main>
 
-</body>
-</html>
+@endsection

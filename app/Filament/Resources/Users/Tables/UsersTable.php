@@ -31,9 +31,9 @@ class UsersTable
                         default => 'gray',
                     })
                     ->icon(fn (string $state): string => match ($state) {
-                        'admin' => 'heroicon-m-shield-check',
-                        'student' => 'heroicon-m-academic-cap',
-                        default => 'heroicon-m-user',
+                        'admin' => 'heroicon-s-shield-check',
+                        'student' => 'heroicon-s-academic-cap',
+                        default => 'heroicon-s-user',
                     }),
                 
                 TextColumn::make('created_at')

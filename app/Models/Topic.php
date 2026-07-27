@@ -15,6 +15,7 @@ class Topic extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'sort_order' => 'integer',
+        'merged_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -36,9 +37,51 @@ class Topic extends Model
         return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order')->orderBy('name');
     }
 
+    public function ancestorIds(): array
+    {
+        $ids = [];
+        $current = $this->parent()->with('parent')->first();
+
+        while ($current) {
+            if (in_array($current->id, $ids, true)) {
+                break;
+            }
+
+            $ids[] = $current->id;
+            $current = $current->parent()->with('parent')->first();
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    public function relatedTopicIds(): array
+    {
+        $ids = [$this->id];
+
+        foreach ($this->ancestorIds() as $ancestorId) {
+            $ids[] = $ancestorId;
+        }
+
+        foreach ($this->children()->pluck('id') as $childId) {
+            $ids[] = $childId;
+        }
+
+        return array_values(array_unique($ids));
+    }
+
     public function publications(): BelongsToMany
     {
         return $this->belongsToMany(Publication::class);
+    }
+
+    public function userPreferences()
+    {
+        return $this->hasMany(UserTopicPreference::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_topic_preferences');
     }
 
     // Scopes
@@ -90,18 +133,25 @@ class Topic extends Model
             $publication->topics()->detach($this->id);
         }
 
-        // Store backup for potential undo, including list of added attachments
+        // Determine actor
+        $actorId = auth()->id() ?? null;
+
+        // Store backup for potential undo, including list of added attachments and audit info
         \DB::table('topic_merge_backups')->insert([
             'source_id' => $this->id,
             'target_id' => $target->id,
             'publication_ids' => json_encode($publicationIds),
             'added_publication_ids' => json_encode($added),
+            'merged_by' => $actorId,
+            'merged_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         // Mark this topic as merged into target and deactivate it (do not delete)
         $this->merged_into = $target->id;
+        $this->merged_by = $actorId;
+        $this->merged_at = now();
         $this->is_active = false;
         $this->save();
     }
@@ -145,8 +195,10 @@ class Topic extends Model
             }
         }
 
-        // Reactivate topic and clear merged_into
+        // Reactivate topic and clear merged_into and audit fields
         $this->merged_into = null;
+        $this->merged_by = null;
+        $this->merged_at = null;
         $this->is_active = true;
         $this->save();
 

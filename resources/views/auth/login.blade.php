@@ -6,11 +6,12 @@
     <title>Login Mahasiswa - RepoIlmiah</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+<body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_24%),linear-gradient(135deg,_#f8fbff_0%,_#eef4ff_100%)] flex items-center justify-center px-4 py-10">
+    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.35)] backdrop-blur">
         <div class="mb-8 text-center">
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-2xl font-black text-white">R</div>
             <h1 class="text-2xl font-extrabold text-slate-900">Login Mahasiswa</h1>
-            <p class="text-sm text-slate-500 mt-2">Masuk dengan NPM dan password akun kamu.</p>
+            <p class="mt-2 text-sm text-slate-500">Masuk dengan NPM dan password akun kamu.</p>
         </div>
 
         @if ($errors->any())
@@ -46,55 +47,6 @@
         <p class="mt-5 text-center text-sm text-slate-500">
             Belum punya akun?
             <a href="{{ route('student.register') }}" class="text-blue-600 font-semibold hover:underline">Daftar mahasiswa</a>
-        </p>
-    </div>
-</body>
-</html>
-    <title>Login - Repository Publikasi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">Selamat Datang</h1>
-            <p class="text-gray-500 mt-2">Silakan login ke akun Anda</p>
-        </div>
-
-        <!-- Alert Sukses (Misal dari Register atau Logout) -->
-        @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                <p>{{ session('success') }}</p>
-            </div>
-        @endif
-
-        <!-- Form Login -->
-        <form action="{{ route('login') }}" method="POST" class="space-y-6">
-            @csrf
-             
-            <div>
-                <label for="npm" class="block text-sm font-medium text-gray-700">NPM</label>
-                <input type="text" name="npm" id="npm" value="{{ old('npm') }}" maxlength="8" inputmode="numeric" required 
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                @error('npm')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" name="password" id="password" required 
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <button type="submit" 
-                class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                Masuk
-            </button>
-        </form>
-
-        <p class="mt-6 text-center text-sm text-gray-600">
-            Belum punya akun? 
-            <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500">Daftar di sini</a>
         </p>
     </div>
 </body>

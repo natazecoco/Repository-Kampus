@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Topics\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class TopicForm
@@ -35,7 +36,7 @@ class TopicForm
                 ->label('Penjelasan Singkat')
                 ->rows(3)
                 ->maxLength(1000),
-            Forms\Components\Toggle::make('is_active')
+            Toggle::make('is_active')
                 ->label('Aktif')
                 ->default(true),
         ]);

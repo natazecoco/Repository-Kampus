@@ -57,7 +57,7 @@ class PublicationsTable
             ->recordActions([
                 Action::make('view_publication')
                     ->label('Baca Publikasi')
-                    ->icon('heroicon-o-eye')
+                    ->icon('heroicon-s-eye')
                     ->color('info')
                     ->url(fn ($record): string => route('publications.viewer', $record))
                     ->openUrlInNewTab()

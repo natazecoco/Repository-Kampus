@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Topics\Tables;
 
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -17,8 +19,13 @@ class TopicsTable
                 TextColumn::make('name')->label('Topik')->searchable()->sortable(),
                 TextColumn::make('parent.name')->label('Topik Induk')->placeholder('Topik utama')->searchable(),
                 TextColumn::make('publications_count')->counts('publications')->label('Publikasi')->badge(),
-                TextColumn::make('is_active')->label('Aktif')->boolean()->sortable(),
+                TextColumn::make('is_active')
+                    ->label('Aktif')
+                    ->formatStateUsing(fn ($state) => $state ? 'Ya' : 'Tidak')
+                    ->sortable(),
                 TextColumn::make('merged_into')->label('Merged Into')->formatStateUsing(fn($state) => $state ? \App\Models\Topic::find($state)?->name : null)->sortable(),
+                TextColumn::make('merged_at')->label('Merged At')->dateTime()->formatStateUsing(fn($state) => $state ? (string) \Carbon\Carbon::parse($state)->setTimezone(config('app.timezone')) : null)->sortable(),
+                TextColumn::make('merged_by')->label('Merged By')->formatStateUsing(fn($state) => $state ? \App\Models\User::find($state)?->name : null)->sortable(),
                 TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->reorderable('sort_order')
@@ -26,9 +33,9 @@ class TopicsTable
                 EditAction::make()
                     ->visible(fn ($record) => auth()->user()?->can('update', $record)),
 
-                \Filament\Tables\Actions\Action::make('toggleActive')
+                Action::make('toggleActive')
                     ->label(fn($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
-                    ->icon(fn($record) => $record->is_active ? 'heroicon-o-eye-off' : 'heroicon-o-eye')
+                    ->icon(fn($record) => $record->is_active ? 'heroicon-s-eye-slash' : 'heroicon-s-eye')
                     ->requiresConfirmation()
                     ->visible(fn ($record) => auth()->user()?->can('toggleActive', $record))
                     ->action(function ($record) {
@@ -40,14 +47,14 @@ class TopicsTable
                             ->send();
                     }),
 
-                \Filament\Tables\Actions\Action::make('merge')
+                Action::make('merge')
                     ->label('Gabungkan')
-                    ->icon('heroicon-o-duplicate')
+                    ->icon('heroicon-s-square-2-stack')
                     ->visible(fn ($record) => auth()->user()?->can('merge', $record))
                     ->form([
                         \Filament\Forms\Components\Select::make('target')
                             ->label('Gabungkan ke')
-                            ->options(fn () => \App\Models\Topic::where('id', '!=', \Filament\Tables\getRecord()?->id)->pluck('name', 'id')->toArray())
+                            ->options(fn () => \App\Models\Topic::pluck('name', 'id')->toArray())
                             ->required(),
                     ])
                     ->requiresConfirmation()
@@ -68,9 +75,9 @@ class TopicsTable
                                 ->send();
                         }
                     }),
-                \Filament\Tables\Actions\Action::make('undoMerge')
+                Action::make('undoMerge')
                     ->label('Batalkan gabungan')
-                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->icon('heroicon-s-arrow-uturn-left')
                     ->visible(fn($record) => ! $record->is_active && $record->merged_into !== null && auth()->user()?->role === 'admin')
                     ->requiresConfirmation()
                     ->action(function ($record) {
@@ -83,7 +90,7 @@ class TopicsTable
                     }),
             ])
             ->bulkActions([
-                \Filament\Tables\Actions\BulkAction::make('merge')
+                BulkAction::make('merge')
                     ->label('Gabungkan ke topik lain')
                     ->form([
                         \Filament\Forms\Components\Select::make('target')

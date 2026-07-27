@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositori Ilmiah - Universitas Gunadarma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-[#f7f2eb] font-sans text-slate-800">
+    <div class="relative isolate overflow-hidden">
+        <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(118,58,151,0.22),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(248,151,35,0.18),_transparent_30%)]"></div>
+        <nav class="sticky top-0 z-40 border-b border-white/70 bg-[#f7f2eb]/90 backdrop-blur-xl">
+            <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('home') }}" class="flex items-center gap-3">
+                        <span class="inline-flex items-center rounded-full bg-[#911B62]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-[#911B62]">Gunadarma</span>
+                        <span class="text-2xl font-black text-[#911B62]">Repo<span class="text-slate-800">Ilmiah</span></span>
+                    </a>
+                </div>
+
+                <div class="hidden flex-1 md:block">
+                    <form action="/" method="GET" class="mx-auto max-w-xl">
+                        <div class="flex items-center gap-2 rounded-full border border-[#ecdfe8] bg-white/80 px-3 py-2 shadow-[0_8px_30px_rgba(17,17,17,0.05)]">
+                            <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"/></svg>
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari dokumen, topik, atau penulis..." class="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    @guest
+                        <a href="{{ route('student.login') }}" class="text-sm font-semibold text-slate-700 transition hover:text-[#763a97]">Masuk</a>
+                        <a href="{{ route('student.register') }}" class="rounded-full border border-[#e8dce7] bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#763a97] hover:text-[#763a97]">Daftar</a>
+                    @endguest
+                    @auth
+                        <a href="{{ route('bookmarks.index') }}" class="rounded-full bg-[#763a97]/10 px-3 py-2 text-sm font-semibold text-[#763a97] transition hover:bg-[#763a97]/15">Koleksi</a>
+                        <span class="hidden text-sm font-medium text-slate-700 sm:block">Halo, {{ Auth::user()->name }}</span>
+                        <form action="{{ route('student.logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-sm font-semibold text-slate-500 transition hover:text-[#763a97]">Logout</button>
+                        </form>
+                    @endauth
+                    <a href="/admin" class="rounded-full border border-[#e8dce7] bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#763a97] hover:text-[#763a97]">Admin</a>
+                </div>
+            </div>
+        </nav>
+
+        <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+            <div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+                <div class="rounded-[32px] border border-[#eadfe8] bg-[#111111] p-7 text-white shadow-[0_22px_70px_rgba(17,17,17,0.18)] sm:p-8 lg:p-10">
+                    <div class="flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-[#f8c26f]">
+                        <span class="rounded-full border border-white/15 bg-white/10 px-3 py-1">Repository Digital</span>
+                        <span class="rounded-full border border-white/15 bg-white/10 px-3 py-1">Edition 2026</span>
+                    </div>
+                    <h1 class="mt-5 max-w-2xl text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">Temukan ide yang terasa dekat, bukan sekadar tercatat.</h1>
+                    <p class="mt-4 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">Repositori ini dibuat untuk memberi rasa penjelajahan yang lebih hidup: pencarian, topik, dan rekomendasi yang mengarah ke materi yang benar-benar relevan.</p>
+
+                    <form action="/" method="GET" class="mt-8 flex flex-col gap-3 rounded-[24px] border border-white/10 bg-white/10 p-2 backdrop-blur sm:flex-row">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, penulis, kata kunci, atau topik..." class="flex-1 rounded-[18px] px-4 py-4 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none">
+                        <button type="submit" class="rounded-[18px] bg-[#f89723] px-5 py-4 font-black text-white transition hover:bg-[#e58500]">Jelajah</button>
+                    </form>
+
+                    <div class="mt-6 flex flex-wrap gap-2 text-sm text-slate-300">
+                        <span class="rounded-full border border-white/10 bg-white/10 px-3 py-1">Skripsi</span>
+                        <span class="rounded-full border border-white/10 bg-white/10 px-3 py-1">Artikel</span>
+                        <span class="rounded-full border border-white/10 bg-white/10 px-3 py-1">Buku</span>
+                        <span class="rounded-full border border-white/10 bg-white/10 px-3 py-1">Rasa personal</span>
+                    </div>
+                </div>
+
+                <div class="rounded-[32px] border border-[#eadfe8] bg-white p-6 shadow-[0_18px_60px_rgba(118,58,151,0.10)] sm:p-7">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-[#763a97]">For You</p>
+                            <h2 class="mt-2 text-2xl font-black text-slate-900">Peta bacaan yang terasa ringan.</h2>
+                        </div>
+                        <div class="rounded-full bg-[#fdf6fb] p-3 text-[#911B62]">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M3 12h18"/></svg>
+                        </div>
+                    </div>
+                    <div class="mt-5 space-y-3">
+                        <div class="rounded-[20px] border border-[#eddce8] bg-[#f9f5fc] p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-[#763a97]">AI</p>
+                            <p class="mt-2 font-semibold text-slate-800">Machine Learning for Recommendation Systems</p>
+                        </div>
+                        <div class="rounded-[20px] border border-[#eddce8] bg-white p-4 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-slate-400">Data</p>
+                            <p class="mt-2 font-semibold text-slate-800">Analisis Data dan Visualisasi</p>
+                        </div>
+                        <div class="rounded-[20px] border border-[#eddce8] bg-[#fff8ef] p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-[#f89723]">Design</p>
+                            <p class="mt-2 font-semibold text-slate-800">Human-Centered Research & Interaction</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-6">
+                <aside class="mb-6 lg:mb-0">
+                    <div class="rounded-[28px] border border-[#eadfe8] bg-white p-4 shadow-[0_10px_35px_rgba(17,17,17,0.05)] lg:sticky lg:top-20">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-[#911B62]">Explorer</p>
+                            <span class="rounded-full bg-[#fdf6fb] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#911B62]">Live</span>
+                        </div>
+
+                        <nav class="mt-4 space-y-1">
+                            <a href="{{ route('home') }}" class="flex items-center rounded-2xl bg-[#fdf6fb] px-3 py-2 text-sm font-semibold text-[#911B62]">
+                                <span class="mr-2">✦</span> Beranda
+                            </a>
+                            <a href="{{ route('bookmarks.index') }}" class="flex items-center rounded-2xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-[#fdf6fb] hover:text-[#911B62]">
+                                <span class="mr-2">♡</span> Koleksi Saya
+                            </a>
+                            <a href="{{ route('student.dashboard') }}" class="flex items-center rounded-2xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-[#fdf6fb] hover:text-[#911B62]">
+                                <span class="mr-2">◌</span> Profil
+                            </a>
+                            <a href="/admin" class="flex items-center rounded-2xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-[#fdf6fb] hover:text-[#911B62]">
+                                <span class="mr-2">⚙</span> Admin
+                            </a>
+                        </nav>
+
+                        <div class="mt-6 border-t border-slate-100 pt-4">
+                            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Browse</p>
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                @foreach($topics->take(6) as $topic)
+                                    <a href="{{ route('topic.show', $topic->slug) }}" class="rounded-full border border-[#f0e7f3] bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-[#911B62] hover:text-[#911B62]">
+                                        {{ $topic->name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <div>
+                    <div class="mb-6 rounded-[28px] border border-[#eadfe8] bg-white p-4 shadow-[0_10px_35px_rgba(17,17,17,0.05)]">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="{{ route('home', ['search' => request('search')]) }}" class="inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold {{ $activeTopic ? 'bg-slate-100 text-slate-700' : 'bg-[#911B62] text-white' }} transition">
+                                Semua topik
+                            </a>
+                            @foreach($topics as $topic)
+                                <a href="{{ route('topic.show', $topic->slug) }}" class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition {{ $activeTopic && $activeTopic->id === $topic->id ? 'bg-[#763a97] text-white' : 'bg-[#f4f2f3] text-slate-700 hover:bg-[#e8e2e5]' }}">
+                                    <span>{{ $topic->name }}</span>
+                                    <span class="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-bold text-[#763a97]">{{ $topic->publications_count }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+
+                        @if($taxonomyTopics->isNotEmpty())
+                            <div class="mt-4 border-t border-slate-100 pt-4">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Taksonomi Topik</p>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    @foreach($taxonomyTopics as $parentTopic)
+                                        <div class="rounded-2xl border border-[#e9dce8] bg-[#fcf7fb] px-3 py-2">
+                                            <a href="{{ route('topic.show', $parentTopic->slug) }}" class="text-sm font-semibold text-slate-800 hover:text-[#763a97]">{{ $parentTopic->name }}</a>
+                                            @if($parentTopic->children->isNotEmpty())
+                                                <div class="mt-2 flex flex-wrap gap-2">
+                                                    @foreach($parentTopic->children as $childTopic)
+                                                        <a href="{{ route('topic.show', $childTopic->slug) }}" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-slate-500 hover:text-[#763a97]">{{ $childTopic->name }}</a>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($activeTopic)
+                            <p class="mt-3 text-sm text-slate-500">
+                                Menampilkan publikasi yang terkait dengan topik <span class="font-semibold text-slate-700">{{ $activeTopic->name }}</span>.
+                                <a href="{{ route('home', ['search' => request('search')]) }}" class="ml-1 font-semibold text-[#763a97] hover:text-[#5e3078]">Reset filter</a>
+                            </p>
+                        @endif
+
+                        @if($search)
+                            <p class="mt-3 text-sm text-slate-500">
+                                Pencarian semantik memperluas istilah Anda dengan kata terkait seperti: <span class="font-semibold text-slate-700">{{ implode(', ', $semanticTerms) }}</span>.
+                            </p>
+                        @endif
+                    </div>
+
+                    @auth
+                        @if($personalizedRecommendations->isNotEmpty())
+                            <div class="mb-8 rounded-[28px] border border-[#eadfe8] bg-gradient-to-br from-[#f9f5fc] to-white p-5 shadow-[0_10px_35px_rgba(17,17,17,0.05)]">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div>
+                                        <h2 class="text-xl font-black text-slate-900">Rekomendasi untukmu</h2>
+                                        <p class="mt-1 text-sm text-slate-600">Yang terasa personal berdasarkan bookmark dan topik favorit yang kamu pilih.</p>
+                                    </div>
+                                    <a href="{{ route('student.dashboard') }}" class="text-sm font-semibold text-[#763a97] hover:text-[#5e3078]">Lihat dashboard</a>
+                                </div>
+                                <div class="mt-4 grid gap-4 md:grid-cols-2">
+                                    @foreach($personalizedRecommendations as $item)
+                                        <a href="{{ route('publications.show', $item) }}" class="rounded-[22px] border border-[#eadfe8] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-[#763a97]">
+                                            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-[#763a97]">{{ $item->type }}</p>
+                                            <h3 class="mt-2 font-semibold text-slate-900">{{ $item->title }}</h3>
+                                            <p class="mt-1 text-sm text-slate-600">{{ $item->author }}</p>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    @endauth
+
+                    <div class="mb-6 flex items-end justify-between">
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-900">Koleksi Terbaru</h2>
+                            @if($search)
+                                <p class="mt-1 text-sm text-slate-500">Menampilkan hasil pencarian untuk: <span class="font-semibold text-slate-700">{{ $search }}</span></p>
+                            @endif
+                        </div>
+                    </div>
+
+                    @if($publications->isEmpty())
+                        <div class="rounded-[28px] border border-dashed border-[#d9cddb] bg-white p-10 text-center shadow-sm">
+                            <p class="text-lg text-slate-500">Belum ada dokumen yang diunggah ke repositori.</p>
+                        </div>
+                    @else
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            @foreach($publications as $pub)
+                                <article onclick="window.location.href='{{ route('publications.show', $pub->id) }}'" class="group flex h-full cursor-pointer flex-col rounded-[24px] border border-[#eadfe8] bg-white p-6 shadow-[0_10px_35px_rgba(17,17,17,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_42px_rgba(118,58,151,0.12)]">
+                                    <div class="mb-3 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.24em] text-[#763a97]">
+                                        <span>{{ $pub->year ?? 'Tahun N/A' }}</span>
+                                        <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                        <span class="text-slate-500">{{ $pub->type ?? 'JURNAL' }}</span>
+                                    </div>
+
+                                    <h3 class="mb-2 line-clamp-2 text-xl font-black text-slate-900 transition group-hover:text-[#763a97]" title="{{ $pub->title }}">
+                                        <a href="{{ route('publications.show', $pub->id) }}">{{ $pub->title }}</a>
+                                    </h3>
+
+                                    <div class="mb-4 text-sm font-medium text-slate-500">
+                                        Oleh: {{ $pub->author }} <br>
+                                        <span class="text-xs font-normal text-slate-400">{{ $pub->container ? $pub->container->name : 'Wadah tidak diketahui' }}</span>
+                                    </div>
+
+                                    @if($pub->topics->isNotEmpty())
+                                        <div class="mb-4 flex flex-wrap gap-1.5">
+                                            @foreach($pub->topics->take(3) as $topic)
+                                                <span class="rounded-full border border-[#e9dce8] bg-[#fcf7fb] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#763a97]">{{ $topic->name }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    <p class="mb-6 flex-grow text-sm leading-7 text-slate-600 line-clamp-3">
+                                        {!! $pub->highlighted_abstract ?? 'Abstrak tidak tersedia.' !!}
+                                    </p>
+
+                                    <div class="mt-auto flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                                        <div class="flex items-center gap-2">
+                                            @if($pub->files->count() > 0)
+                                                <span class="flex items-center gap-1 text-xs font-bold text-emerald-600">
+                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                    PDF
+                                                </span>
+                                            @else
+                                                <span class="text-xs font-medium italic text-slate-400">No PDF</span>
+                                            @endif
+                                        </div>
+
+                                        <div class="flex items-center gap-2">
+                                            @auth
+                                                <form action="{{ route('bookmarks.toggle') }}" method="POST" onclick="event.stopPropagation()">
+                                                    @csrf
+                                                    <input type="hidden" name="publication_id" value="{{ $pub->id }}">
+                                                    <button type="submit" class="rounded-full border border-[#e9dce8] px-2.5 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-[#763a97] hover:text-[#763a97]">
+                                                        {{ $pub->bookmarks()->where('user_id', auth()->id())->exists() ? '★ Tersimpan' : '☆ Simpan' }}
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <a href="{{ route('student.login') }}" class="rounded-full border border-[#e9dce8] px-2.5 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-[#763a97] hover:text-[#763a97]" onclick="event.stopPropagation()">
+                                                    Login untuk simpan
+                                                </a>
+                                            @endauth
+
+                                            <span class="text-sm font-semibold text-[#763a97] opacity-0 transition-opacity group-hover:opacity-100">Baca detail →</span>
+                                        </div>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-8">
+                            {{ $publications->links() }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </main>
+
+        <footer class="border-t border-[#eadfe8] bg-[#f7f2eb]/90">
+            <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+                <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Tentang RepoIlmiah</h3>
+                        <p class="mt-3 max-w-xl text-sm leading-7 text-slate-600">RepoIlmiah adalah repositori digital untuk mengelola publikasi akademik, memudahkan akses dokumen, dan memberi rekomendasi yang lebih personal kepada mahasiswa.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-[0.24em] text-slate-400">Fitur</h3>
+                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                            <li>• Bookmark dan daftar bacaan</li>
+                            <li>• Preferensi topik pribadi</li>
+                            <li>• Taksonomi topik dan pencarian semantik</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-[0.24em] text-slate-400">Akses</h3>
+                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                            <li><a href="{{ route('student.login') }}" class="hover:text-[#763a97]">Masuk Mahasiswa</a></li>
+                            <li><a href="/admin" class="hover:text-[#763a97]">Masuk Admin</a></li>
+                            <li><a href="{{ route('bookmarks.index') }}" class="hover:text-[#763a97]">Daftar Bacaan Saya</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
