@@ -5,11 +5,18 @@ namespace App\Services;
 use App\Models\Publication;
 use App\Models\Topic;
 use App\Models\User;
-use Sastrawi\Stemmer\StemmerFactory;
-use Sastrawi\StopWordRemover\StopWordRemoverFactory;
+use App\Services\TextPreprocessor; // [BARU] Import TextPreprocessor
 
 class RecommendationScorer
 {
+    private TextPreprocessor $preprocessor;
+
+    // [BARU] Dependency Injection untuk TextPreprocessor
+    public function __construct(TextPreprocessor $preprocessor)
+    {
+        $this->preprocessor = $preprocessor;
+    }
+
     /**
      * Menghitung skor kemiripan kandidat publikasi terhadap target.
      * Mengembalikan array terstruktur yang memuat skor teks dan irisan taksonomi.
@@ -22,17 +29,15 @@ class RecommendationScorer
             return [];
         }
 
-        $stopWordFactory = new StopWordRemoverFactory();
-        $stopword = $stopWordFactory->createStopWordRemover();
-
-        $stemmerFactory = new StemmerFactory();
-        $stemmer = $stemmerFactory->createStemmer();
+        // --- PABRIK SASTRAWI LAMA DIHAPUS DARI SINI ---
 
         $documents = collect();
-        $documents->put($target->id, $this->prepareText($target, $stemmer, $stopword));
+        
+        // [MODIFIKASI MINOR]: Hapus parameter stemmer & stopword, cukup kirim target/candidate
+        $documents->put($target->id, $this->prepareText($target));
 
         foreach ($candidateCollection as $candidate) {
-            $documents->put($candidate->id, $this->prepareText($candidate, $stemmer, $stopword));
+            $documents->put($candidate->id, $this->prepareText($candidate));
         }
 
         $df = [];
@@ -138,23 +143,25 @@ class RecommendationScorer
         return count(array_intersect($targetContext, $candidateContext));
     }
 
-    private function prepareText(Publication $publication, $stemmer, $stopword): string
+    // [MODIFIKASI] prepareText tetap dipertahankan sebagai Wrapper (Abstraction Layer)
+    private function prepareText(Publication $publication): string
     {
-        $rawText = trim(implode(' ', array_filter([
+        return $this->preprocessor->process($this->getRawText($publication));
+    }
+
+    // [BARU] Helper khusus untuk merangkai teks mentah publikasi
+    private function getRawText(Publication $publication): string
+    {
+        // Pencegahan error array to string conversion dari Filament TagsInput
+        $keywords = is_array($publication->keywords) 
+            ? implode(' ', $publication->keywords) 
+            : (string) $publication->keywords;
+
+        return trim(implode(' ', array_filter([
             $publication->title,
-            $publication->keywords,
+            $keywords,
             $publication->abstract,
         ])));
-
-        if ($rawText === '') {
-            return '';
-        }
-
-        $text = strtolower($rawText);
-        $text = preg_replace('/[^a-z0-9 ]/', '', $text);
-        $text = $stopword->remove($text);
-
-        return $stemmer->stem($text);
     }
 
     private function userPreferenceBonus(User $user, Publication $candidate, ?array $candidateTopicIds = null): float
@@ -187,8 +194,7 @@ class RecommendationScorer
         foreach ($topics as $topic) {
             $contextIds[] = $topic->id;
             
-            // Masukkan ID dari relasi relatedTopicIds secara aman
-            $contextIds = array_merge($contextIds, [$topic->id]);
+            // [MODIFIKASI]: Menghapus array_merge redundan
             if ($topic->parent_id) {
                 $contextIds[] = $topic->parent_id;
             }

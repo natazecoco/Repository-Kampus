@@ -71,7 +71,7 @@ class Topic extends Model
 
     public function publications(): BelongsToMany
     {
-        return $this->belongsToMany(Publication::class);
+        return $this->belongsToMany(Publication::class)->withPivot('is_auto');
     }
 
     public function userPreferences()
