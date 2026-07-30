@@ -24,24 +24,29 @@ class PublicationFile extends Model
             return true;
         }
 
-        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
+        $effectiveVisibility = $this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated');
+
+        return match ($effectiveVisibility) {
             'public' => true,
             'authenticated' => $user !== null,
+            'admin' => $user?->role === 'admin',
             default => false,
         };
     }
 
     public function canBeDownloadedBy(?Authenticatable $user): bool
     {
+        if ($user?->role === 'admin') {
+            return true;
+        }
+
         return $this->allow_download && $this->canBeViewedBy($user);
     }
 
     public function isPublic(): bool
     {
-        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
-            'public' => true,
-            default => false,
-        };
+        $effectiveVisibility = $this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated');
+        return $effectiveVisibility === 'public';
     }
 
     public function isRestricted(): bool
@@ -51,7 +56,9 @@ class PublicationFile extends Model
 
     public function getVisibilityLabelAttribute(): string
     {
-        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
+        $effectiveVisibility = $this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated');
+
+        return match ($effectiveVisibility) {
             'public' => 'Publik',
             'authenticated' => 'Mahasiswa internal',
             'admin' => 'Admin saja',

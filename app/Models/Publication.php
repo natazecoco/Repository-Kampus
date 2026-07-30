@@ -104,8 +104,8 @@ class Publication extends Model
     }
 
     /**
-     * Return list of required section keys for a given publication type.
-     * These reflect reasonable defaults based on typical campus repository templates.
+     * [PERBAIKAN] Return list of required section keys for a given publication type.
+     * scientific_paper kini memiliki aturan ringkas (tanpa lembar pengesahan dan presentasi skripsi).
      *
      * @return array<int, string>
      */
@@ -113,7 +113,7 @@ class Publication extends Model
     {
         $type = $type ?? 'thesis';
 
-        // Defaults inspired by the list you provided (bintang = wajib)
+        // 1. Berkas wajib skripsi (10 section)
         $thesisRequired = [
             'cover',
             'originality_statement',
@@ -127,26 +127,31 @@ class Publication extends Model
             'presentation',
         ];
 
-        switch ($type) {
-            case 'scientific_paper':
-                // Penulisan ilmiah: mirip skripsi tapi lebih ringkas
-                return $thesisRequired;
+        // 2. Berkas wajib Penulisan Ilmiah (Lebih ringkas dibanding skripsi)
+        $scientificPaperRequired = [
+            'cover',
+            'originality_statement',
+            'abstract_id',
+            'table_of_contents',
+            'chapter_1',
+            'chapter_2',
+            'chapter_3',
+            'bibliography',
+        ];
 
-            case 'article':
-            case 'book':
-            case 'proceeding':
-            case 'report':
-                // Dokumen tunggal: minimal dokumen lengkap dan daftar pustaka
-                return [
-                    'full_document',
-                    'abstract_id',
-                    'bibliography',
-                ];
+        // 3. Berkas untuk publikasi lepas (Artikel, Buku, Prosiding, Laporan)
+        $singleDocumentRequired = [
+            'full_document',
+            'abstract_id',
+            'bibliography',
+        ];
 
-            case 'thesis':
-            default:
-                return $thesisRequired;
-        }
+        return match ($type) {
+            'scientific_paper' => $scientificPaperRequired,
+            'article', 'book', 'proceeding', 'report' => $singleDocumentRequired,
+            'thesis' => $thesisRequired,
+            default => $singleDocumentRequired,
+        };
     }
 
     /**

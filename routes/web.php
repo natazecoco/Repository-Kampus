@@ -19,9 +19,8 @@ if (! Route::has('student.register')) {
 Route::get('/', [PublicationController::class, 'index'])->name('home');
 Route::get('/topic/{slug}', [PublicationController::class, 'index'])->name('topic.show');
 
-// [FASE 2B] Route Download File - Ditaruh SBLM /publication/{publication}
-Route::get('/publication/file/{file}/download', [PublicationController::class, 'downloadFile'])->name('publications.files.download');
-
+// [FASE 2B] Route Download & Viewer (Disamakan strukturnya dengan menerima {publication} dan {file})
+Route::get('/publication/{publication}/file/{file}/download', [PublicationController::class, 'downloadFile'])->name('publications.files.download');
 Route::get('/publication/{publication}', [PublicationController::class, 'show'])->name('publications.show');
 Route::get('/publication/{publication}/read', [DocumentController::class, 'publicationViewer'])->name('publications.viewer');
 
@@ -54,16 +53,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/topics/{topic}/preference', [BookmarkController::class, 'preference'])->name('topics.preference');
 });
 
-// Route untuk pengunjung yang belum login (Guest) - generic auth (if used)
+// Route untuk pengunjung yang belum login (Guest) - generic auth (jika dipakai admin)
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/admin-login', [AuthController::class, 'showLogin'])->name('admin.login');
+    Route::post('/admin-login', [AuthController::class, 'login']);
     
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
-});
-
-// Route untuk yang sudah login (Auth)
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

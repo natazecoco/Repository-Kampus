@@ -19,7 +19,7 @@ class PublicationController extends Controller
         // 1. Tangkap parameter filter metode riset dari URL (?method=...)
         $methodFilter = trim((string) $request->input('method', ''));
 
-        // [MODIFIKASI] Hapus ->latest() di sini agar tidak berbenturan dengan order by bobot search
+        // Hapus ->latest() di sini agar tidak berbenturan dengan order by bobot search
         $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
 
@@ -40,7 +40,7 @@ class PublicationController extends Controller
             }
         }
 
-        // [MODIFIKASI] Gunakan scopeSearch dan kirimkan hasil semanticTerms kamu
+        // Gunakan scopeSearch dan kirimkan hasil semanticTerms kamu
         if ($search !== '') {
             $semanticTerms = $this->expandSearchTerms($search);
             $query->search($search, $semanticTerms);
@@ -96,7 +96,7 @@ class PublicationController extends Controller
 
     public function show(Publication $publication)
     {
-        // [BARU - FASE 2B] Increment View Counter (+1) dengan proteksi Session
+        // Increment View Counter (+1) dengan proteksi Session
         $viewKey = 'publication_viewed_' . $publication->id;
         if (!session()->has($viewKey)) {
             $publication->increment('views_count');
@@ -200,54 +200,63 @@ class PublicationController extends Controller
     }
 
     /**
-     * [BARU - FASE 2B] Handle proses download file dan increment counter (Support Private & Public Storage).
+     * Handle proses download file dan increment counter (Support Private Storage & Filament Upload).
      */
-    public function downloadFile(Request $request, PublicationFile $file)
+    public function downloadFile(Request $request, Publication $publication, PublicationFile $file)
     {
-        // 0. Proteksi jika ada record database yang file_path-nya tidak sengaja kosong (NULL)
-        if (empty($file->file_path)) {
-            abort(404, 'Gagal mengunduh: Path file belum tercatat di database (NULL).');
+        // 0. Proteksi kepemilikan file terhadap publikasi
+        if ($file->publication_id !== $publication->id) {
+            abort(404, 'File tidak ditemukan pada karya ilmiah ini.');
         }
 
-        // 1. Cek Hak Akses User terhadap File (jika method canBeDownloadedBy tersedia di model)
+        // 1. Cek Hak Akses Unduh (Visibility & allow_download)
         if (method_exists($file, 'canBeDownloadedBy') && ! $file->canBeDownloadedBy($request->user())) {
             abort(403, 'Anda tidak memiliki izin untuk mengunduh dokumen ini. Silakan login sebagai mahasiswa terlebih dahulu.');
         }
 
-        $path = $file->file_path;
-        $fileName = $file->original_name ?? basename($path);
-
-        // 2. OPSI A: Cek langsung ke folder private (storage/app/{path})
-        $privatePath = storage_path('app/' . ltrim($path, '/'));
-        if (file_exists($privatePath) && is_file($privatePath)) {
-            $file->increment('downloads_count');
-            return response()->download($privatePath, $fileName);
+        // 2. Proteksi jika file_path kosong di database
+        if (empty($file->file_path)) {
+            abort(404, 'Gagal mengunduh: Path file belum tercatat di database (NULL).');
         }
 
-        // 3. OPSI B: Cek langsung ke folder public (storage/app/public/{path})
+        // 3. Tambahkan Counter Download +1
+        $file->increment('downloads_count');
+
+        $path = ltrim($file->file_path, '/');
+        $fileName = $file->original_name ?? basename($path);
+
+        // 4. OPSI A: Cek di folder private Filament (storage/app/private/{path})
+        $privateAppPath = storage_path('app/private/' . $path);
+        if (file_exists($privateAppPath) && is_file($privateAppPath)) {
+            return response()->download($privateAppPath, $fileName);
+        }
+
+        // 5. OPSI B: Cek di folder standard storage/app/{path}
+        $standardPath = storage_path('app/' . $path);
+        if (file_exists($standardPath) && is_file($standardPath)) {
+            return response()->download($standardPath, $fileName);
+        }
+
+        // 6. OPSI C: Cek di folder public storage (storage/app/public/{path})
         $cleanPublicPath = ltrim(str_replace(['public/', 'storage/'], '', $path), '/');
         $publicPath = storage_path('app/public/' . $cleanPublicPath);
         if (file_exists($publicPath) && is_file($publicPath)) {
-            $file->increment('downloads_count');
             return response()->download($publicPath, $fileName);
         }
 
-        // 4. OPSI C: Cek via Storage Facade Default (disk lokal)
+        // 7. OPSI D: Gunakan Storage Facade bawaan Laravel
         if (Storage::exists($path)) {
-            $file->increment('downloads_count');
             return Storage::download($path, $fileName);
         }
 
-        // 5. OPSI D: Cek via Storage Facade disk 'public'
-        if (Storage::disk('public')->exists($cleanPublicPath)) {
-            $file->increment('downloads_count');
-            return Storage::disk('public')->download($cleanPublicPath, $fileName);
-        }
-
-        // Jika ke-4 cara di atas gagal menemukan fisik filenya:
-        abort(404, "File fisik tidak ditemukan di server. (Path tercatat di DB: {$path} | Cek juga folder: storage/app/{$path})");
+        // Jika fisik file benar-benar tidak ditemukan di semua direktori server
+        abort(404, "File fisik tidak ditemukan di server. (Path tercatat di DB: {$path} | Cek folder: storage/app/private/{$path})");
     }
 
+    /**
+     * [PERBAIKAN] Sentralisasi pemanggilan taksonomi semantik
+     * menggunakan method getSemanticKeywords() dari Model Topic.
+     */
     private function expandSearchTerms(string $search): array
     {
         $terms = preg_split('/\s+/', strtolower(trim($search))) ?: [];
@@ -267,26 +276,15 @@ class PublicationController extends Controller
             $expanded[] = $term;
             $expanded = array_merge($expanded, $synonyms[$term] ?? []);
 
-            $topicMatches = Topic::active()->where(function ($query) use ($term): void {
+            // Eager-load children untuk efisiensi
+            $topicMatches = Topic::with('children')->active()->where(function ($query) use ($term): void {
                 $query->where('name', 'like', '%' . $term . '%')
                     ->orWhere('slug', 'like', '%' . $term . '%');
             })->get();
 
             foreach ($topicMatches as $topic) {
-                $expanded[] = $topic->name;
-                $expanded[] = $topic->slug;
-
-                foreach ($topic->ancestorIds() as $ancestorId) {
-                    $ancestor = Topic::find($ancestorId);
-                    if ($ancestor) {
-                        $expanded[] = $ancestor->name;
-                        $expanded[] = $ancestor->slug;
-                    }
-                }
-
-                foreach ($topic->children()->pluck('name') as $childName) {
-                    $expanded[] = $childName;
-                }
+                // Gunakan helper terpusat model Topic agar sinkron
+                $expanded = array_merge($expanded, $topic->getSemanticKeywords());
             }
         }
 

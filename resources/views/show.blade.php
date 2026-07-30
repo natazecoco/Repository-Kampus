@@ -279,7 +279,7 @@
                                         </a>
                                         @if($file->canBeDownloadedBy(auth()->user()))
                                             <!-- [MODIFIKASI] Gunakan route publications.files.download untuk menambah download counter -->
-                                            <a href="{{ route('publications.files.download', $file) }}" class="rounded border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
+                                            <a href="{{ route('publications.files.download', ['publication' => $publication, 'file' => $file]) }}" class="rounded border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
                                                 Unduh PDF
                                             </a>
                                         @endif

@@ -69,6 +69,38 @@ class Topic extends Model
         return array_values(array_unique($ids));
     }
 
+    /**
+     * [PERBAIKAN] Mengambil daftar kata kunci semantik (nama topik, parent, dan children)
+     * untuk keperluan perluasan pencarian (query expansion) secara terpusat.
+     */
+    public function getSemanticKeywords(): array
+    {
+        $keywords = [
+            $this->name,
+            $this->slug,
+        ];
+
+        // Ambil dari seluruh leluhur (ancestors)
+        foreach ($this->ancestorIds() as $ancestorId) {
+            $ancestor = self::find($ancestorId);
+            if ($ancestor) {
+                $keywords[] = $ancestor->name;
+                $keywords[] = $ancestor->slug;
+            }
+        }
+
+        // Ambil nama dari children (cek apakah relationLoaded agar hemat query)
+        if ($this->relationLoaded('children')) {
+            $childrenNames = $this->children->pluck('name')->all();
+        } else {
+            $childrenNames = $this->children()->pluck('name')->all();
+        }
+
+        $keywords = array_merge($keywords, $childrenNames);
+
+        return array_values(array_unique(array_filter(array_map('trim', $keywords))));
+    }
+
     public function publications(): BelongsToMany
     {
         return $this->belongsToMany(Publication::class)->withPivot('is_auto');

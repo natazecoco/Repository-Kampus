@@ -5,13 +5,12 @@ namespace App\Services;
 use App\Models\Publication;
 use App\Models\Topic;
 use App\Models\User;
-use App\Services\TextPreprocessor; // [BARU] Import TextPreprocessor
+use App\Services\TextPreprocessor;
 
 class RecommendationScorer
 {
     private TextPreprocessor $preprocessor;
 
-    // [BARU] Dependency Injection untuk TextPreprocessor
     public function __construct(TextPreprocessor $preprocessor)
     {
         $this->preprocessor = $preprocessor;
@@ -29,11 +28,8 @@ class RecommendationScorer
             return [];
         }
 
-        // --- PABRIK SASTRAWI LAMA DIHAPUS DARI SINI ---
-
         $documents = collect();
         
-        // [MODIFIKASI MINOR]: Hapus parameter stemmer & stopword, cukup kirim target/candidate
         $documents->put($target->id, $this->prepareText($target));
 
         foreach ($candidateCollection as $candidate) {
@@ -82,6 +78,10 @@ class RecommendationScorer
         $targetTopicIds = $target->topics()->pluck('topics.id')->all();
         $targetContext = $this->expandTopicContextIds($targetTopicIds);
 
+        // Batas maksimal skor rasio
+        // textSimilarity (maks 1.0) + knowledgeBonus (maks ~0.55) + userPreferenceBonus (maks ~0.54) = ~2.09
+        $maxPossibleScore = 1.0 + 0.55 + ($user ? 0.54 : 0.0);
+
         foreach ($candidateCollection as $candidate) {
             $candidateVector = $tfidf[$candidate->id] ?? [];
             $dotProduct = 0;
@@ -113,11 +113,14 @@ class RecommendationScorer
                 $knowledgeBonus = 0.25 + min($knowledgeOverlap, 3) * 0.1;
             }
 
-            $finalScore = $textSimilarity + $knowledgeBonus;
+            $rawScore = $textSimilarity + $knowledgeBonus;
 
             if ($user) {
-                $finalScore += $this->userPreferenceBonus($user, $candidate, $candidateTopicIds);
+                $rawScore += $this->userPreferenceBonus($user, $candidate, $candidateTopicIds);
             }
+
+            // [PERBAIKAN] Normalisasi akhir agar skor selalu dicap dalam batas 0.0 sampai 1.0 (0 - 100%)
+            $finalScore = min(1.0, max(0.0, $rawScore / $maxPossibleScore));
 
             $scores[] = [
                 'publication' => $candidate,
@@ -143,16 +146,13 @@ class RecommendationScorer
         return count(array_intersect($targetContext, $candidateContext));
     }
 
-    // [MODIFIKASI] prepareText tetap dipertahankan sebagai Wrapper (Abstraction Layer)
     private function prepareText(Publication $publication): string
     {
         return $this->preprocessor->process($this->getRawText($publication));
     }
 
-    // [BARU] Helper khusus untuk merangkai teks mentah publikasi
     private function getRawText(Publication $publication): string
     {
-        // Pencegahan error array to string conversion dari Filament TagsInput
         $keywords = is_array($publication->keywords) 
             ? implode(' ', $publication->keywords) 
             : (string) $publication->keywords;
@@ -187,14 +187,12 @@ class RecommendationScorer
             return [];
         }
 
-        // Optimasi: Tarik seluruh topik terkait sekaligus untuk mencegah N+1 query problem
         $topics = Topic::whereIn('id', $topicIds)->with(['parent.parent', 'children'])->get();
         $contextIds = [];
 
         foreach ($topics as $topic) {
             $contextIds[] = $topic->id;
             
-            // [MODIFIKASI]: Menghapus array_merge redundan
             if ($topic->parent_id) {
                 $contextIds[] = $topic->parent_id;
             }
