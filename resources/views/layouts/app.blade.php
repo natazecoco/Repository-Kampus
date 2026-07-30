@@ -22,6 +22,14 @@
             }
         }
     </script>
+
+    <!-- [BARU] CSS x-cloak agar modal tidak muncul sebelum diklik -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
+    <!-- [BARU] CDN Alpine.js untuk mengaktifkan fitur modal & interaktivitas -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 </head>
 <body class="min-h-screen bg-gundar-light font-sans text-slate-800 selection:bg-gundar-primary selection:text-white">
 

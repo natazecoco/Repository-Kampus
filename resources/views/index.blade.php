@@ -19,6 +19,9 @@
 
             <!-- MINIMALIST SEARCH -->
             <form action="/" method="GET" class="mt-10 mx-auto max-w-3xl">
+                @if(request('topic')) <input type="hidden" name="topic" value="{{ request('topic') }}"> @endif
+                @if(request('method')) <input type="hidden" name="method" value="{{ request('method') }}"> @endif
+
                 <div class="flex items-center rounded-full border-2 border-slate-200 bg-white p-1.5 transition-all focus-within:border-gundar-primary/50 focus-within:shadow-[0_0_20px_rgba(118,58,151,0.1)]">
                     <div class="pl-4 pr-2 text-slate-400">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -59,20 +62,43 @@
                     @endif
                 @endauth
 
-                <div class="mb-6 flex items-end justify-between border-b border-slate-200 pb-4">
+                <!-- [MODIFIKASI] Bagian Judul dan Filter Dropdown Metode Riset -->
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
                     <div>
                         <h2 class="text-xl font-black text-gundar-dark">Jurnal & Publikasi</h2>
                         @if($search)
                             <p class="mt-1 text-sm text-slate-500">Hasil pencarian untuk: <span class="font-bold text-gundar-primary">"{{ $search }}"</span></p>
                         @elseif($activeTopic)
                             <p class="mt-1 text-sm text-slate-500">Kategori: <span class="font-bold text-gundar-primary">{{ $activeTopic->name }}</span></p>
+                        @elseif(isset($methodFilter) && $methodFilter !== '')
+                            <p class="mt-1 text-sm text-slate-500">Metode Riset: <span class="font-bold text-gundar-primary">{{ $methodFilter }}</span></p>
                         @else
                             <p class="mt-1 text-sm text-slate-500">Terbaru diunggah ke dalam sistem.</p>
                         @endif
                     </div>
-                    @if($search || $activeTopic)
-                        <a href="{{ route('home') }}" class="text-sm font-semibold text-gundar-accent hover:underline">Hapus Filter</a>
-                    @endif
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- [BARU] Dropdown Filter Metode Riset -->
+                        @if(isset($availableMethods) && $availableMethods->isNotEmpty())
+                            <form action="{{ route('home') }}" method="GET" class="inline-block">
+                                @if($search) <input type="hidden" name="search" value="{{ $search }}"> @endif
+                                @if(request('topic')) <input type="hidden" name="topic" value="{{ request('topic') }}"> @endif
+                                
+                                <select name="method" onchange="this.form.submit()" class="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-bold text-slate-600 focus:border-gundar-primary focus:outline-none shadow-sm cursor-pointer">
+                                    <option value="">-- Semua Metode Riset --</option>
+                                    @foreach($availableMethods as $m)
+                                        <option value="{{ $m }}" {{ (isset($methodFilter) && $methodFilter == $m) ? 'selected' : '' }}>
+                                            {{ $m }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        @endif
+
+                        @if($search || $activeTopic || (isset($methodFilter) && $methodFilter !== ''))
+                            <a href="{{ route('home') }}" class="text-sm font-semibold text-gundar-accent hover:underline">Hapus Filter</a>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Notifikasi Pencarian Semantik -->
@@ -90,7 +116,7 @@
                     <div class="py-12 text-center">
                         <span class="text-4xl">📭</span>
                         <h3 class="mt-4 text-lg font-bold text-gundar-dark">Tidak ditemukan</h3>
-                        <p class="text-slate-500">Coba gunakan kata kunci yang lebih umum.</p>
+                        <p class="text-slate-500">Coba gunakan kata kunci atau metode riset yang lebih umum.</p>
                     </div>
                 @else
                     <!-- LOOPING ITEM JURNAL MENGGUNAKAN PARTIALS -->

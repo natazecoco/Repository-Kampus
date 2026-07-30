@@ -1,5 +1,76 @@
 <?php
 
+namespace App\Filament\Resources\Publications\Pages;
+
+use App\Filament\Resources\Publications\PublicationResource;
+use Filament\Resources\Pages\CreateRecord;
+use App\Services\AutoTaggingService;
+use App\Jobs\GenerateRecommendations;
+
+class CreatePublication extends CreateRecord
+{
+    protected static string $resource = PublicationResource::class;
+
+    protected function afterCreate(): void
+    {
+        $publication = $this->record;
+        
+        // Panggil service di sini, SETELAH Filament selesai menyimpan semuanya
+        app(AutoTaggingService::class)->tag($publication);
+
+        // Panggil job rekomendasi setelah tagging selesai
+        GenerateRecommendations::dispatch($publication);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Pages;
+
+use App\Filament\Resources\Publications\PublicationResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+use App\Services\AutoTaggingService;
+
+class EditPublication extends EditRecord
+{
+    protected static string $resource = PublicationResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+
+    protected function afterSave(): void
+    {
+        $publication = $this->record;
+        
+        // Jalankan tagging ulang setelah proses edit disimpan
+        app(AutoTaggingService::class)->tag($publication);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Pages;
+
+use App\Filament\Resources\Publications\PublicationResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+
+class ListPublications extends ListRecords
+{
+    protected static string $resource = PublicationResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make(),
+        ];
+    }
+}
+<?php
+
 namespace App\Filament\Resources\Publications\Schemas;
 
 use App\Models\Publication;
@@ -14,61 +85,11 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Support\Str;
 
 class PublicationForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $detectResearchMethod = function (Get $get, Set $set) {
-            // TagsInput mengembalikan array, jadi kita gabungkan menjadi satu string
-            $keywordsData = $get('keywords');
-            $keywordsString = is_array($keywordsData) ? implode(' ', $keywordsData) : (string) ($keywordsData ?? '');
-            
-            $keywords = strtolower($keywordsString);
-            $abstract = strtolower((string) ($get('abstract') ?? ''));
-
-            $methods = [
-                'agile' => 'Agile',
-                'waterfall' => 'SDLC Waterfall',
-                'sdlc' => 'SDLC',
-                'rad' => 'Rapid Application Development (RAD)',
-                'prototyping' => 'Prototyping',
-                'scrum' => 'Scrum',
-                'kuantitatif' => 'Kuantitatif',
-                'kualitatif' => 'Kualitatif',
-                'studi kasus' => 'Studi Kasus',
-                'eksperimental' => 'Eksperimental',
-                'tindakan' => 'Penelitian Tindakan (Action Research)',
-                'blackbox' => 'Black Box Testing',
-            ];
-
-            $detectedMethod = null;
-
-            // 1. Cek di Keywords
-            foreach ($methods as $key => $label) {
-                if (Str::contains($keywords, $key)) {
-                    $detectedMethod = $label;
-                    break;
-                }
-            }
-
-            // 2. Cek di Abstrak (Jika tidak ada di keywords)
-            if (! $detectedMethod) {
-                foreach ($methods as $key => $label) {
-                    if (Str::contains($abstract, $key)) {
-                        $detectedMethod = $label;
-                        break;
-                    }
-                }
-            }
-
-            // 3. Set nilai hanya jika ditemukan dan kolom masih kosong
-            if ($detectedMethod && empty($get('research_method'))) {
-                $set('research_method', $detectedMethod);
-            }
-        };
-
         return $schema
             ->components([
                 Select::make('container_id')
@@ -127,22 +148,14 @@ class PublicationForm
 
                 Textarea::make('abstract')
                     ->rows(5)
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
-                        $detectResearchMethod($get, $set);
-                    }),
+                    ->required(),
 
                 TagsInput::make('keywords')
                     ->label('Kata Kunci')
                     ->separator(',')
                     ->splitKeys(['Tab', 'Enter'])
                     ->helperText('Tekan Enter atau Tab setelah setiap kata kunci. Tag ini digunakan oleh pencarian dan rekomendasi dokumen.')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
-                        $detectResearchMethod($get, $set);
-                    }),
+                    ->required(),
 
                 Select::make('topics')
                     ->label('Topik Repository')
@@ -160,44 +173,6 @@ class PublicationForm
                             ->required(),
                     ])
                     ->helperText('Pilih topik terstruktur untuk mendukung pencarian dan rekomendasi bacaan pelengkap. Ketik untuk mencari, atau buat topik baru.'),
-
-                // ==========================================
-                // TAMBAHAN METADATA BARU DIMULAI DARI SINI
-                // ==========================================
-                Select::make('language')
-                    ->label('Bahasa')
-                    ->options([
-                        'id' => 'Indonesia',
-                        'en' => 'Inggris',
-                    ])
-                    ->default('id')
-                    ->searchable(),
-
-                TextInput::make('research_method')
-                    ->label('Metode Riset')
-                    ->placeholder('Contoh: Kualitatif, Kuantitatif, SDLC Waterfall...')
-                    ->maxLength(255)
-                    ->helperText('Otomatis terdeteksi dari Kata Kunci atau Abstrak. Dapat diubah manual jika tidak sesuai.'),
-
-                Select::make('license')
-                    ->label('Lisensi')
-                    ->options([
-                        'Internal Use Only' => 'Internal Use Only (Khusus Kampus)',
-                        'All Rights Reserved' => 'All Rights Reserved (Hak Cipta Penuh)',
-                        'CC BY' => 'CC BY (Creative Commons - Atribusi)',
-                        'CC BY-NC' => 'CC BY-NC (Non-Komersial)',
-                    ])
-                    ->default('Internal Use Only')
-                    ->searchable(),
-
-                TextInput::make('doi')
-                    ->label('DOI (Digital Object Identifier)')
-                    ->placeholder('Contoh: 10.1000/xyz123')
-                    ->maxLength(255)
-                    ->helperText('Kosongkan jika publikasi belum memiliki DOI resmi.'),
-                // ==========================================
-                // BATAS TAMBAHAN METADATA BARU
-                // ==========================================
 
                 Repeater::make('files')
                     ->label('Berkas Publikasi')
@@ -323,5 +298,140 @@ class PublicationForm
             'visibility' => $section[1],
             'allow_download' => false,
         ], $sections);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications\Tables;
+
+// Kembali menggunakan namespace Filament\Actions yang benar untuk versimu
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class PublicationsTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('container.name')
+                    ->label('Container')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(50),
+                TextColumn::make('author')
+                    ->searchable(),
+                TextColumn::make('year'),
+                TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'thesis' => 'primary',
+                        'article' => 'success',
+                        'book' => 'warning',
+                        default => 'gray',
+                    }),
+                TextColumn::make('keywords')
+                    ->searchable(),
+                TextColumn::make('files_count')
+                    ->counts('files')
+                    ->label('Jumlah Dokumen')
+                    ->badge()
+                    ->color('success'),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                Action::make('view_publication')
+                    ->label('Baca Publikasi')
+                    ->icon('heroicon-s-eye')
+                    ->color('info')
+                    ->url(fn ($record): string => route('publications.viewer', $record))
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => $record->files->isNotEmpty()),
+
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}
+<?php
+
+namespace App\Filament\Resources\Publications;
+
+use App\Filament\Resources\Publications\Pages\CreatePublication;
+use App\Filament\Resources\Publications\Pages\EditPublication;
+use App\Filament\Resources\Publications\Pages\ListPublications;
+use App\Filament\Resources\Publications\Schemas\PublicationForm;
+use App\Filament\Resources\Publications\Tables\PublicationsTable;
+use App\Models\Publication;
+use BackedEnum;
+use UnitEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class PublicationResource extends Resource
+{
+    protected static ?string $model = Publication::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
+
+    protected static ?string $navigationLabel = 'Publikasi';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Repository';
+
+    protected static ?string $recordTitleAttribute = 'title';
+
+    // TAMBAHAN: Agar pencarian global juga melacak author dan keywords
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'author', 'keywords'];
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return PublicationForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return PublicationsTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListPublications::route('/'),
+            'create' => CreatePublication::route('/create'),
+            'edit' => EditPublication::route('/{record}/edit'),
+        ];
     }
 }

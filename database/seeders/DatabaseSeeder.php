@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,12 +16,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Tambahkan 'npm' karena kolom tersebut wajib diisi di tabel users
+        User::updateOrCreate(
+            ['email' => 'admin@repository.com'],
+            [
+                'name' => 'Admin Repositori',
+                'npm' => '10000001',
+                'role' => 'admin',
+                'password' => Hash::make('password123'),
+            ]
+        );
 
         // Seed topics & sample publications for local development
         $this->call(TopicSeeder::class);

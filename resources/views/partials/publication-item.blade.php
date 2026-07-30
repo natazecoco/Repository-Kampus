@@ -1,9 +1,23 @@
 <article class="group relative flex flex-col items-start gap-2 border-b border-slate-100 py-8 transition hover:bg-slate-50/50 sm:flex-row sm:gap-6 -mx-4 px-4 rounded-2xl">
     
-    <!-- Meta Kiri (Tahun & Tipe) -->
-    <div class="w-full shrink-0 sm:w-24 pt-1 text-left">
+    <!-- Meta Kiri (Tahun & Tipe & Metode Riset & Badge Populer) -->
+    <div class="w-full shrink-0 sm:w-28 pt-1 text-left">
         <p class="text-sm font-bold text-gundar-primary">{{ $pub->year ?? 'N/A' }}</p>
         <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ $pub->type ?? 'JURNAL' }}</p>
+        
+        <!-- Badge Metode Riset -->
+        @if($pub->research_method)
+            <a href="{{ route('home', ['method' => $pub->research_method]) }}" class="mt-2 inline-block rounded bg-gundar-primary/10 px-2 py-0.5 text-[10px] font-bold text-gundar-primary border border-gundar-primary/20 hover:bg-gundar-primary hover:text-white transition shadow-sm" title="Filter berdasarkan metode ini">
+                ⚙️ {{ $pub->research_method }}
+            </a>
+        @endif
+
+        <!-- [BARU] Badge Populer -->
+        @if(($pub->views_count ?? 0) >= 50 || $pub->files->sum('downloads_count') >= 20)
+            <span class="mt-2 inline-block rounded bg-amber-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-600 border border-amber-200 shadow-sm">
+                🔥 Populer
+            </span>
+        @endif
     </div>
 
     <!-- Konten Tengah -->
@@ -42,6 +56,12 @@
                     PDF
                 </div>
             @endif
+
+            <!-- [BARU] Statistik Mini (Views & Downloads) -->
+            <div class="flex items-center gap-3 text-[11px] font-semibold text-slate-400 ml-auto sm:ml-0">
+                <span title="Jumlah dilihat">👁️ {{ number_format($pub->views_count ?? 0) }}</span>
+                <span title="Jumlah diunduh">📥 {{ number_format($pub->files->sum('downloads_count') ?? 0) }}</span>
+            </div>
         </div>
     </div>
 

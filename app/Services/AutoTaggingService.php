@@ -27,7 +27,7 @@ class AutoTaggingService
             return;
         }
 
-        // 1. Bersihkan teks di masing-masing kolom (agar pencocokan akurat)
+        // 1. Bersihkan teks di masing-masing kolom
         $title = $this->preprocessor->process($publication->title ?? '');
         
         $keywordsRaw = is_array($publication->keywords) 
@@ -43,16 +43,12 @@ class AutoTaggingService
         foreach ($dictionary as $topicName => $synonyms) {
             $score = 0;
             
-            // Gabungkan nama topik itu sendiri dengan sinonimnya
             $checkWords = array_unique(array_merge([$topicName], $synonyms));
 
             foreach ($checkWords as $word) {
-                // Pastikan kata yang dicari juga di-preprocess agar seimbang
                 $processedWord = $this->preprocessor->process($word);
                 if (empty($processedWord)) continue;
 
-                // Gunakan regex boundary \b agar cocok per kata yang utuh, 
-                // misal 'ai' tidak cocok dengan 'air'
                 $pattern = '/\b' . preg_quote($processedWord, '/') . '\b/';
 
                 // Pembobotan: Judul (10), Keywords (7), Abstrak (3)
@@ -67,13 +63,24 @@ class AutoTaggingService
             }
         }
 
-        // 4. Cari ID Topik di database berdasarkan nama yang cocok
+        // 4. Cari ID Topik di database dan tarik Parent-nya secara hierarkis (UPDATED)
         $autoTopicIds = [];
         if (!empty($matchedTopicNames)) {
-            $autoTopicIds = Topic::whereIn('name', $matchedTopicNames)
+            // Ambil seluruh object modelnya, bukan cuma pluck('id')
+            $matchedTopics = Topic::whereIn('name', $matchedTopicNames)
                 ->orWhereIn('slug', array_map(fn($name) => Str::slug($name), $matchedTopicNames))
-                ->pluck('id')
-                ->toArray();
+                ->get();
+
+            foreach ($matchedTopics as $topic) {
+                // Masukkan ID dari topik yang match
+                $autoTopicIds[] = $topic->id;
+                
+                // Panggil method ancestorIds() buatanmu untuk mengambil seluruh ID parent/kakeknya
+                $autoTopicIds = array_merge($autoTopicIds, $topic->ancestorIds());
+            }
+
+            // Hapus ID duplikat (misal "React" dan "Laravel" sama-sama punya parent "Web Development")
+            $autoTopicIds = array_values(array_unique($autoTopicIds));
         }
 
         // 5. Simpan ke database dengan aman (Sinkronisasi Pivot)
@@ -105,7 +112,7 @@ class AutoTaggingService
             }
         }
 
-        // Sync akan menghapus topik lama yang tidak ada di $syncData (misal topik auto lama yang sudah tidak relevan),
+        // Sync akan menghapus topik lama yang tidak ada di $syncData,
         // tapi mempertahankan topik manual dan menambahkan topik auto yang baru.
         $publication->topics()->sync($syncData);
     }

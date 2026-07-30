@@ -18,12 +18,15 @@ if (! Route::has('student.register')) {
 
 Route::get('/', [PublicationController::class, 'index'])->name('home');
 Route::get('/topic/{slug}', [PublicationController::class, 'index'])->name('topic.show');
+
+// [FASE 2B] Route Download File - Ditaruh SBLM /publication/{publication}
+Route::get('/publication/file/{file}/download', [PublicationController::class, 'downloadFile'])->name('publications.files.download');
+
 Route::get('/publication/{publication}', [PublicationController::class, 'show'])->name('publications.show');
 Route::get('/publication/{publication}/read', [DocumentController::class, 'publicationViewer'])->name('publications.viewer');
 
 // Rute akses file PDF yang lama (dibiarkan saja kalau masih dipakai bagian lain)
 Route::get('/dokumen/{file}', [FileAccessController::class, 'show'])->name('file.akses');
-
 Route::get('/document/{file}/stream', [DocumentController::class, 'stream'])->name('document.stream');
 
 // Student (mahasiswa) auth routes

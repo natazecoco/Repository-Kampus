@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Publication;
+use App\Models\PublicationFile;
 use App\Models\Recommendation;
 use App\Models\Topic;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PublicationController extends Controller
 {
@@ -13,7 +15,12 @@ class PublicationController extends Controller
     {
         $search = trim((string) $request->input('search'));
         $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
-        $query = Publication::with(['container', 'files', 'topics'])->latest();
+        
+        // 1. Tangkap parameter filter metode riset dari URL (?method=...)
+        $methodFilter = trim((string) $request->input('method', ''));
+
+        // [MODIFIKASI] Hapus ->latest() di sini agar tidak berbenturan dengan order by bobot search
+        $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
 
         $personalizedRecommendations = collect();
@@ -33,27 +40,13 @@ class PublicationController extends Controller
             }
         }
 
+        // [MODIFIKASI] Gunakan scopeSearch dan kirimkan hasil semanticTerms kamu
         if ($search !== '') {
             $semanticTerms = $this->expandSearchTerms($search);
-            $query->where(function ($q) use ($search, $semanticTerms) {
-                $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhere('author', 'like', '%' . $search . '%')
-                  ->orWhere('keywords', 'like', '%' . $search . '%')
-                  ->orWhere('year', 'like', '%' . $search . '%')
-                  ->orWhere('abstract', 'like', '%' . $search . '%')
-                  ->orWhereHas('container', function ($containerQuery) use ($search) {
-                      $containerQuery->where('name', 'like', '%' . $search . '%')
-                                     ->orWhere('identifier', 'like', '%' . $search . '%');
-                  })
-                  ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->where('name', 'like', '%' . $search . '%'));
-
-                foreach ($semanticTerms as $term) {
-                    $q->orWhere('title', 'like', '%' . $term . '%')
-                      ->orWhere('abstract', 'like', '%' . $term . '%')
-                      ->orWhere('keywords', 'like', '%' . $term . '%')
-                      ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->where('name', 'like', '%' . $term . '%'));
-                }
-            });
+            $query->search($search, $semanticTerms);
+        } else {
+            // Jika tidak ada keyword pencarian, urutkan dokumen dari terbaru
+            $query->latest();
         }
 
         if ($topicSlug !== '') {
@@ -63,7 +56,13 @@ class PublicationController extends Controller
             });
         }
 
-        $publications = $query->paginate(12)->appends($request->only(['search', 'topic']));
+        // 2. Terapkan filter research_method jika mahasiswa memilih dari dropdown
+        if ($methodFilter !== '') {
+            $query->where('research_method', $methodFilter);
+        }
+
+        // 3. Tambahkan 'method' ke dalam pagination appends
+        $publications = $query->paginate(12)->appends($request->only(['search', 'topic', 'method']));
 
         foreach ($publications as $pub) {
             $pub->highlighted_abstract = $this->highlightKeyword($pub->abstract, $search);
@@ -75,11 +74,35 @@ class PublicationController extends Controller
             : null;
         $taxonomyTopics = $topics->whereNull('parent_id');
 
-        return view('index', compact('publications', 'search', 'topics', 'activeTopic', 'personalizedRecommendations', 'taxonomyTopics', 'semanticTerms'));
+        // 4. Ambil daftar metode unik yang ada di database untuk opsi dropdown filter
+        $availableMethods = Publication::whereNotNull('research_method')
+            ->where('research_method', '!=', '')
+            ->distinct()
+            ->orderBy('research_method')
+            ->pluck('research_method');
+
+        return view('index', compact(
+            'publications', 
+            'search', 
+            'topics', 
+            'activeTopic', 
+            'personalizedRecommendations', 
+            'taxonomyTopics', 
+            'semanticTerms',
+            'availableMethods',
+            'methodFilter'
+        ));
     }
 
     public function show(Publication $publication)
     {
+        // [BARU - FASE 2B] Increment View Counter (+1) dengan proteksi Session
+        $viewKey = 'publication_viewed_' . $publication->id;
+        if (!session()->has($viewKey)) {
+            $publication->increment('views_count');
+            session()->put($viewKey, true);
+        }
+
         $publication->load(['container', 'files', 'topics']);
 
         $recommendations = Recommendation::where('publication_id', $publication->id)
@@ -141,9 +164,15 @@ class PublicationController extends Controller
             ->limit(3)
             ->get();
 
-        // 4. Metode Serupa (Dokumen dengan tipe / jenis publikasi yang sama)
+        // 4. Metode Serupa (Cari berdasarkan research_method yang sama dulu, kalau kosong baru fallback ke tipe karya)
         $similarMethods = Publication::where('id', '!=', $publication->id)
-            ->where('type', $publication->type)
+            ->where(function ($q) use ($publication) {
+                if (!empty($publication->research_method)) {
+                    $q->where('research_method', $publication->research_method);
+                } else {
+                    $q->where('type', $publication->type);
+                }
+            })
             ->with('topics')
             ->limit(3)
             ->get();
@@ -168,6 +197,55 @@ class PublicationController extends Controller
             'similarMethods', 
             'advancedReadings'
         ));
+    }
+
+    /**
+     * [BARU - FASE 2B] Handle proses download file dan increment counter (Support Private & Public Storage).
+     */
+    public function downloadFile(Request $request, PublicationFile $file)
+    {
+        // 0. Proteksi jika ada record database yang file_path-nya tidak sengaja kosong (NULL)
+        if (empty($file->file_path)) {
+            abort(404, 'Gagal mengunduh: Path file belum tercatat di database (NULL).');
+        }
+
+        // 1. Cek Hak Akses User terhadap File (jika method canBeDownloadedBy tersedia di model)
+        if (method_exists($file, 'canBeDownloadedBy') && ! $file->canBeDownloadedBy($request->user())) {
+            abort(403, 'Anda tidak memiliki izin untuk mengunduh dokumen ini. Silakan login sebagai mahasiswa terlebih dahulu.');
+        }
+
+        $path = $file->file_path;
+        $fileName = $file->original_name ?? basename($path);
+
+        // 2. OPSI A: Cek langsung ke folder private (storage/app/{path})
+        $privatePath = storage_path('app/' . ltrim($path, '/'));
+        if (file_exists($privatePath) && is_file($privatePath)) {
+            $file->increment('downloads_count');
+            return response()->download($privatePath, $fileName);
+        }
+
+        // 3. OPSI B: Cek langsung ke folder public (storage/app/public/{path})
+        $cleanPublicPath = ltrim(str_replace(['public/', 'storage/'], '', $path), '/');
+        $publicPath = storage_path('app/public/' . $cleanPublicPath);
+        if (file_exists($publicPath) && is_file($publicPath)) {
+            $file->increment('downloads_count');
+            return response()->download($publicPath, $fileName);
+        }
+
+        // 4. OPSI C: Cek via Storage Facade Default (disk lokal)
+        if (Storage::exists($path)) {
+            $file->increment('downloads_count');
+            return Storage::download($path, $fileName);
+        }
+
+        // 5. OPSI D: Cek via Storage Facade disk 'public'
+        if (Storage::disk('public')->exists($cleanPublicPath)) {
+            $file->increment('downloads_count');
+            return Storage::disk('public')->download($cleanPublicPath, $fileName);
+        }
+
+        // Jika ke-4 cara di atas gagal menemukan fisik filenya:
+        abort(404, "File fisik tidak ditemukan di server. (Path tercatat di DB: {$path} | Cek juga folder: storage/app/{$path})");
     }
 
     private function expandSearchTerms(string $search): array
