@@ -19,7 +19,7 @@
             <header class="mb-10">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
                     <span class="inline-flex items-center rounded bg-gundar-primary/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-gundar-primary">
-                        {{ $publication->type }}
+                        {{ $publication->type_label }}
                     </span>
                     <span class="inline-flex items-center rounded bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
                         {{ $publication->year }}
@@ -310,7 +310,7 @@
                         @foreach($similarRecommendations as $item)
                             @if($pub = $item->recommendedPublication ?? null)
                                 <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                     <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                                 </a>
                             @endif
@@ -329,7 +329,7 @@
                         @foreach($complementaryRecommendations as $item)
                             @if($pub = $item->recommendedPublication ?? null)
                                 <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                     <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                                 </a>
                             @endif
@@ -347,7 +347,7 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach($basicConcepts as $pub)
                             <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                 <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                             </a>
                         @endforeach
@@ -364,7 +364,7 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach($similarMethods as $pub)
                             <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                 <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                             </a>
                         @endforeach
@@ -381,7 +381,7 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach($advancedReadings as $pub)
                             <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                 <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                             </a>
                         @endforeach

@@ -3,7 +3,7 @@
     <!-- Meta Kiri (Tahun & Tipe & Metode Riset & Badge Populer) -->
     <div class="w-full shrink-0 sm:w-28 pt-1 text-left">
         <p class="text-sm font-bold text-gundar-primary">{{ $pub->year ?? 'N/A' }}</p>
-        <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ $pub->type ?? 'JURNAL' }}</p>
+        <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ $pub->type_label ?? 'Jurnal' }}</p>
         
         <!-- Badge Metode Riset -->
         @if($pub->research_method)

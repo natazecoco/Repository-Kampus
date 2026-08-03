@@ -207,258 +207,6 @@ tests/
 <files>
 This section contains the contents of the repository's files.
 
-<file path="config/research.php">
-<?php
-
-return [
-    /*
-    |--------------------------------------------------------------------------
-    | Kamus Metode Riset & Pemodelan ULTIMATE (Multi-Disiplin Ilmu)
-    |--------------------------------------------------------------------------
-    | Urutan sangat penting! Sistem akan mendeteksi dari ATAS ke BAWAH.
-    | Hirarki dirancang agar tidak terjadi false-positive pada abstrak umum.
-    |
-    */
-    'methods' => [
-        // ====================================================================
-        // 1. SPESIFIK: SDLC, REKAYASA PERANGKAT LUNAK & AGILE
-        // ====================================================================
-        'sdlc waterfall'                   => 'SDLC Waterfall',
-        'metode waterfall'                 => 'SDLC Waterfall',
-        'model waterfall'                  => 'SDLC Waterfall',
-        'waterfall'                        => 'SDLC Waterfall',
-
-        'agile scrum'                      => 'Agile Scrum',
-        'metode scrum'                     => 'Agile Scrum',
-        'scrum'                            => 'Agile Scrum',
-        'extreme programming'              => 'Extreme Programming (XP)',
-        'metode xp'                        => 'Extreme Programming (XP)',
-        'agile development'                => 'Agile Development',
-        'agile'                            => 'Agile Development',
-
-        'rapid application development'    => 'Rapid Application Development (RAD)',
-        'metode rad'                       => 'Rapid Application Development (RAD)',
-        'rad'                              => 'Rapid Application Development (RAD)',
-        
-        'rational unified process'         => 'Rational Unified Process (RUP)',
-        'metode rup'                       => 'Rational Unified Process (RUP)',
-        'rup'                              => 'Rational Unified Process (RUP)',
-
-        'prototyping'                      => 'Prototyping',
-        'metode prototype'                 => 'Prototyping',
-        'prototype'                        => 'Prototyping',
-        
-        'model spiral'                     => 'SDLC Spiral',
-        'metode spiral'                    => 'SDLC Spiral',
-        'spiral'                           => 'SDLC Spiral',
-        'devops'                           => 'DevOps',
-
-        // ====================================================================
-        // 2. AI, DATA SCIENCE, MACHINE LEARNING & SPK
-        // ====================================================================
-        'convolutional neural network'     => 'Convolutional Neural Network (CNN)',
-        'cnn'                              => 'Convolutional Neural Network (CNN)',
-        'recurrent neural network'         => 'Recurrent Neural Network (RNN)',
-        'rnn'                              => 'Recurrent Neural Network (RNN)',
-        'long short-term memory'           => 'Long Short-Term Memory (LSTM)',
-        'lstm'                             => 'Long Short-Term Memory (LSTM)',
-        'support vector machine'           => 'Support Vector Machine (SVM)',
-        'svm'                              => 'Support Vector Machine (SVM)',
-        'k-nearest neighbor'               => 'K-Nearest Neighbor (KNN)',
-        'k-nearest neighbours'             => 'K-Nearest Neighbor (KNN)',
-        'knn'                              => 'K-Nearest Neighbor (KNN)',
-        'naive bayes'                      => 'Naive Bayes',
-        'random forest'                    => 'Random Forest',
-        'decision tree'                    => 'Decision Tree',
-        'k-means clustering'               => 'K-Means Clustering',
-        'k-means'                          => 'K-Means Clustering',
-        'collaborative filtering'          => 'Collaborative Filtering',
-        'content-based filtering'          => 'Content-Based Filtering',
-        'data mining'                      => 'Data Mining',
-        'machine learning'                 => 'Machine Learning',
-        'deep learning'                    => 'Deep Learning',
-
-        'analytical hierarchy process'     => 'Analytical Hierarchy Process (AHP)',
-        'metode ahp'                       => 'Analytical Hierarchy Process (AHP)',
-        'ahp'                              => 'Analytical Hierarchy Process (AHP)',
-        'technique for others reference by similarity to ideal solution' => 'TOPSIS',
-        'metode topsis'                    => 'TOPSIS',
-        'topsis'                           => 'TOPSIS',
-        'simple additive weighting'        => 'Simple Additive Weighting (SAW)',
-        'metode saw'                       => 'Simple Additive Weighting (SAW)',
-        'profile matching'                 => 'Profile Matching',
-        'weighted product'                 => 'Weighted Product (WP)',
-
-        // ====================================================================
-        // 3. STATISTIK LANJUTAN, EKONOMI & BISNIS
-        // ====================================================================
-        'structural equation modeling'     => 'Structural Equation Modeling (SEM)',
-        'metode sem'                       => 'Structural Equation Modeling (SEM)',
-        'partial least squares'            => 'Partial Least Squares (PLS-SEM)',
-        'pls-sem'                          => 'Partial Least Squares (PLS-SEM)',
-        'smartpls'                         => 'Partial Least Squares (PLS-SEM)',
-        'regresi linear berganda'          => 'Regresi Linear Berganda',
-        'regresi linier berganda'          => 'Regresi Linear Berganda',
-        'regresi linear sederhana'         => 'Regresi Linear Sederhana',
-        'regresi linier sederhana'         => 'Regresi Linear Sederhana',
-        'regresi logistik'                 => 'Regresi Logistik',
-        'data panel'                       => 'Analisis Data Panel',
-        'error correction model'           => 'Error Correction Model (ECM)',
-        'vector autoregression'            => 'Vector Autoregression (VAR)',
-        'analisis swot'                    => 'Analisis SWOT',
-        'swot'                             => 'Analisis SWOT',
-        'balanced scorecard'               => 'Balanced Scorecard',
-        'kelayakan bisnis'                 => 'Studi Kelayakan Bisnis',
-
-        // ====================================================================
-        // 4. METODOLOGI UTAMA (DIPRIORITASKAN SEBELUM METODE PENGUJIAN!)
-        // ====================================================================
-        'classroom action research'        => 'Penelitian Tindakan Kelas (PTK)',
-        'penelitian tindakan kelas'        => 'Penelitian Tindakan Kelas (PTK)',
-        'ptk'                              => 'Penelitian Tindakan Kelas (PTK)',
-        'penelitian tindakan'              => 'Penelitian Tindakan (Action Research)',
-        'action research'                  => 'Penelitian Tindakan (Action Research)',
-        
-        'research and development'         => 'Research and Development (R&D)',
-        'penelitian dan pengembangan'      => 'Research and Development (R&D)',
-        'r&d'                              => 'Research and Development (R&D)',
-        'model 4d'                         => 'R&D (Model 4D)',
-        'model addie'                      => 'R&D (Model ADDIE)',
-        'model borg and gall'              => 'R&D (Borg & Gall)',
-        
-        'randomized controlled trial'      => 'Randomized Controlled Trial (RCT)',
-        'rct'                              => 'Randomized Controlled Trial (RCT)',
-        'cross sectional'                  => 'Cross-Sectional',
-        'case control'                     => 'Case-Control',
-        'kohort'                           => 'Cohort Study',
-        'cohort'                           => 'Cohort Study',
-        'quasi eksperimen'                 => 'Quasi-Eksperimen',
-        'kuasi eksperimen'                 => 'Quasi-Eksperimen',
-        'eksperimen laboratorium'          => 'Eksperimen Laboratorium',
-        'eksperimental'                    => 'Eksperimental',
-        'eksperimen'                       => 'Eksperimental',
-        'finite element method'            => 'Finite Element Method (FEM)',
-        'computational fluid dynamics'     => 'Computational Fluid Dynamics (CFD)',
-
-        'grounded theory'                  => 'Grounded Theory',
-        'fenomenologi'                     => 'Fenomenologi',
-        'etnografi'                        => 'Etnografi',
-        'studi kasus'                      => 'Studi Kasus',
-        'analisis wacana'                  => 'Analisis Wacana (Discourse Analysis)',
-        'analisis isi'                     => 'Analisis Isi (Content Analysis)',
-        'analisis framing'                 => 'Analisis Framing',
-        'analisis semiotika'               => 'Analisis Semiotika',
-        'semiotika'                        => 'Analisis Semiotika',
-        
-        'yuridis normatif'                 => 'Yuridis Normatif',
-        'yuridis empiris'                  => 'Yuridis Empiris',
-        'sosio legal'                      => 'Socio-Legal Research',
-
-        'mixed methods'                    => 'Mixed Methods (Kuantitatif & Kualitatif)',
-        'metode campuran'                  => 'Mixed Methods (Kuantitatif & Kualitatif)',
-        'kuantitatif'                      => 'Kuantitatif',
-        'kualitatif'                       => 'Kualitatif',
-
-        // ====================================================================
-        // 5. METODE PENGUJIAN SISTEM (DITARUH DI BAWAH METODOLOGI UTAMA)
-        // ====================================================================
-        'black box testing'                => 'Black Box Testing',
-        'black box'                        => 'Black Box Testing',
-        'blackbox'                         => 'Black Box Testing',
-        'white box testing'                => 'White Box Testing',
-        'white box'                        => 'White Box Testing',
-        'whitebox'                         => 'White Box Testing',
-        'user acceptance test'             => 'User Acceptance Testing (UAT)',
-        'user acceptance testing'          => 'User Acceptance Testing (UAT)',
-        'uat'                              => 'User Acceptance Testing (UAT)',
-        'system usability scale'           => 'System Usability Scale (SUS)',
-        'metode sus'                       => 'System Usability Scale (SUS)',
-
-        // ====================================================================
-        // 6. FALLBACK & LITERATURE REVIEW (PALING BAWAH)
-        // ====================================================================
-        'systematic literature review'     => 'Systematic Literature Review (SLR)',
-        'slr'                              => 'Systematic Literature Review (SLR)',
-        'bibliometrik'                     => 'Analisis Bibliometrik',
-        'meta analisis'                    => 'Meta-Analisis',
-        'meta-analysis'                    => 'Meta-Analisis',
-        'literature review'                => 'Literature Review',
-        'tinjauan pustaka'                 => 'Literature Review',
-        'studi pustaka'                    => 'Literature Review',
-        'sdlc'                             => 'SDLC (General)',
-        'deskriptif'                       => 'Deskriptif',
-    ],
-];
-</file>
-
-<file path="database/migrations/2026_07_29_065905_add_metadata_to_publications_table.php">
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    public function up(): void
-    {
-        Schema::table('publications', function (Blueprint $table) {
-            // nullable() agar aman jika skripsi mahasiswa tidak punya data ini
-            $table->string('language')->default('id')->nullable()->after('abstract'); 
-            $table->string('research_method')->nullable()->after('language');
-            $table->string('license')->default('Internal Use Only')->nullable()->after('research_method');
-            $table->string('doi')->nullable()->after('license');
-        });
-    }
-
-    public function down(): void
-    {
-        Schema::table('publications', function (Blueprint $table) {
-            $table->dropColumn(['language', 'research_method', 'license', 'doi']);
-        });
-    }
-};
-</file>
-
-<file path="database/migrations/2026_07_30_072045_add_counters_to_publications_and_files_table.php">
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::table('publications', function (Blueprint $table) {
-            $table->unsignedInteger('views_count')->default(0)->after('abstract');
-        });
-
-        Schema::table('publication_files', function (Blueprint $table) {
-            $table->unsignedInteger('downloads_count')->default(0)->after('allow_download');
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('publications', function (Blueprint $table) {
-            $table->dropColumn('views_count');
-        });
-
-        Schema::table('publication_files', function (Blueprint $table) {
-            $table->dropColumn('downloads_count');
-        });
-    }
-};
-</file>
-
 <file path="app/Filament/Resources/Containers/Pages/CreateContainer.php">
 <?php
 
@@ -1043,128 +791,6 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
-    }
-}
-</file>
-
-<file path="app/Services/AutoTaggingService.php">
-<?php
-
-namespace App\Services;
-
-use App\Models\Publication;
-use App\Models\Topic;
-use Illuminate\Support\Str;
-
-class AutoTaggingService
-{
-    private TextPreprocessor $preprocessor;
-
-    public function __construct(TextPreprocessor $preprocessor)
-    {
-        $this->preprocessor = $preprocessor;
-    }
-
-    /**
-     * Menganalisis teks publikasi dan menempelkan topik secara otomatis.
-     */
-    public function tag(Publication $publication): void
-    {   
-        $dictionary = config('topic_dictionary.mappings', []);
-        $threshold = config('topic_dictionary.threshold', 10);
-
-        if (empty($dictionary)) {
-            return;
-        }
-
-        // 1. Bersihkan teks di masing-masing kolom
-        $title = $this->preprocessor->process($publication->title ?? '');
-        
-        $keywordsRaw = is_array($publication->keywords) 
-            ? implode(' ', $publication->keywords) 
-            : (string) $publication->keywords;
-        $keywords = $this->preprocessor->process($keywordsRaw);
-        
-        $abstract = $this->preprocessor->process($publication->abstract ?? '');
-
-        $matchedTopicNames = [];
-
-        // 2. Evaluasi setiap topik dan sinonimnya
-        foreach ($dictionary as $topicName => $synonyms) {
-            $score = 0;
-            
-            $checkWords = array_unique(array_merge([$topicName], $synonyms));
-
-            foreach ($checkWords as $word) {
-                $processedWord = $this->preprocessor->process($word);
-                if (empty($processedWord)) continue;
-
-                $pattern = '/\b' . preg_quote($processedWord, '/') . '\b/';
-
-                // Pembobotan: Judul (10), Keywords (7), Abstrak (3)
-                if (preg_match($pattern, $title)) $score += 10;
-                if (preg_match($pattern, $keywords)) $score += 7;
-                if (preg_match($pattern, $abstract)) $score += 3;
-            }
-
-            // 3. Jika skor mencukupi, masukkan sebagai kandidat topik
-            if ($score >= $threshold) {
-                $matchedTopicNames[] = $topicName;
-            }
-        }
-
-        // 4. Cari ID Topik di database dan tarik Parent-nya secara hierarkis (UPDATED)
-        $autoTopicIds = [];
-        if (!empty($matchedTopicNames)) {
-            // Ambil seluruh object modelnya, bukan cuma pluck('id')
-            $matchedTopics = Topic::whereIn('name', $matchedTopicNames)
-                ->orWhereIn('slug', array_map(fn($name) => Str::slug($name), $matchedTopicNames))
-                ->get();
-
-            foreach ($matchedTopics as $topic) {
-                // Masukkan ID dari topik yang match
-                $autoTopicIds[] = $topic->id;
-                
-                // Panggil method ancestorIds() buatanmu untuk mengambil seluruh ID parent/kakeknya
-                $autoTopicIds = array_merge($autoTopicIds, $topic->ancestorIds());
-            }
-
-            // Hapus ID duplikat (misal "React" dan "Laravel" sama-sama punya parent "Web Development")
-            $autoTopicIds = array_values(array_unique($autoTopicIds));
-        }
-
-        // 5. Simpan ke database dengan aman (Sinkronisasi Pivot)
-        $this->syncTopicsSafely($publication, $autoTopicIds);
-    }
-
-    /**
-     * Memperbarui pivot table tanpa menghapus topik manual pilihan Admin.
-     */
-    private function syncTopicsSafely(Publication $publication, array $autoTopicIds): void
-    {
-        // Ambil semua topik yang diinput MANUAL oleh admin (is_auto = false)
-        $manualTopicIds = $publication->topics()
-            ->wherePivot('is_auto', false)
-            ->pluck('topics.id')
-            ->toArray();
-
-        $syncData = [];
-
-        // Masukkan kembali topik manual agar tidak hilang
-        foreach ($manualTopicIds as $id) {
-            $syncData[$id] = ['is_auto' => false];
-        }
-
-        // Tambahkan topik otomatis (hanya jika belum ada di list manual)
-        foreach ($autoTopicIds as $id) {
-            if (!isset($syncData[$id])) {
-                $syncData[$id] = ['is_auto' => true];
-            }
-        }
-
-        // Sync akan menghapus topik lama yang tidak ada di $syncData,
-        // tapi mempertahankan topik manual dan menambahkan topik auto yang baru.
-        $publication->topics()->sync($syncData);
     }
 }
 </file>
@@ -2291,6 +1917,190 @@ return [
 ];
 </file>
 
+<file path="config/research.php">
+<?php
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | Kamus Metode Riset & Pemodelan ULTIMATE (Multi-Disiplin Ilmu)
+    |--------------------------------------------------------------------------
+    | Urutan sangat penting! Sistem akan mendeteksi dari ATAS ke BAWAH.
+    | Hirarki dirancang agar tidak terjadi false-positive pada abstrak umum.
+    |
+    */
+    'methods' => [
+        // ====================================================================
+        // 1. SPESIFIK: SDLC, REKAYASA PERANGKAT LUNAK & AGILE
+        // ====================================================================
+        'sdlc waterfall'                   => 'SDLC Waterfall',
+        'metode waterfall'                 => 'SDLC Waterfall',
+        'model waterfall'                  => 'SDLC Waterfall',
+        'waterfall'                        => 'SDLC Waterfall',
+
+        'agile scrum'                      => 'Agile Scrum',
+        'metode scrum'                     => 'Agile Scrum',
+        'scrum'                            => 'Agile Scrum',
+        'extreme programming'              => 'Extreme Programming (XP)',
+        'metode xp'                        => 'Extreme Programming (XP)',
+        'agile development'                => 'Agile Development',
+        'agile'                            => 'Agile Development',
+
+        'rapid application development'    => 'Rapid Application Development (RAD)',
+        'metode rad'                       => 'Rapid Application Development (RAD)',
+        'rad'                              => 'Rapid Application Development (RAD)',
+        
+        'rational unified process'         => 'Rational Unified Process (RUP)',
+        'metode rup'                       => 'Rational Unified Process (RUP)',
+        'rup'                              => 'Rational Unified Process (RUP)',
+
+        'prototyping'                      => 'Prototyping',
+        'metode prototype'                 => 'Prototyping',
+        'prototype'                        => 'Prototyping',
+        
+        'model spiral'                     => 'SDLC Spiral',
+        'metode spiral'                    => 'SDLC Spiral',
+        'spiral'                           => 'SDLC Spiral',
+        'devops'                           => 'DevOps',
+
+        // ====================================================================
+        // 2. AI, DATA SCIENCE, MACHINE LEARNING & SPK
+        // ====================================================================
+        'convolutional neural network'     => 'Convolutional Neural Network (CNN)',
+        'cnn'                              => 'Convolutional Neural Network (CNN)',
+        'recurrent neural network'         => 'Recurrent Neural Network (RNN)',
+        'rnn'                              => 'Recurrent Neural Network (RNN)',
+        'long short-term memory'           => 'Long Short-Term Memory (LSTM)',
+        'lstm'                             => 'Long Short-Term Memory (LSTM)',
+        'support vector machine'           => 'Support Vector Machine (SVM)',
+        'svm'                              => 'Support Vector Machine (SVM)',
+        'k-nearest neighbor'               => 'K-Nearest Neighbor (KNN)',
+        'k-nearest neighbours'             => 'K-Nearest Neighbor (KNN)',
+        'knn'                              => 'K-Nearest Neighbor (KNN)',
+        'naive bayes'                      => 'Naive Bayes',
+        'random forest'                    => 'Random Forest',
+        'decision tree'                    => 'Decision Tree',
+        'k-means clustering'               => 'K-Means Clustering',
+        'k-means'                          => 'K-Means Clustering',
+        'collaborative filtering'          => 'Collaborative Filtering',
+        'content-based filtering'          => 'Content-Based Filtering',
+        'data mining'                      => 'Data Mining',
+        'machine learning'                 => 'Machine Learning',
+        'deep learning'                    => 'Deep Learning',
+
+        'analytical hierarchy process'     => 'Analytical Hierarchy Process (AHP)',
+        'metode ahp'                       => 'Analytical Hierarchy Process (AHP)',
+        'ahp'                              => 'Analytical Hierarchy Process (AHP)',
+        'technique for others reference by similarity to ideal solution' => 'TOPSIS',
+        'metode topsis'                    => 'TOPSIS',
+        'topsis'                           => 'TOPSIS',
+        'simple additive weighting'        => 'Simple Additive Weighting (SAW)',
+        'metode saw'                       => 'Simple Additive Weighting (SAW)',
+        'profile matching'                 => 'Profile Matching',
+        'weighted product'                 => 'Weighted Product (WP)',
+
+        // ====================================================================
+        // 3. STATISTIK LANJUTAN, EKONOMI & BISNIS
+        // ====================================================================
+        'structural equation modeling'     => 'Structural Equation Modeling (SEM)',
+        'metode sem'                       => 'Structural Equation Modeling (SEM)',
+        'partial least squares'            => 'Partial Least Squares (PLS-SEM)',
+        'pls-sem'                          => 'Partial Least Squares (PLS-SEM)',
+        'smartpls'                         => 'Partial Least Squares (PLS-SEM)',
+        'regresi linear berganda'          => 'Regresi Linear Berganda',
+        'regresi linier berganda'          => 'Regresi Linear Berganda',
+        'regresi linear sederhana'         => 'Regresi Linear Sederhana',
+        'regresi linier sederhana'         => 'Regresi Linear Sederhana',
+        'regresi logistik'                 => 'Regresi Logistik',
+        'data panel'                       => 'Analisis Data Panel',
+        'error correction model'           => 'Error Correction Model (ECM)',
+        'vector autoregression'            => 'Vector Autoregression (VAR)',
+        'analisis swot'                    => 'Analisis SWOT',
+        'swot'                             => 'Analisis SWOT',
+        'balanced scorecard'               => 'Balanced Scorecard',
+        'kelayakan bisnis'                 => 'Studi Kelayakan Bisnis',
+
+        // ====================================================================
+        // 4. METODOLOGI UTAMA (DIPRIORITASKAN SEBELUM METODE PENGUJIAN!)
+        // ====================================================================
+        'classroom action research'        => 'Penelitian Tindakan Kelas (PTK)',
+        'penelitian tindakan kelas'        => 'Penelitian Tindakan Kelas (PTK)',
+        'ptk'                              => 'Penelitian Tindakan Kelas (PTK)',
+        'penelitian tindakan'              => 'Penelitian Tindakan (Action Research)',
+        'action research'                  => 'Penelitian Tindakan (Action Research)',
+        
+        'research and development'         => 'Research and Development (R&D)',
+        'penelitian dan pengembangan'      => 'Research and Development (R&D)',
+        'r&d'                              => 'Research and Development (R&D)',
+        'model 4d'                         => 'R&D (Model 4D)',
+        'model addie'                      => 'R&D (Model ADDIE)',
+        'model borg and gall'              => 'R&D (Borg & Gall)',
+        
+        'randomized controlled trial'      => 'Randomized Controlled Trial (RCT)',
+        'rct'                              => 'Randomized Controlled Trial (RCT)',
+        'cross sectional'                  => 'Cross-Sectional',
+        'case control'                     => 'Case-Control',
+        'kohort'                           => 'Cohort Study',
+        'cohort'                           => 'Cohort Study',
+        'quasi eksperimen'                 => 'Quasi-Eksperimen',
+        'kuasi eksperimen'                 => 'Quasi-Eksperimen',
+        'eksperimen laboratorium'          => 'Eksperimen Laboratorium',
+        'eksperimental'                    => 'Eksperimental',
+        'eksperimen'                       => 'Eksperimental',
+        'finite element method'            => 'Finite Element Method (FEM)',
+        'computational fluid dynamics'     => 'Computational Fluid Dynamics (CFD)',
+
+        'grounded theory'                  => 'Grounded Theory',
+        'fenomenologi'                     => 'Fenomenologi',
+        'etnografi'                        => 'Etnografi',
+        'studi kasus'                      => 'Studi Kasus',
+        'analisis wacana'                  => 'Analisis Wacana (Discourse Analysis)',
+        'analisis isi'                     => 'Analisis Isi (Content Analysis)',
+        'analisis framing'                 => 'Analisis Framing',
+        'analisis semiotika'               => 'Analisis Semiotika',
+        'semiotika'                        => 'Analisis Semiotika',
+        
+        'yuridis normatif'                 => 'Yuridis Normatif',
+        'yuridis empiris'                  => 'Yuridis Empiris',
+        'sosio legal'                      => 'Socio-Legal Research',
+
+        'mixed methods'                    => 'Mixed Methods (Kuantitatif & Kualitatif)',
+        'metode campuran'                  => 'Mixed Methods (Kuantitatif & Kualitatif)',
+        'kuantitatif'                      => 'Kuantitatif',
+        'kualitatif'                       => 'Kualitatif',
+
+        // ====================================================================
+        // 5. METODE PENGUJIAN SISTEM (DITARUH DI BAWAH METODOLOGI UTAMA)
+        // ====================================================================
+        'black box testing'                => 'Black Box Testing',
+        'black box'                        => 'Black Box Testing',
+        'blackbox'                         => 'Black Box Testing',
+        'white box testing'                => 'White Box Testing',
+        'white box'                        => 'White Box Testing',
+        'whitebox'                         => 'White Box Testing',
+        'user acceptance test'             => 'User Acceptance Testing (UAT)',
+        'user acceptance testing'          => 'User Acceptance Testing (UAT)',
+        'uat'                              => 'User Acceptance Testing (UAT)',
+        'system usability scale'           => 'System Usability Scale (SUS)',
+        'metode sus'                       => 'System Usability Scale (SUS)',
+
+        // ====================================================================
+        // 6. FALLBACK & LITERATURE REVIEW (PALING BAWAH)
+        // ====================================================================
+        'systematic literature review'     => 'Systematic Literature Review (SLR)',
+        'slr'                              => 'Systematic Literature Review (SLR)',
+        'bibliometrik'                     => 'Analisis Bibliometrik',
+        'meta analisis'                    => 'Meta-Analisis',
+        'meta-analysis'                    => 'Meta-Analisis',
+        'literature review'                => 'Literature Review',
+        'tinjauan pustaka'                 => 'Literature Review',
+        'studi pustaka'                    => 'Literature Review',
+        'sdlc'                             => 'SDLC (General)',
+        'deskriptif'                       => 'Deskriptif',
+    ],
+];
+</file>
+
 <file path="config/services.php">
 <?php
 
@@ -2629,9 +2439,47 @@ return [
             'frontend', 
             'backend'
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kamus Format Judul (Title Case)
+    |--------------------------------------------------------------------------
+    | Digunakan untuk memastikan singkatan dan istilah teknis tetap menggunakan
+    | huruf kapital yang benar, serta kata hubung tetap menggunakan huruf kecil.
+    */
+    'title_cases' => [
+        'mysql' => 'MySQL',
+        'php' => 'PHP',
+        'laravel' => 'Laravel',
+        'filament' => 'Filament',
+        'react' => 'React',
+        'api' => 'API',
+        'ui/ux' => 'UI/UX',
+        'ui' => 'UI',
+        'ux' => 'UX',
+        'nlp' => 'NLP',
+        'tf-idf' => 'TF-IDF',
+        'ai' => 'AI',
+        'html' => 'HTML',
+        'css' => 'CSS',
+        'spmb' => 'SPMB',
+        'ueq' => 'UEQ',
+        'sus' => 'SUS',
         
-        // Kamu bisa menambahkan lebih banyak topik dan sinonimnya di sini nanti
-        // seiring dengan berkembangnya skripsimu.
+        // Kata Hubung & Depan
+        'dan' => 'dan',
+        'atau' => 'atau',
+        'di' => 'di',
+        'ke' => 'ke',
+        'dari' => 'dari',
+        'yang' => 'yang',
+        'pada' => 'pada',
+        'untuk' => 'untuk',
+        'dengan' => 'dengan',
+        'dalam' => 'dalam',
+        'terhadap' => 'terhadap',
+        'sebagai' => 'sebagai',
     ],
 ];
 </file>
@@ -3525,276 +3373,72 @@ return new class extends Migration
 };
 </file>
 
-<file path="database/seeders/TopicSeeder.php">
+<file path="database/migrations/2026_07_29_065905_add_metadata_to_publications_table.php">
 <?php
 
-namespace Database\Seeders;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use App\Models\Container;
-use App\Models\Publication;
-use App\Models\Topic;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
-
-class TopicSeeder extends Seeder
+return new class extends Migration
 {
-    public function run(): void
+    public function up(): void
     {
-        /* 
-          ULTIMATE CLEAN & LOGICAL TAXONOMY TREE
-          Batasan jelas: 
-          - Level 1: Domain / Rumpun Utama (Contoh: Ilmu Komputer & Teknologi)
-          - Level 2: Bidang / Program Studi / Fokus (Contoh: Sistem Informasi, Kecerdasan Buatan)
-          - Level 3: Kelompok Topik / Sub-Bidang (Contoh: Sistem Rekomendasi, Machine Learning)
-          - Level 4: Metode / Algoritma / Spesifik (Contoh: Content-based Filtering, TF-IDF)
-        */
-        $ultimateTaxonomy = [
-            'Ilmu Komputer & Teknologi' => [
-                'Sistem Informasi' => [
-                    'Sistem Rekomendasi' => [
-                        'Content-based Filtering',
-                        'Collaborative Filtering',
-                        'Hybrid Recommender System',
-                    ],
-                    'Information Retrieval' => [
-                        'TF-IDF',
-                        'Cosine Similarity',
-                        'Semantic Search Engine',
-                        'Information Extraction',
-                    ],
-                    'Knowledge Management' => [
-                        'Knowledge Graph',
-                        'Ontology Engineering',
-                        'Semantic Web',
-                    ],
-                    'Business Analytics' => [
-                        'Predictive Analytics',
-                        'Customer Churn Analysis',
-                        'Business Intelligence',
-                        'RFM Analysis',
-                        'Performance Scoring',
-                    ]
-                ],
-                'Kecerdasan Buatan' => [
-                    'Natural Language Processing' => [
-                        'Named Entity Recognition',
-                        'Sentiment Analysis',
-                        'Retrieval-Augmented Generation',
-                        'Large Language Models',
-                        'OCR',
-                        'Chatbot',
-                    ],
-                    'Machine Learning' => [
-                        'Classification',
-                        'Clustering',
-                        'Anomaly Detection',
-                        'Explainable AI',
-                        'Autoencoder',
-                        'Time Series Forecasting',
-                    ],
-                    'Computer Vision' => [
-                        'Object Detection',
-                        'YOLO',
-                        'CNN',
-                        'Face Recognition',
-                        'VGG-16',
-                    ],
-                    'Advanced AI' => [
-                        'Graph Neural Networks',
-                        'Graph Embedding',
-                        'Reinforcement Learning',
-                    ]
-                ],
-                'Terapan & Studi Kasus' => [
-                    'Smart City & Urban' => [
-                        'Geospatial Analysis',
-                        'Urban Analytics',
-                    ],
-                    'Healthcare System' => [
-                        'Predictive Healthcare',
-                        'Clinical Decision Support',
-                    ],
-                    'Industrial & Supply Chain' => [
-                        'Predictive Maintenance',
-                        'Supply Chain Optimization',
-                        'Vehicle Routing Problem',
-                    ],
-                    'Education & Agriculture' => [
-                        'Educational Data Mining',
-                        'Learning Analytics',
-                        'Precision Agriculture',
-                    ]
-                ],
-                'Keamanan & Infrastruktur' => [
-                    'Cybersecurity' => [
-                        'Malware Detection',
-                        'Intrusion Detection System',
-                    ],
-                    'System Optimization' => [
-                        'LLM Optimization',
-                        'Batch Prompting',
-                    ]
-                ],
-                'Pengembangan Perangkat Lunak' => [
-                    'Web Development' => [
-                        'Laravel',
-                        'React',
-                        'Filament',
-                        'PHP',
-                    ],
-                    'Mobile Development' => [
-                        'Android',
-                        'Flutter',
-                    ]
-                ]
-            ]
-        ];
-
-        $sortOrder = 1;
-
-        // Eksekusi Pemetaan Multi-Level ke Database
-        foreach ($ultimateTaxonomy as $level1Name => $level2Group) {
-            $level1Parent = Topic::updateOrCreate(
-                ['slug' => Str::slug($level1Name)], 
-                [
-                    'name' => $level1Name,
-                    'is_active' => true,
-                    'sort_order' => $sortOrder++,
-                    'parent_id' => null,
-                ]
-            );
-
-            foreach ($level2Group as $level2Name => $level3GroupOrChildren) {
-                $level2Parent = Topic::updateOrCreate(
-                    ['slug' => Str::slug($level2Name)], 
-                    [
-                        'name' => $level2Name,
-                        'is_active' => true,
-                        'sort_order' => $sortOrder++,
-                        'parent_id' => $level1Parent->id,
-                    ]
-                );
-
-                foreach ($level3GroupOrChildren as $key => $value) {
-                    if (is_array($value)) {
-                        $level3Name = $key;
-                        $level3Parent = Topic::updateOrCreate(
-                            ['slug' => Str::slug($level3Name)], 
-                            [
-                                'name' => $level3Name,
-                                'is_active' => true,
-                                'sort_order' => $sortOrder++,
-                                'parent_id' => $level2Parent->id,
-                            ]
-                        );
-
-                        foreach ($value as $level4Name) {
-                            Topic::updateOrCreate(
-                                ['slug' => Str::slug($level4Name)], 
-                                [
-                                    'name' => $level4Name,
-                                    'is_active' => true,
-                                    'sort_order' => $sortOrder++,
-                                    'parent_id' => $level3Parent->id,
-                                ]
-                            );
-                        }
-                    } else {
-                        $level3Name = $value;
-                        Topic::updateOrCreate(
-                            ['slug' => Str::slug($level3Name)], 
-                            [
-                                'name' => $level3Name,
-                                'is_active' => true,
-                                'sort_order' => $sortOrder++,
-                                'parent_id' => $level2Parent->id,
-                            ]
-                        );
-                    }
-                }
-            }
-        }
-
-        // Buat Container sampel jika belum ada
-        if (Container::count() === 0) {
-            $container = Container::create([
-                'name' => 'Repository Utama Universitas', 
-                'type' => 'university'
-            ]);
-        } else {
-            $container = Container::first();
-        }
-
-        // Buat Publikasi sampel untuk pengujian auto-tagging & hierarki
-        if (Publication::count() === 0) {
-            $p1 = Publication::create([
-                'container_id' => $container->id,
-                'type' => 'thesis',
-                'title' => 'Semantic Search Engine untuk Repositori Skripsi Menggunakan Content-based Filtering',
-                'author' => 'Radhwa Radinka',
-                'year' => 2026,
-                'abstract' => 'Penelitian ini mengembangkan sistem pencarian dan rekomendasi literatur berbasis Content-based filtering, TF-IDF, dan cosine similarity untuk repositori ilmiah.',
-                'keywords' => 'content-based filtering, tf-idf, semantic search engine',
-            ]);
-
-            $targetTopic = Topic::where('slug', 'content-based-filtering')->first();
-            if ($targetTopic) { 
-                $p1->topics()->attach($targetTopic->id, ['is_auto' => false]); 
-            }
-        }
+        Schema::table('publications', function (Blueprint $table) {
+            // nullable() agar aman jika skripsi mahasiswa tidak punya data ini
+            $table->string('language')->default('id')->nullable()->after('abstract'); 
+            $table->string('research_method')->nullable()->after('language');
+            $table->string('license')->default('Internal Use Only')->nullable()->after('research_method');
+            $table->string('doi')->nullable()->after('license');
+        });
     }
-}
+
+    public function down(): void
+    {
+        Schema::table('publications', function (Blueprint $table) {
+            $table->dropColumn(['language', 'research_method', 'license', 'doi']);
+        });
+    }
+};
 </file>
 
-<file path="resources/views/layouts/app.blade.php">
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repositori Ilmiah - Universitas Gunadarma</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        gundar: {
-                            primary: '#763a97', 
-                            accent: '#f89723',
-                            dark: '#111111', 
-                            muted: '#938a8e', 
-                            light: '#fdfcfb',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+<file path="database/migrations/2026_07_30_072045_add_counters_to_publications_and_files_table.php">
+<?php
 
-    <!-- [BARU] CSS x-cloak agar modal tidak muncul sebelum diklik -->
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    <!-- [BARU] CDN Alpine.js untuk mengaktifkan fitur modal & interaktivitas -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
-</head>
-<body class="min-h-screen bg-gundar-light font-sans text-slate-800 selection:bg-gundar-primary selection:text-white">
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('publications', function (Blueprint $table) {
+            $table->unsignedInteger('views_count')->default(0)->after('abstract');
+        });
 
-    <!-- PANGGIL NAVBAR (PARTIALS) -->
-    @include('partials.navbar')
+        Schema::table('publication_files', function (Blueprint $table) {
+            $table->unsignedInteger('downloads_count')->default(0)->after('allow_download');
+        });
+    }
 
-    <!-- MAIN WRAPPER -->
-    <div class="pt-28 pb-16">
-        @yield('content')
-    </div>
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('publications', function (Blueprint $table) {
+            $table->dropColumn('views_count');
+        });
 
-    <!-- PANGGIL FOOTER (PARTIALS) -->
-    @include('partials.footer')
-
-</body>
-</html>
+        Schema::table('publication_files', function (Blueprint $table) {
+            $table->dropColumn('downloads_count');
+        });
+    }
+};
 </file>
 
 <file path="resources/views/partials/footer.blade.php">
@@ -4608,213 +4252,124 @@ class AppServiceProvider extends ServiceProvider
 }
 </file>
 
-<file path="app/Services/RecommendationScorer.php">
+<file path="app/Services/AutoTaggingService.php">
 <?php
 
 namespace App\Services;
 
 use App\Models\Publication;
 use App\Models\Topic;
-use App\Models\User;
-use App\Services\TextPreprocessor; // [BARU] Import TextPreprocessor
+use Illuminate\Support\Str;
 
-class RecommendationScorer
+class AutoTaggingService
 {
     private TextPreprocessor $preprocessor;
 
-    // [BARU] Dependency Injection untuk TextPreprocessor
     public function __construct(TextPreprocessor $preprocessor)
     {
         $this->preprocessor = $preprocessor;
     }
 
     /**
-     * Menghitung skor kemiripan kandidat publikasi terhadap target.
-     * Mengembalikan array terstruktur yang memuat skor teks dan irisan taksonomi.
+     * Menganalisis teks publikasi dan menempelkan topik secara otomatis.
      */
-    public function scoreCandidates(Publication $target, iterable $candidates, ?User $user = null): array
-    {
-        $candidateCollection = collect($candidates)->filter(fn ($candidate) => $candidate instanceof Publication && $candidate->id !== $target->id);
+    public function tag(Publication $publication): void
+    {   
+        $dictionary = config('topic_dictionary.mappings', []);
+        $threshold = config('topic_dictionary.threshold', 10);
 
-        if ($candidateCollection->isEmpty()) {
-            return [];
+        if (empty($dictionary)) {
+            return;
         }
 
-        // --- PABRIK SASTRAWI LAMA DIHAPUS DARI SINI ---
-
-        $documents = collect();
+        // 1. Bersihkan teks di masing-masing kolom
+        $title = $this->preprocessor->process($publication->title ?? '');
         
-        // [MODIFIKASI MINOR]: Hapus parameter stemmer & stopword, cukup kirim target/candidate
-        $documents->put($target->id, $this->prepareText($target));
-
-        foreach ($candidateCollection as $candidate) {
-            $documents->put($candidate->id, $this->prepareText($candidate));
-        }
-
-        $df = [];
-        $tf = [];
-        $documentIds = $documents->keys()->all();
-        $N = count($documentIds);
-
-        foreach ($documents as $documentId => $text) {
-            $words = array_filter(explode(' ', $text));
-            $totalWords = count($words);
-
-            if ($totalWords === 0) {
-                continue;
-            }
-
-            $wordCounts = array_count_values($words);
-            $tf[$documentId] = [];
-            $uniqueWords = array_unique($words);
-
-            foreach ($uniqueWords as $word) {
-                $tf[$documentId][$word] = $wordCounts[$word] / $totalWords;
-                $df[$word] = ($df[$word] ?? 0) + 1;
-            }
-        }
-
-        $idf = [];
-        foreach ($df as $word => $count) {
-            $idf[$word] = log($N / $count);
-        }
-
-        $tfidf = [];
-        foreach ($tf as $documentId => $wordFreqs) {
-            foreach ($wordFreqs as $word => $value) {
-                $tfidf[$documentId][$word] = $value * ($idf[$word] ?? 0);
-            }
-        }
-
-        $targetVector = $tfidf[$target->id] ?? [];
-        $scores = [];
-
-        // Preload topik target dan konteksnya untuk menghindari query berulang
-        $targetTopicIds = $target->topics()->pluck('topics.id')->all();
-        $targetContext = $this->expandTopicContextIds($targetTopicIds);
-
-        foreach ($candidateCollection as $candidate) {
-            $candidateVector = $tfidf[$candidate->id] ?? [];
-            $dotProduct = 0;
-            $normTarget = 0;
-            $normCandidate = 0;
-
-            $allWords = array_unique(array_merge(array_keys($targetVector), array_keys($candidateVector)));
-            foreach ($allWords as $word) {
-                $targetValue = $targetVector[$word] ?? 0;
-                $candidateValue = $candidateVector[$word] ?? 0;
-
-                $dotProduct += $targetValue * $candidateValue;
-                $normTarget += pow($targetValue, 2);
-                $normCandidate += pow($candidateValue, 2);
-            }
-
-            $normTarget = sqrt($normTarget);
-            $normCandidate = sqrt($normCandidate);
-
-            $textSimilarity = ($normTarget * $normCandidate === 0) ? 0 : $dotProduct / ($normTarget * $normCandidate);
-            
-            // Hitung Knowledge Overlap menggunakan context yang sudah di-expand
-            $candidateTopicIds = $candidate->topics()->pluck('topics.id')->all();
-            $candidateContext = $this->expandTopicContextIds($candidateTopicIds);
-            $knowledgeOverlap = count(array_intersect($targetContext, $candidateContext));
-            
-            $knowledgeBonus = 0;
-            if ($knowledgeOverlap > 0) {
-                $knowledgeBonus = 0.25 + min($knowledgeOverlap, 3) * 0.1;
-            }
-
-            $finalScore = $textSimilarity + $knowledgeBonus;
-
-            if ($user) {
-                $finalScore += $this->userPreferenceBonus($user, $candidate, $candidateTopicIds);
-            }
-
-            $scores[] = [
-                'publication' => $candidate,
-                'score' => round($finalScore, 4),
-                'text_similarity' => round($textSimilarity, 4),
-                'knowledge_overlap' => $knowledgeOverlap,
-            ];
-        }
-
-        usort($scores, fn ($left, $right) => $right['score'] <=> $left['score']);
-
-        return $scores;
-    }
-
-    public function knowledgeOverlap(Publication $target, Publication $candidate): int
-    {
-        $targetTopics = $target->topics()->pluck('topics.id')->all();
-        $candidateTopics = $candidate->topics()->pluck('topics.id')->all();
-
-        $targetContext = $this->expandTopicContextIds($targetTopics);
-        $candidateContext = $this->expandTopicContextIds($candidateTopics);
-
-        return count(array_intersect($targetContext, $candidateContext));
-    }
-
-    // [MODIFIKASI] prepareText tetap dipertahankan sebagai Wrapper (Abstraction Layer)
-    private function prepareText(Publication $publication): string
-    {
-        return $this->preprocessor->process($this->getRawText($publication));
-    }
-
-    // [BARU] Helper khusus untuk merangkai teks mentah publikasi
-    private function getRawText(Publication $publication): string
-    {
-        // Pencegahan error array to string conversion dari Filament TagsInput
-        $keywords = is_array($publication->keywords) 
+        $keywordsRaw = is_array($publication->keywords) 
             ? implode(' ', $publication->keywords) 
             : (string) $publication->keywords;
+        $keywords = $this->preprocessor->process($keywordsRaw);
+        
+        $abstract = $this->preprocessor->process($publication->abstract ?? '');
 
-        return trim(implode(' ', array_filter([
-            $publication->title,
-            $keywords,
-            $publication->abstract,
-        ])));
-    }
+        $matchedTopicNames = [];
 
-    private function userPreferenceBonus(User $user, Publication $candidate, ?array $candidateTopicIds = null): float
-    {
-        $preferenceTopicIds = $user->topicPreferences()->pluck('topic_id')->all();
-        if ($preferenceTopicIds === []) {
-            return 0.0;
-        }
-
-        $candidateTopicIds = $candidateTopicIds ?? $candidate->topics()->pluck('topics.id')->all();
-        $sharedPreferences = array_intersect($preferenceTopicIds, $candidateTopicIds);
-
-        if ($sharedPreferences === []) {
-            return 0.0;
-        }
-
-        return min(count($sharedPreferences) * 0.18, 0.54);
-    }
-
-    private function expandTopicContextIds(array $topicIds): array
-    {
-        if (empty($topicIds)) {
-            return [];
-        }
-
-        // Optimasi: Tarik seluruh topik terkait sekaligus untuk mencegah N+1 query problem
-        $topics = Topic::whereIn('id', $topicIds)->with(['parent.parent', 'children'])->get();
-        $contextIds = [];
-
-        foreach ($topics as $topic) {
-            $contextIds[] = $topic->id;
+        // 2. Evaluasi setiap topik dan sinonimnya
+        foreach ($dictionary as $topicName => $synonyms) {
+            $score = 0;
             
-            // [MODIFIKASI]: Menghapus array_merge redundan
-            if ($topic->parent_id) {
-                $contextIds[] = $topic->parent_id;
+            $checkWords = array_unique(array_merge([$topicName], $synonyms));
+
+            foreach ($checkWords as $word) {
+                $processedWord = $this->preprocessor->process($word);
+                if (empty($processedWord)) continue;
+
+                $pattern = '/\b' . preg_quote($processedWord, '/') . '\b/';
+
+                // Pembobotan: Judul (10), Keywords (7), Abstrak (3)
+                if (preg_match($pattern, $title)) $score += 10;
+                if (preg_match($pattern, $keywords)) $score += 7;
+                if (preg_match($pattern, $abstract)) $score += 3;
             }
-            foreach ($topic->children as $child) {
-                $contextIds[] = $child->id;
+
+            // 3. Jika skor mencukupi, masukkan sebagai kandidat topik
+            if ($score >= $threshold) {
+                $matchedTopicNames[] = $topicName;
             }
         }
 
-        return array_values(array_unique(array_filter($contextIds)));
+        // 4. Cari ID Topik di database dan tarik Parent-nya secara hierarkis (UPDATED)
+        $autoTopicIds = [];
+        if (!empty($matchedTopicNames)) {
+            // Ambil seluruh object modelnya, bukan cuma pluck('id')
+            $matchedTopics = Topic::whereIn('name', $matchedTopicNames)
+                ->orWhereIn('slug', array_map(fn($name) => Str::slug($name), $matchedTopicNames))
+                ->get();
+
+            foreach ($matchedTopics as $topic) {
+                // Masukkan ID dari topik yang match
+                $autoTopicIds[] = $topic->id;
+                
+                // Panggil method ancestorIds() buatanmu untuk mengambil seluruh ID parent/kakeknya
+                $autoTopicIds = array_merge($autoTopicIds, $topic->ancestorIds());
+            }
+
+            // Hapus ID duplikat (misal "React" dan "Laravel" sama-sama punya parent "Web Development")
+            $autoTopicIds = array_values(array_unique($autoTopicIds));
+        }
+
+        // 5. Simpan ke database dengan aman (Sinkronisasi Pivot)
+        $this->syncTopicsSafely($publication, $autoTopicIds);
+    }
+
+    /**
+     * Memperbarui pivot table tanpa menghapus topik manual pilihan Admin.
+     */
+    private function syncTopicsSafely(Publication $publication, array $autoTopicIds): void
+    {
+        // Ambil semua topik yang diinput MANUAL oleh admin (is_auto = false)
+        $manualTopicIds = $publication->topics()
+            ->wherePivot('is_auto', false)
+            ->pluck('topics.id')
+            ->toArray();
+
+        $syncData = [];
+
+        // Masukkan kembali topik manual agar tidak hilang
+        foreach ($manualTopicIds as $id) {
+            $syncData[$id] = ['is_auto' => false];
+        }
+
+        // Tambahkan topik otomatis (hanya jika belum ada di list manual)
+        foreach ($autoTopicIds as $id) {
+            if (!isset($syncData[$id])) {
+                $syncData[$id] = ['is_auto' => true];
+            }
+        }
+
+        // Sync akan menghapus topik lama yang tidak ada di $syncData,
+        // tapi mempertahankan topik manual dan menambahkan topik auto yang baru.
+        $publication->topics()->sync($syncData);
     }
 }
 </file>
@@ -4975,38 +4530,223 @@ return new class extends Migration
 };
 </file>
 
-<file path="database/seeders/DatabaseSeeder.php">
+<file path="database/seeders/TopicSeeder.php">
 <?php
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Container;
+use App\Models\Publication;
+use App\Models\Topic;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
-class DatabaseSeeder extends Seeder
+class TopicSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Tambahkan 'npm' karena kolom tersebut wajib diisi di tabel users
-        User::updateOrCreate(
-            ['email' => 'admin@repository.com'],
-            [
-                'name' => 'Admin Repositori',
-                'npm' => '10000001',
-                'role' => 'admin',
-                'password' => Hash::make('password123'),
+        /* 
+          ULTIMATE CLEAN & LOGICAL TAXONOMY TREE
+          Batasan jelas: 
+          - Level 1: Domain / Rumpun Utama (Contoh: Ilmu Komputer & Teknologi)
+          - Level 2: Bidang / Program Studi / Fokus (Contoh: Sistem Informasi, Kecerdasan Buatan)
+          - Level 3: Kelompok Topik / Sub-Bidang (Contoh: Sistem Rekomendasi, Machine Learning)
+          - Level 4: Metode / Algoritma / Spesifik (Contoh: Content-based Filtering, TF-IDF)
+        */
+        $ultimateTaxonomy = [
+            'Ilmu Komputer & Teknologi' => [
+                'Sistem Informasi' => [
+                    'Sistem Rekomendasi' => [
+                        'Content-based Filtering',
+                        'Collaborative Filtering',
+                        'Hybrid Recommender System',
+                    ],
+                    'Information Retrieval' => [
+                        'TF-IDF',
+                        'Cosine Similarity',
+                        'Semantic Search Engine',
+                        'Information Extraction',
+                    ],
+                    'Knowledge Management' => [
+                        'Knowledge Graph',
+                        'Ontology Engineering',
+                        'Semantic Web',
+                    ],
+                    'Business Analytics' => [
+                        'Predictive Analytics',
+                        'Customer Churn Analysis',
+                        'Business Intelligence',
+                        'RFM Analysis',
+                        'Performance Scoring',
+                    ]
+                ],
+                'Kecerdasan Buatan' => [
+                    'Natural Language Processing' => [
+                        'Named Entity Recognition',
+                        'Sentiment Analysis',
+                        'Retrieval-Augmented Generation',
+                        'Large Language Models',
+                        'OCR',
+                        'Chatbot',
+                    ],
+                    'Machine Learning' => [
+                        'Classification',
+                        'Clustering',
+                        'Anomaly Detection',
+                        'Explainable AI',
+                        'Autoencoder',
+                        'Time Series Forecasting',
+                    ],
+                    'Computer Vision' => [
+                        'Object Detection',
+                        'YOLO',
+                        'CNN',
+                        'Face Recognition',
+                        'VGG-16',
+                    ],
+                    'Advanced AI' => [
+                        'Graph Neural Networks',
+                        'Graph Embedding',
+                        'Reinforcement Learning',
+                    ]
+                ],
+                'Terapan & Studi Kasus' => [
+                    'Smart City & Urban' => [
+                        'Geospatial Analysis',
+                        'Urban Analytics',
+                    ],
+                    'Healthcare System' => [
+                        'Predictive Healthcare',
+                        'Clinical Decision Support',
+                    ],
+                    'Industrial & Supply Chain' => [
+                        'Predictive Maintenance',
+                        'Supply Chain Optimization',
+                        'Vehicle Routing Problem',
+                    ],
+                    'Education & Agriculture' => [
+                        'Educational Data Mining',
+                        'Learning Analytics',
+                        'Precision Agriculture',
+                    ]
+                ],
+                'Keamanan & Infrastruktur' => [
+                    'Cybersecurity' => [
+                        'Malware Detection',
+                        'Intrusion Detection System',
+                    ],
+                    'System Optimization' => [
+                        'LLM Optimization',
+                        'Batch Prompting',
+                    ]
+                ],
+                'Pengembangan Perangkat Lunak' => [
+                    'Web Development' => [
+                        'Laravel',
+                        'React',
+                        'Filament',
+                        'PHP',
+                    ],
+                    'Mobile Development' => [
+                        'Android',
+                        'Flutter',
+                    ]
+                ]
             ]
-        );
+        ];
 
-        // Seed topics & sample publications for local development
-        $this->call(TopicSeeder::class);
+        $sortOrder = 1;
+
+        // Eksekusi Pemetaan Multi-Level ke Database
+        foreach ($ultimateTaxonomy as $level1Name => $level2Group) {
+            $level1Parent = Topic::updateOrCreate(
+                ['slug' => Str::slug($level1Name)], 
+                [
+                    'name' => $level1Name,
+                    'is_active' => true,
+                    'sort_order' => $sortOrder++,
+                    'parent_id' => null,
+                ]
+            );
+
+            foreach ($level2Group as $level2Name => $level3GroupOrChildren) {
+                $level2Parent = Topic::updateOrCreate(
+                    ['slug' => Str::slug($level2Name)], 
+                    [
+                        'name' => $level2Name,
+                        'is_active' => true,
+                        'sort_order' => $sortOrder++,
+                        'parent_id' => $level1Parent->id,
+                    ]
+                );
+
+                foreach ($level3GroupOrChildren as $key => $value) {
+                    if (is_array($value)) {
+                        $level3Name = $key;
+                        $level3Parent = Topic::updateOrCreate(
+                            ['slug' => Str::slug($level3Name)], 
+                            [
+                                'name' => $level3Name,
+                                'is_active' => true,
+                                'sort_order' => $sortOrder++,
+                                'parent_id' => $level2Parent->id,
+                            ]
+                        );
+
+                        foreach ($value as $level4Name) {
+                            Topic::updateOrCreate(
+                                ['slug' => Str::slug($level4Name)], 
+                                [
+                                    'name' => $level4Name,
+                                    'is_active' => true,
+                                    'sort_order' => $sortOrder++,
+                                    'parent_id' => $level3Parent->id,
+                                ]
+                            );
+                        }
+                    } else {
+                        $level3Name = $value;
+                        Topic::updateOrCreate(
+                            ['slug' => Str::slug($level3Name)], 
+                            [
+                                'name' => $level3Name,
+                                'is_active' => true,
+                                'sort_order' => $sortOrder++,
+                                'parent_id' => $level2Parent->id,
+                            ]
+                        );
+                    }
+                }
+            }
+        }
+
+        // Buat Container sampel jika belum ada
+        if (Container::count() === 0) {
+            $container = Container::create([
+                'name' => 'Repository Utama Universitas', 
+                'type' => 'university'
+            ]);
+        } else {
+            $container = Container::first();
+        }
+
+        // Buat Publikasi sampel untuk pengujian auto-tagging & hierarki
+        if (Publication::count() === 0) {
+            $p1 = Publication::create([
+                'container_id' => $container->id,
+                'type' => 'thesis',
+                'title' => 'Semantic Search Engine untuk Repositori Skripsi Menggunakan Content-based Filtering',
+                'author' => 'Radhwa Radinka',
+                'year' => 2026,
+                'abstract' => 'Penelitian ini mengembangkan sistem pencarian dan rekomendasi literatur berbasis Content-based filtering, TF-IDF, dan cosine similarity untuk repositori ilmiah.',
+                'keywords' => 'content-based filtering, tf-idf, semantic search engine',
+            ]);
+
+            $targetTopic = Topic::where('slug', 'content-based-filtering')->first();
+            if ($targetTopic) { 
+                $p1->topics()->attach($targetTopic->id, ['is_auto' => false]); 
+            }
+        }
     }
 }
 </file>
@@ -5237,99 +4977,55 @@ class DatabaseSeeder extends Seeder
 @endsection
 </file>
 
-<file path="resources/views/partials/publication-item.blade.php">
-<article class="group relative flex flex-col items-start gap-2 border-b border-slate-100 py-8 transition hover:bg-slate-50/50 sm:flex-row sm:gap-6 -mx-4 px-4 rounded-2xl">
-    
-    <!-- Meta Kiri (Tahun & Tipe & Metode Riset & Badge Populer) -->
-    <div class="w-full shrink-0 sm:w-28 pt-1 text-left">
-        <p class="text-sm font-bold text-gundar-primary">{{ $pub->year ?? 'N/A' }}</p>
-        <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ $pub->type ?? 'JURNAL' }}</p>
-        
-        <!-- Badge Metode Riset -->
-        @if($pub->research_method)
-            <a href="{{ route('home', ['method' => $pub->research_method]) }}" class="mt-2 inline-block rounded bg-gundar-primary/10 px-2 py-0.5 text-[10px] font-bold text-gundar-primary border border-gundar-primary/20 hover:bg-gundar-primary hover:text-white transition shadow-sm" title="Filter berdasarkan metode ini">
-                ⚙️ {{ $pub->research_method }}
-            </a>
-        @endif
+<file path="resources/views/layouts/app.blade.php">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositori Ilmiah - Universitas Gunadarma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gundar: {
+                            primary: '#763a97', 
+                            accent: '#f89723',
+                            dark: '#111111', 
+                            muted: '#938a8e', 
+                            light: '#fdfcfb',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-        <!-- [BARU] Badge Populer -->
-        @if(($pub->views_count ?? 0) >= 50 || $pub->files->sum('downloads_count') >= 20)
-            <span class="mt-2 inline-block rounded bg-amber-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-600 border border-amber-200 shadow-sm">
-                🔥 Populer
-            </span>
-        @endif
+    <!-- [BARU] CSS x-cloak agar modal tidak muncul sebelum diklik -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
+    <!-- [BARU] CDN Alpine.js untuk mengaktifkan fitur modal & interaktivitas -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+</head>
+<body class="min-h-screen bg-gundar-light font-sans text-slate-800 selection:bg-gundar-primary selection:text-white">
+
+    <!-- PANGGIL NAVBAR (PARTIALS) -->
+    @include('partials.navbar')
+
+    <!-- MAIN WRAPPER -->
+    <div class="pt-28 pb-16">
+        @yield('content')
     </div>
 
-    <!-- Konten Tengah -->
-    <div class="flex-1 min-w-0">
-        <h3 class="text-xl font-black leading-snug text-gundar-dark transition group-hover:text-gundar-primary">
-            <a href="{{ route('publications.show', $pub->id) }}" class="before:absolute before:inset-0">
-                {{ $pub->title }}
-            </a>
-        </h3>
-        
-        <p class="mt-1.5 text-sm font-medium text-slate-600">
-            {{ $pub->author }} <span class="text-slate-300 mx-1">|</span> <span class="text-slate-500 font-normal">{{ $pub->container ? $pub->container->name : 'Universitas Gunadarma' }}</span>
-        </p>
+    <!-- PANGGIL FOOTER (PARTIALS) -->
+    @include('partials.footer')
 
-        <!-- Abstrak (Dengan Fallback) -->
-        <p class="mt-4 text-sm leading-relaxed text-slate-500 line-clamp-2">
-            {!! $pub->highlighted_abstract ?? $pub->abstract ?? 'Abstrak tidak tersedia untuk dokumen ini.' !!}
-        </p>
-
-        <div class="mt-5 flex flex-wrap items-center gap-4 relative z-10">
-            <!-- Topik Tags -->
-            @if($pub->topics->isNotEmpty())
-                <div class="flex gap-2">
-                    @foreach($pub->topics->take(2) as $topic)
-                        <a href="{{ route('topic.show', $topic->slug) }}" class="rounded bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-gundar-primary hover:text-white transition shadow-sm">
-                            {{ $topic->name }}
-                        </a>
-                    @endforeach
-                </div>
-            @endif
-            
-            <!-- Akses File -->
-            @if($pub->files->count() > 0)
-                <div class="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-600">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    PDF
-                </div>
-            @endif
-
-            <!-- [BARU] Statistik Mini (Views & Downloads) -->
-            <div class="flex items-center gap-3 text-[11px] font-semibold text-slate-400 ml-auto sm:ml-0">
-                <span title="Jumlah dilihat">👁️ {{ number_format($pub->views_count ?? 0) }}</span>
-                <span title="Jumlah diunduh">📥 {{ number_format($pub->files->sum('downloads_count') ?? 0) }}</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Aksi Kanan (Bookmark / Hapus) -->
-    <div class="absolute right-4 top-8 z-20 sm:static sm:pt-1">
-        @auth
-            @if(isset($isBookmarkPage) && $isBookmarkPage)
-                <!-- TAMPILAN DI HALAMAN BOOKMARK (Tombol Hapus) -->
-                <form action="{{ route('bookmarks.toggle') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="publication_id" value="{{ $pub->id }}">
-                    <button type="submit" class="rounded bg-rose-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 shadow-sm relative z-30">
-                        Hapus
-                    </button>
-                </form>
-            @else
-                <!-- TAMPILAN DI BERANDA/PENCARIAN (Tombol Bintang) -->
-                <form action="{{ route('bookmarks.toggle') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="publication_id" value="{{ $pub->id }}">
-                    <button type="submit" class="text-2xl text-slate-300 hover:text-gundar-accent transition relative z-30" title="Simpan ke koleksi">
-                        {{ $pub->bookmarks()->where('user_id', auth()->id())->exists() ? '★' : '☆' }}
-                    </button>
-                </form>
-            @endif
-        @endauth
-    </div>
-</article>
+</body>
+</html>
 </file>
 
 <file path="app/Filament/Resources/Publications/PublicationResource.php">
@@ -5578,6 +5274,346 @@ class AdminPanelProvider extends PanelProvider
             ]);
     }
 }
+</file>
+
+<file path="app/Services/RecommendationScorer.php">
+<?php
+
+namespace App\Services;
+
+use App\Models\Publication;
+use App\Models\Topic;
+use App\Models\User;
+use App\Services\TextPreprocessor;
+
+class RecommendationScorer
+{
+    private TextPreprocessor $preprocessor;
+
+    public function __construct(TextPreprocessor $preprocessor)
+    {
+        $this->preprocessor = $preprocessor;
+    }
+
+    /**
+     * Menghitung skor kemiripan kandidat publikasi terhadap target.
+     * Mengembalikan array terstruktur yang memuat skor teks dan irisan taksonomi.
+     */
+    public function scoreCandidates(Publication $target, iterable $candidates, ?User $user = null): array
+    {
+        $candidateCollection = collect($candidates)->filter(fn ($candidate) => $candidate instanceof Publication && $candidate->id !== $target->id);
+
+        if ($candidateCollection->isEmpty()) {
+            return [];
+        }
+
+        $documents = collect();
+        
+        $documents->put($target->id, $this->prepareText($target));
+
+        foreach ($candidateCollection as $candidate) {
+            $documents->put($candidate->id, $this->prepareText($candidate));
+        }
+
+        $df = [];
+        $tf = [];
+        $documentIds = $documents->keys()->all();
+        $N = count($documentIds);
+
+        foreach ($documents as $documentId => $text) {
+            $words = array_filter(explode(' ', $text));
+            $totalWords = count($words);
+
+            if ($totalWords === 0) {
+                continue;
+            }
+
+            $wordCounts = array_count_values($words);
+            $tf[$documentId] = [];
+            $uniqueWords = array_unique($words);
+
+            foreach ($uniqueWords as $word) {
+                $tf[$documentId][$word] = $wordCounts[$word] / $totalWords;
+                $df[$word] = ($df[$word] ?? 0) + 1;
+            }
+        }
+
+        $idf = [];
+        foreach ($df as $word => $count) {
+            $idf[$word] = log($N / $count);
+        }
+
+        $tfidf = [];
+        foreach ($tf as $documentId => $wordFreqs) {
+            foreach ($wordFreqs as $word => $value) {
+                $tfidf[$documentId][$word] = $value * ($idf[$word] ?? 0);
+            }
+        }
+
+        $targetVector = $tfidf[$target->id] ?? [];
+        $scores = [];
+
+        // Preload topik target dan konteksnya untuk menghindari query berulang
+        $targetTopicIds = $target->topics()->pluck('topics.id')->all();
+        $targetContext = $this->expandTopicContextIds($targetTopicIds);
+
+        // Batas maksimal skor rasio
+        // textSimilarity (maks 1.0) + knowledgeBonus (maks ~0.55) + userPreferenceBonus (maks ~0.54) = ~2.09
+        $maxPossibleScore = 1.0 + 0.55 + ($user ? 0.54 : 0.0);
+
+        foreach ($candidateCollection as $candidate) {
+            $candidateVector = $tfidf[$candidate->id] ?? [];
+            $dotProduct = 0;
+            $normTarget = 0;
+            $normCandidate = 0;
+
+            $allWords = array_unique(array_merge(array_keys($targetVector), array_keys($candidateVector)));
+            foreach ($allWords as $word) {
+                $targetValue = $targetVector[$word] ?? 0;
+                $candidateValue = $candidateVector[$word] ?? 0;
+
+                $dotProduct += $targetValue * $candidateValue;
+                $normTarget += pow($targetValue, 2);
+                $normCandidate += pow($candidateValue, 2);
+            }
+
+            $normTarget = sqrt($normTarget);
+            $normCandidate = sqrt($normCandidate);
+
+            $textSimilarity = ($normTarget * $normCandidate === 0) ? 0 : $dotProduct / ($normTarget * $normCandidate);
+            
+            // Hitung Knowledge Overlap menggunakan context yang sudah di-expand
+            $candidateTopicIds = $candidate->topics()->pluck('topics.id')->all();
+            $candidateContext = $this->expandTopicContextIds($candidateTopicIds);
+            $knowledgeOverlap = count(array_intersect($targetContext, $candidateContext));
+            
+            $knowledgeBonus = 0;
+            if ($knowledgeOverlap > 0) {
+                $knowledgeBonus = 0.25 + min($knowledgeOverlap, 3) * 0.1;
+            }
+
+            $rawScore = $textSimilarity + $knowledgeBonus;
+
+            if ($user) {
+                $rawScore += $this->userPreferenceBonus($user, $candidate, $candidateTopicIds);
+            }
+
+            // [PERBAIKAN] Normalisasi akhir agar skor selalu dicap dalam batas 0.0 sampai 1.0 (0 - 100%)
+            $finalScore = min(1.0, max(0.0, $rawScore / $maxPossibleScore));
+
+            $scores[] = [
+                'publication' => $candidate,
+                'score' => round($finalScore, 4),
+                'text_similarity' => round($textSimilarity, 4),
+                'knowledge_overlap' => $knowledgeOverlap,
+            ];
+        }
+
+        usort($scores, fn ($left, $right) => $right['score'] <=> $left['score']);
+
+        return $scores;
+    }
+
+    public function knowledgeOverlap(Publication $target, Publication $candidate): int
+    {
+        $targetTopics = $target->topics()->pluck('topics.id')->all();
+        $candidateTopics = $candidate->topics()->pluck('topics.id')->all();
+
+        $targetContext = $this->expandTopicContextIds($targetTopics);
+        $candidateContext = $this->expandTopicContextIds($candidateTopics);
+
+        return count(array_intersect($targetContext, $candidateContext));
+    }
+
+    private function prepareText(Publication $publication): string
+    {
+        return $this->preprocessor->process($this->getRawText($publication));
+    }
+
+    private function getRawText(Publication $publication): string
+    {
+        $keywords = is_array($publication->keywords) 
+            ? implode(' ', $publication->keywords) 
+            : (string) $publication->keywords;
+
+        return trim(implode(' ', array_filter([
+            $publication->title,
+            $keywords,
+            $publication->abstract,
+        ])));
+    }
+
+    private function userPreferenceBonus(User $user, Publication $candidate, ?array $candidateTopicIds = null): float
+    {
+        $preferenceTopicIds = $user->topicPreferences()->pluck('topic_id')->all();
+        if ($preferenceTopicIds === []) {
+            return 0.0;
+        }
+
+        $candidateTopicIds = $candidateTopicIds ?? $candidate->topics()->pluck('topics.id')->all();
+        $sharedPreferences = array_intersect($preferenceTopicIds, $candidateTopicIds);
+
+        if ($sharedPreferences === []) {
+            return 0.0;
+        }
+
+        return min(count($sharedPreferences) * 0.18, 0.54);
+    }
+
+    private function expandTopicContextIds(array $topicIds): array
+    {
+        if (empty($topicIds)) {
+            return [];
+        }
+
+        $topics = Topic::whereIn('id', $topicIds)->with(['parent.parent', 'children'])->get();
+        $contextIds = [];
+
+        foreach ($topics as $topic) {
+            $contextIds[] = $topic->id;
+            
+            if ($topic->parent_id) {
+                $contextIds[] = $topic->parent_id;
+            }
+            foreach ($topic->children as $child) {
+                $contextIds[] = $child->id;
+            }
+        }
+
+        return array_values(array_unique(array_filter($contextIds)));
+    }
+}
+</file>
+
+<file path="database/seeders/DatabaseSeeder.php">
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+
+class DatabaseSeeder extends Seeder
+{
+    use WithoutModelEvents;
+
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        // Tambahkan 'npm' karena kolom tersebut wajib diisi di tabel users
+        User::updateOrCreate(
+            ['email' => 'admin@repository.com'],
+            [
+                'name' => 'Admin Repositori',
+                'npm' => '10000001',
+                'role' => 'admin',
+                'password' => Hash::make('password123'),
+            ]
+        );
+
+        // Seed topics & sample publications for local development
+        $this->call(TopicSeeder::class);
+    }
+}
+</file>
+
+<file path="resources/views/partials/publication-item.blade.php">
+<article class="group relative flex flex-col items-start gap-2 border-b border-slate-100 py-8 transition hover:bg-slate-50/50 sm:flex-row sm:gap-6 -mx-4 px-4 rounded-2xl">
+    
+    <!-- Meta Kiri (Tahun & Tipe & Metode Riset & Badge Populer) -->
+    <div class="w-full shrink-0 sm:w-28 pt-1 text-left">
+        <p class="text-sm font-bold text-gundar-primary">{{ $pub->year ?? 'N/A' }}</p>
+        <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ $pub->type_label ?? 'Jurnal' }}</p>
+        
+        <!-- Badge Metode Riset -->
+        @if($pub->research_method)
+            <a href="{{ route('home', ['method' => $pub->research_method]) }}" class="mt-2 inline-block rounded bg-gundar-primary/10 px-2 py-0.5 text-[10px] font-bold text-gundar-primary border border-gundar-primary/20 hover:bg-gundar-primary hover:text-white transition shadow-sm" title="Filter berdasarkan metode ini">
+                ⚙️ {{ $pub->research_method }}
+            </a>
+        @endif
+
+        <!-- [BARU] Badge Populer -->
+        @if(($pub->views_count ?? 0) >= 50 || $pub->files->sum('downloads_count') >= 20)
+            <span class="mt-2 inline-block rounded bg-amber-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-600 border border-amber-200 shadow-sm">
+                🔥 Populer
+            </span>
+        @endif
+    </div>
+
+    <!-- Konten Tengah -->
+    <div class="flex-1 min-w-0">
+        <h3 class="text-xl font-black leading-snug text-gundar-dark transition group-hover:text-gundar-primary">
+            <a href="{{ route('publications.show', $pub->id) }}" class="before:absolute before:inset-0">
+                {{ $pub->title }}
+            </a>
+        </h3>
+        
+        <p class="mt-1.5 text-sm font-medium text-slate-600">
+            {{ $pub->author }} <span class="text-slate-300 mx-1">|</span> <span class="text-slate-500 font-normal">{{ $pub->container ? $pub->container->name : 'Universitas Gunadarma' }}</span>
+        </p>
+
+        <!-- Abstrak (Dengan Fallback) -->
+        <p class="mt-4 text-sm leading-relaxed text-slate-500 line-clamp-2">
+            {!! $pub->highlighted_abstract ?? $pub->abstract ?? 'Abstrak tidak tersedia untuk dokumen ini.' !!}
+        </p>
+
+        <div class="mt-5 flex flex-wrap items-center gap-4 relative z-10">
+            <!-- Topik Tags -->
+            @if($pub->topics->isNotEmpty())
+                <div class="flex gap-2">
+                    @foreach($pub->topics->take(2) as $topic)
+                        <a href="{{ route('topic.show', $topic->slug) }}" class="rounded bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-gundar-primary hover:text-white transition shadow-sm">
+                            {{ $topic->name }}
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+            
+            <!-- Akses File -->
+            @if($pub->files->count() > 0)
+                <div class="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    PDF
+                </div>
+            @endif
+
+            <!-- [BARU] Statistik Mini (Views & Downloads) -->
+            <div class="flex items-center gap-3 text-[11px] font-semibold text-slate-400 ml-auto sm:ml-0">
+                <span title="Jumlah dilihat">👁️ {{ number_format($pub->views_count ?? 0) }}</span>
+                <span title="Jumlah diunduh">📥 {{ number_format($pub->files->sum('downloads_count') ?? 0) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aksi Kanan (Bookmark / Hapus) -->
+    <div class="absolute right-4 top-8 z-20 sm:static sm:pt-1">
+        @auth
+            @if(isset($isBookmarkPage) && $isBookmarkPage)
+                <!-- TAMPILAN DI HALAMAN BOOKMARK (Tombol Hapus) -->
+                <form action="{{ route('bookmarks.toggle') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="publication_id" value="{{ $pub->id }}">
+                    <button type="submit" class="rounded bg-rose-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 shadow-sm relative z-30">
+                        Hapus
+                    </button>
+                </form>
+            @else
+                <!-- TAMPILAN DI BERANDA/PENCARIAN (Tombol Bintang) -->
+                <form action="{{ route('bookmarks.toggle') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="publication_id" value="{{ $pub->id }}">
+                    <button type="submit" class="text-2xl text-slate-300 hover:text-gundar-accent transition relative z-30" title="Simpan ke koleksi">
+                        {{ $pub->bookmarks()->where('user_id', auth()->id())->exists() ? '★' : '☆' }}
+                    </button>
+                </form>
+            @endif
+        @endauth
+    </div>
+</article>
 </file>
 
 <file path="tests/Unit/PublicationFileTest.php">
@@ -5865,70 +5901,6 @@ class TopicForm
 }
 </file>
 
-<file path="app/Models/PublicationFile.php">
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
-
-class PublicationFile extends Model
-{
-    protected $guarded = [];
-
-    protected $casts = [
-        'allow_download' => 'boolean',
-    ];
-
-    public function publication()
-    {
-        return $this->belongsTo(Publication::class);
-    }
-
-    public function canBeViewedBy(?Authenticatable $user): bool
-    {
-        if ($user?->role === 'admin') {
-            return true;
-        }
-
-        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
-            'public' => true,
-            'authenticated' => $user !== null,
-            default => false,
-        };
-    }
-
-    public function canBeDownloadedBy(?Authenticatable $user): bool
-    {
-        return $this->allow_download && $this->canBeViewedBy($user);
-    }
-
-    public function isPublic(): bool
-    {
-        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
-            'public' => true,
-            default => false,
-        };
-    }
-
-    public function isRestricted(): bool
-    {
-        return ! $this->isPublic();
-    }
-
-    public function getVisibilityLabelAttribute(): string
-    {
-        return match ($this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated')) {
-            'public' => 'Publik',
-            'authenticated' => 'Mahasiswa internal',
-            'admin' => 'Admin saja',
-            default => 'Terbatas',
-        };
-    }
-}
-</file>
-
 <file path="app/Models/User.php">
 <?php
 
@@ -5997,7 +5969,7 @@ class User extends Authenticatable implements FilamentUser
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- FIX: Konfigurasi warna khusus agar Ungu Gunadarma terbaca di halaman ini -->
+    <!-- Konfigurasi warna khusus agar Ungu Gunadarma terbaca di halaman ini -->
     <script>
         tailwind.config = {
             theme: {
@@ -6042,21 +6014,13 @@ class User extends Authenticatable implements FilamentUser
             </div>
         </div>
 
-        <!-- Tengah: Kontrol Navigasi Halaman -->
-        <div class="flex items-center justify-center gap-1 sm:gap-2 shrink-0 w-1/3">
-            <button id="prev-page" type="button" class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-white/10 text-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed" title="Halaman Sebelumnya">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            
-            <div class="flex items-center rounded-lg bg-black/20 px-3 py-1.5 text-xs font-medium tracking-widest text-slate-300 border border-white/10 shadow-inner">
-                <span id="page-num" class="text-white font-bold w-4 text-center">-</span> 
-                <span class="mx-1 text-slate-400">/</span> 
-                <span id="page-count" class="text-slate-300 w-4 text-center">-</span>
+        <!-- Tengah: Indikator Info Dokumen (Continuous Scroll) -->
+        <div class="flex items-center justify-center gap-2 shrink-0 w-1/3">
+            <div class="flex items-center rounded-lg bg-black/20 px-4 py-1.5 text-xs font-medium tracking-wide text-slate-300 border border-white/10 shadow-inner">
+                <span class="text-white font-bold mr-1.5">📄 Mode Scroll</span> 
+                <span class="text-slate-400">&bull;</span>
+                <span id="page-count-label" class="ml-1.5 text-slate-300">Memuat...</span>
             </div>
-            
-            <button id="next-page" type="button" class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-white/10 text-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed" title="Halaman Selanjutnya">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-            </button>
         </div>
 
         <!-- Kanan: Kontrol Zoom -->
@@ -6075,13 +6039,13 @@ class User extends Authenticatable implements FilamentUser
 
     <main class="flex flex-1 overflow-hidden">
         
-        <!-- SIDEBAR: DAFTAR BAGIAN (Tema Selaras) -->
+        <!-- SIDEBAR: DAFTAR BAGIAN (Struktur Dokumen) -->
         <nav class="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50">
                 <h2 class="text-[11px] font-black uppercase tracking-widest text-slate-500">Struktur Dokumen</h2>
             </div>
             <div class="flex-1 overflow-y-auto p-3 space-y-1 no-scrollbar">
-                @foreach($files as $documentFile)
+                @foreach($publication->files as $documentFile)
                     <a href="{{ route('publications.viewer', ['publication' => $publication, 'file' => $documentFile]) }}" 
                        class="block rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 {{ $documentFile->is($file) ? 'bg-gundar-primary/10 text-gundar-primary shadow-sm border border-gundar-primary/20' : 'text-slate-600 hover:bg-slate-50 hover:text-gundar-dark' }}">
                         <div class="flex items-start gap-3">
@@ -6093,23 +6057,17 @@ class User extends Authenticatable implements FilamentUser
             </div>
         </nav>
 
-        <!-- KANVAS RENDER PDF (Dengan area scroll) -->
-        <div id="pdf-scroll-area" class="relative flex-1 overflow-auto bg-slate-200/80 flex justify-center p-4 sm:p-8">
+        <!-- KANVAS RENDER PDF (Mode Continuous Scroll) -->
+        <div id="pdf-scroll-area" class="relative flex-1 overflow-auto bg-slate-200/80 flex flex-col items-center p-4 sm:p-8">
             
-            <!-- Wrapper untuk shadow yang lebih realistis -->
-            <div class="relative flex-shrink-0 h-max">
-                <canvas id="pdf-render" class="bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] ring-1 ring-slate-900/5 pointer-events-none"></canvas>
+            <!-- Loading Indicator Minimalis -->
+            <div id="pdf-loader" class="flex flex-col items-center justify-center my-auto py-12 text-slate-500">
+                <div class="h-8 w-8 animate-spin rounded-full border-4 border-gundar-primary border-t-transparent mb-3"></div>
+                <p class="text-xs font-bold tracking-wider uppercase">Memuat Dokumen PDF...</p>
             </div>
-            
-            <!-- WATERMARK (Modern Frosted Glass) -->
-            @if($isWatermarked)
-                <div class="pointer-events-none fixed bottom-8 right-8 z-50 -rotate-6 rounded-2xl border border-white/40 bg-white/60 px-6 py-3 backdrop-blur-md shadow-xl">
-                    <p class="text-xs font-black tracking-[0.15em] text-slate-800/80 uppercase">
-                        {{ $currentUser->name }} <br>
-                        <span class="text-[10px] text-gundar-primary">{{ $currentUser->npm ?? 'NPM' }} &bull; {{ now()->format('d M Y') }}</span>
-                    </p>
-                </div>
-            @endif
+
+            <!-- Kontainer Utama Tempat Halaman-Halaman PDF Disusun -->
+            <div id="pdf-pages-container" class="flex flex-col items-center gap-6 pb-12 w-full"></div>
             
         </div>
     </main>
@@ -6118,62 +6076,87 @@ class User extends Authenticatable implements FilamentUser
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         
         const url = @json(route('document.stream', $file));
-        const canvas = document.getElementById('pdf-render');
-        const context = canvas.getContext('2d');
+        const scrollArea = document.getElementById('pdf-scroll-area');
+        const pagesContainer = document.getElementById('pdf-pages-container');
+        const loader = document.getElementById('pdf-loader');
         
         let pdfDocument = null;
-        let pageNumber = 1;
-        let isRendering = false;
-        let pendingPage = null;
         let currentScale = 1.5; // Skala default 150%
+        const isWatermarked = @json($isWatermarked);
+        const userName = @json($currentUser->name ?? 'User');
+        const userNpm = @json($currentUser->npm ?? 'NPM');
+        const watermarkDate = @json(now()->format('d M Y'));
 
         function updateZoomLabel() {
             document.getElementById('zoom-label').textContent = Math.round(currentScale * 100) + '%';
         }
 
-        function renderPage(number) {
-            isRendering = true;
-            pdfDocument.getPage(number).then((page) => {
-                const viewport = page.getViewport({ scale: currentScale }); 
+        // Fungsi utama render semua halaman secara berurutan (Scroll Mode)
+        async function renderAllPages() {
+            if (!pdfDocument) return;
+            
+            // Tampilkan loader saat memrender ulang
+            loader.style.display = 'flex';
+            pagesContainer.innerHTML = '';
+            
+            const totalPages = pdfDocument.numPages;
+            document.getElementById('page-count-label').textContent = `${totalPages} Halaman`;
+
+            // Loop untuk membuat kanvas tiap halaman
+            for (let num = 1; num <= totalPages; num++) {
+                const page = await pdfDocument.getPage(num);
+                const viewport = page.getViewport({ scale: currentScale });
+
+                // Wrapper per halaman supaya ada shadow dan support watermark per page
+                const pageWrapper = document.createElement('div');
+                pageWrapper.className = 'relative flex-shrink-0 bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] ring-1 ring-slate-900/5 overflow-hidden';
+                pageWrapper.style.width = `${viewport.width}px`;
+                pageWrapper.style.height = `${viewport.height}px`;
+
+                // Element Canvas
+                const canvas = document.createElement('canvas');
+                canvas.className = 'block pointer-events-none';
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
+                
+                const context = canvas.getContext('2d');
+                pageWrapper.appendChild(canvas);
 
-                return page.render({ canvasContext: context, viewport }).promise;
-            }).then(() => {
-                isRendering = false;
-                if (pendingPage !== null) {
-                    const nextPage = pendingPage;
-                    pendingPage = null;
-                    renderPage(nextPage);
+                // Tambahkan Watermark jika dokumen dibatasi
+                if (isWatermarked) {
+                    const watermark = document.createElement('div');
+                    // z-20 untuk di atas kanvas, pointer-events-none agar tidak mengganggu klik/scroll
+                    watermark.className = 'pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden z-20';
+                    watermark.innerHTML = `
+                        <!-- Menggunakan opacity-20 agar sangat transparan dan mix-blend-multiply agar menyatu dengan tinta PDF -->
+                        <div class="-rotate-[35deg] select-none text-center opacity-20 mix-blend-multiply w-full px-10">
+                            <p class="text-4xl sm:text-5xl font-black tracking-widest text-slate-600 uppercase leading-tight">
+                                ${userName} <br>
+                                <span class="text-xl sm:text-2xl text-slate-600 font-bold">${userNpm} &bull; ${watermarkDate}</span>
+                            </p>
+                        </div>
+                    `;
+                    pageWrapper.appendChild(watermark);
                 }
-            });
 
-            document.getElementById('page-num').textContent = number;
-        }
+                pagesContainer.appendChild(pageWrapper);
 
-        function queueRenderPage(number) {
-            if (isRendering) {
-                pendingPage = number;
-                return;
+                // Render halaman ke dalam canvas-nya masing-masing
+                await page.render({ canvasContext: context, viewport }).promise;
             }
-            renderPage(number);
+
+            // Sembunyikan loader setelah selesai
+            loader.style.display = 'none';
         }
-
-        // Navigasi Halaman
-        document.getElementById('prev-page').addEventListener('click', () => {
-            if (pageNumber > 1) queueRenderPage(--pageNumber);
-        });
-
-        document.getElementById('next-page').addEventListener('click', () => {
-            if (pdfDocument && pageNumber < pdfDocument.numPages) queueRenderPage(++pageNumber);
-        });
 
         // Kontrol Zoom
         document.getElementById('zoom-in').addEventListener('click', () => {
             if (currentScale < 3.0) { // Max zoom 300%
                 currentScale += 0.25;
                 updateZoomLabel();
-                queueRenderPage(pageNumber);
+                renderAllPages().then(() => {
+                    scrollArea.scrollTop = 0; // Balikkan scroll ke atas dengan mulus saat ganti zoom
+                });
             }
         });
 
@@ -6181,20 +6164,24 @@ class User extends Authenticatable implements FilamentUser
             if (currentScale > 0.5) { // Min zoom 50%
                 currentScale -= 0.25;
                 updateZoomLabel();
-                queueRenderPage(pageNumber);
+                renderAllPages().then(() => {
+                    scrollArea.scrollTop = 0;
+                });
             }
         });
 
-        // Inisialisasi Dokumen
+        // Inisialisasi Memuat PDF
         pdfjsLib.getDocument({ url, disableAutoFetch: true, disableStream: true }).promise
             .then((pdf) => {
                 pdfDocument = pdf;
-                window.document.getElementById('page-count').textContent = pdfDocument.numPages;
-                renderPage(pageNumber);
+                renderAllPages();
             })
-            .catch(() => alert('Gagal memuat dokumen. Periksa akses atau ketersediaan berkas.'));
+            .catch(() => {
+                loader.style.display = 'none';
+                alert('Gagal memuat dokumen. Periksa akses atau ketersediaan berkas.');
+            });
 
-        // Proteksi Keyboard (Mencegah Save/Print)
+        // Proteksi Keyboard (Mencegah Shortcut Save/Print)
         document.addEventListener('keydown', (event) => {
             if ((event.ctrlKey || event.metaKey) && ['s', 'p'].includes(event.key.toLowerCase())) {
                 event.preventDefault();
@@ -6239,6 +6226,77 @@ class FileAccessController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $file->title . '.pdf"',
         ]);
+    }
+}
+</file>
+
+<file path="app/Models/PublicationFile.php">
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable;
+
+class PublicationFile extends Model
+{
+    protected $guarded = [];
+
+    protected $casts = [
+        'allow_download' => 'boolean',
+    ];
+
+    public function publication()
+    {
+        return $this->belongsTo(Publication::class);
+    }
+
+    public function canBeViewedBy(?Authenticatable $user): bool
+    {
+        if ($user?->role === 'admin') {
+            return true;
+        }
+
+        $effectiveVisibility = $this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated');
+
+        return match ($effectiveVisibility) {
+            'public' => true,
+            'authenticated' => $user !== null,
+            'admin' => $user?->role === 'admin',
+            default => false,
+        };
+    }
+
+    public function canBeDownloadedBy(?Authenticatable $user): bool
+    {
+        if ($user?->role === 'admin') {
+            return true;
+        }
+
+        return $this->allow_download && $this->canBeViewedBy($user);
+    }
+
+    public function isPublic(): bool
+    {
+        $effectiveVisibility = $this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated');
+        return $effectiveVisibility === 'public';
+    }
+
+    public function isRestricted(): bool
+    {
+        return ! $this->isPublic();
+    }
+
+    public function getVisibilityLabelAttribute(): string
+    {
+        $effectiveVisibility = $this->visibility ?? ($this->access_type === 'public' ? 'public' : 'authenticated');
+
+        return match ($effectiveVisibility) {
+            'public' => 'Publik',
+            'authenticated' => 'Mahasiswa internal',
+            'admin' => 'Admin saja',
+            default => 'Terbatas',
+        };
     }
 }
 </file>
@@ -6377,336 +6435,6 @@ class FileAccessController extends Controller
 @endsection
 </file>
 
-<file path="app/Filament/Resources/Publications/Schemas/PublicationForm.php">
-<?php
-
-namespace App\Filament\Resources\Publications\Schemas;
-
-use App\Models\Publication;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Support\Str;
-
-class PublicationForm
-{
-    public static function configure(Schema $schema): Schema
-    {
-        $detectResearchMethod = function (Get $get, Set $set) {
-            // TagsInput mengembalikan array, jadi kita gabungkan menjadi satu string
-            $keywordsData = $get('keywords');
-            $keywordsString = is_array($keywordsData) ? implode(' ', $keywordsData) : (string) ($keywordsData ?? '');
-            
-            $keywords = strtolower($keywordsString);
-            $abstract = strtolower((string) ($get('abstract') ?? ''));
-
-            $methods = [
-                'agile' => 'Agile',
-                'waterfall' => 'SDLC Waterfall',
-                'sdlc' => 'SDLC',
-                'rad' => 'Rapid Application Development (RAD)',
-                'prototyping' => 'Prototyping',
-                'scrum' => 'Scrum',
-                'kuantitatif' => 'Kuantitatif',
-                'kualitatif' => 'Kualitatif',
-                'studi kasus' => 'Studi Kasus',
-                'eksperimental' => 'Eksperimental',
-                'tindakan' => 'Penelitian Tindakan (Action Research)',
-                'blackbox' => 'Black Box Testing',
-            ];
-
-            $detectedMethod = null;
-
-            // 1. Cek di Keywords
-            foreach ($methods as $key => $label) {
-                if (Str::contains($keywords, $key)) {
-                    $detectedMethod = $label;
-                    break;
-                }
-            }
-
-            // 2. Cek di Abstrak (Jika tidak ada di keywords)
-            if (! $detectedMethod) {
-                foreach ($methods as $key => $label) {
-                    if (Str::contains($abstract, $key)) {
-                        $detectedMethod = $label;
-                        break;
-                    }
-                }
-            }
-
-            // 3. Set nilai hanya jika ditemukan dan kolom masih kosong
-            if ($detectedMethod && empty($get('research_method'))) {
-                $set('research_method', $detectedMethod);
-            }
-        };
-
-        return $schema
-            ->components([
-                Select::make('container_id')
-                    ->relationship('container', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-
-                Select::make('type')
-                    ->options(Publication::TYPE_LABELS)
-                    ->default('thesis')
-                    ->live()
-                    ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
-                        if (filled($get('files'))) {
-                            return;
-                        }
-
-                        $set('files', static::fileTemplate($state));
-                    })
-                    ->helperText('Jenis karya menentukan template berkas. Template hanya diterapkan pada berkas yang masih kosong.')
-                    ->required(),
-
-                Placeholder::make('required_sections_check')
-                    ->label('Pemeriksaan bagian wajib')
-                    ->content(function (Get $get) {
-                        $type = $get('type') ?? 'thesis';
-                        $files = $get('files') ?? [];
-
-                        $present = array_map(fn($f) => $f['section'] ?? null, $files);
-                        $required = Publication::requiredSectionsForType($type);
-                        $missing = array_values(array_diff($required, $present));
-                        $countMissing = count($missing);
-
-                        if ($countMissing === 0) {
-                            return '<span style="color:green">✓ Semua bagian wajib ada menurut template saat ini.</span>';
-                        }
-
-                        $labels = array_map(fn($k) => static::sectionOptions()[$k] ?? $k, $missing);
-                        $list = implode(', ', $labels);
-
-                        return "<strong style=\"color:#b45309\">⚠ {$countMissing} bagian wajib belum ada:</strong> {$list}.\n\nSilakan tambahkan bagian-bagian ini sebelum menyimpan jika kamu ingin memastikan kelengkapan publikasi.";
-                    })
-                    ->reactive(),
-
-                TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-
-                TextInput::make('author')
-                    ->required()
-                    ->maxLength(255),
-
-                TextInput::make('year')
-                    ->numeric()
-                    ->required(),
-
-                Textarea::make('abstract')
-                    ->rows(5)
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
-                        $detectResearchMethod($get, $set);
-                    }),
-
-                TagsInput::make('keywords')
-                    ->label('Kata Kunci')
-                    ->separator(',')
-                    ->splitKeys(['Tab', 'Enter'])
-                    ->helperText('Tekan Enter atau Tab setelah setiap kata kunci. Tag ini digunakan oleh pencarian dan rekomendasi dokumen.')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
-                        $detectResearchMethod($get, $set);
-                    }),
-
-                Select::make('topics')
-                    ->label('Topik Repository')
-                    ->relationship('topics', 'name')
-                    ->multiple()
-                    ->searchable()
-                    ->preload()
-                    ->createOptionForm([
-                        \Filament\Forms\Components\TextInput::make('name')
-                            ->label('Nama topik')
-                            ->required()
-                            ->afterStateUpdated(fn ($state, $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
-                        \Filament\Forms\Components\TextInput::make('slug')
-                            ->label('Slug')
-                            ->required(),
-                    ])
-                    ->helperText('Pilih topik terstruktur untuk mendukung pencarian dan rekomendasi bacaan pelengkap. Ketik untuk mencari, atau buat topik baru.'),
-
-                // ==========================================
-                // TAMBAHAN METADATA BARU DIMULAI DARI SINI
-                // ==========================================
-                Select::make('language')
-                    ->label('Bahasa')
-                    ->options([
-                        'id' => 'Indonesia',
-                        'en' => 'Inggris',
-                    ])
-                    ->default('id')
-                    ->searchable(),
-
-                TextInput::make('research_method')
-                    ->label('Metode Riset')
-                    ->placeholder('Contoh: Kualitatif, Kuantitatif, SDLC Waterfall...')
-                    ->maxLength(255)
-                    ->helperText('Otomatis terdeteksi dari Kata Kunci atau Abstrak. Dapat diubah manual jika tidak sesuai.'),
-
-                Select::make('license')
-                    ->label('Lisensi')
-                    ->options([
-                        'Internal Use Only' => 'Internal Use Only (Khusus Kampus)',
-                        'All Rights Reserved' => 'All Rights Reserved (Hak Cipta Penuh)',
-                        'CC BY' => 'CC BY (Creative Commons - Atribusi)',
-                        'CC BY-NC' => 'CC BY-NC (Non-Komersial)',
-                    ])
-                    ->default('Internal Use Only')
-                    ->searchable(),
-
-                TextInput::make('doi')
-                    ->label('DOI (Digital Object Identifier)')
-                    ->placeholder('Contoh: 10.1000/xyz123')
-                    ->maxLength(255)
-                    ->helperText('Kosongkan jika publikasi belum memiliki DOI resmi.'),
-                // ==========================================
-                // BATAS TAMBAHAN METADATA BARU
-                // ==========================================
-
-                Repeater::make('files')
-                    ->label('Berkas Publikasi')
-                    ->relationship('files')
-                    ->default(fn (Get $get): array => static::fileTemplate($get('type') ?? 'thesis'))
-                    ->schema([
-                        Select::make('section')
-                            ->label('Bagian')
-                            ->options(static::sectionOptions())
-                            ->searchable()
-                            ->live()
-                            ->afterStateUpdated(function (Set $set, ?string $state): void {
-                                if (filled($state)) {
-                                    $set('title', static::sectionOptions()[$state] ?? $state);
-                                }
-                            })
-                            ->required(),
-
-                        TextInput::make('title')
-                            ->label('Nama Bagian')
-                            ->placeholder('Contoh: Bab I – Pendahuluan')
-                            ->required()
-                            ->maxLength(255),
-
-                        Select::make('visibility')
-                            ->label('Siapa yang dapat membaca')
-                            ->options([
-                                'public' => 'Publik',
-                                'authenticated' => 'Mahasiswa internal (wajib login)',
-                                'admin' => 'Admin saja',
-                            ])
-                            ->default('authenticated')
-                            ->required(),
-
-                        Toggle::make('allow_download')
-                            ->label('Izinkan unduh PDF')
-                            ->helperText('Aktifkan hanya untuk dokumen yang memang berlisensi atau berizin untuk diunduh.')
-                            ->default(false),
-
-                        FileUpload::make('file_path')
-                            ->label('File PDF')
-                            ->disk('local')
-                            ->visibility('private')
-                            ->acceptedFileTypes(['application/pdf'])
-                            ->directory('publications_pdf')
-                            ->maxSize(10240)
-                            ->required(),
-                    ])
-                    ->columns(2)
-                    ->orderColumn('sort_order')
-                    ->defaultItems(1)
-                    ->addActionLabel('Tambah berkas atau bagian lain')
-                    ->helperText('Karya akademik menggunakan template per bagian. Artikel dan buku dapat diunggah sebagai satu dokumen lengkap.'),
-            ]);
-    }
-
-    public static function sectionOptions(): array
-    {
-        return [
-            'full_document' => 'Dokumen lengkap',
-            'cover' => 'Cover Penulisan',
-            'originality_statement' => 'Pernyataan Orisinalitas dan Publikasi',
-            'approval_sheet' => 'Lembar Pengesahan',
-            'abstract_id' => 'Abstrak Bahasa Indonesia',
-            'abstract_en' => 'Abstract Bahasa Inggris',
-            'preface' => 'Kata Pengantar',
-            'table_of_contents' => 'Daftar Isi',
-            'list_of_tables' => 'Daftar Tabel',
-            'list_of_figures' => 'Daftar Gambar',
-            'list_of_formulas' => 'Daftar Rumus',
-            'list_of_appendices' => 'Daftar Lampiran',
-            'chapter_1' => 'Bab I – Pendahuluan',
-            'chapter_2' => 'Bab II – Tinjauan Pustaka',
-            'chapter_3' => 'Bab III – Metodologi',
-            'chapter_4' => 'Bab IV – Hasil dan Pembahasan',
-            'chapter_5' => 'Bab V – Kesimpulan',
-            'chapter_6' => 'Bab VI',
-            'bibliography' => 'Daftar Pustaka',
-            'appendix' => 'Lampiran',
-            'application_test_statement' => 'Pernyataan Uji Coba Aplikasi',
-            'program_listing' => 'Listing Program',
-            'program_output' => 'Output Program',
-            'presentation' => 'Dokumen Presentasi Sidang',
-            'other' => 'Berkas Lainnya',
-        ];
-    }
-
-    private static function fileTemplate(?string $type): array
-    {
-        if (in_array($type, ['article', 'book', 'proceeding', 'report'], true)) {
-            return [[
-                'section' => 'full_document',
-                'title' => 'Dokumen lengkap',
-                'visibility' => 'public',
-                'allow_download' => false,
-            ]];
-        }
-
-        $sections = [
-            ['cover', 'public'],
-            ['originality_statement', 'admin'],
-            ['approval_sheet', 'admin'],
-            ['abstract_id', 'public'],
-            ['abstract_en', 'public'],
-            ['preface', 'authenticated'],
-            ['table_of_contents', 'authenticated'],
-            ['list_of_tables', 'authenticated'],
-            ['list_of_figures', 'authenticated'],
-            ['list_of_formulas', 'authenticated'],
-            ['list_of_appendices', 'authenticated'],
-            ['chapter_1', 'authenticated'],
-            ['chapter_2', 'authenticated'],
-            ['chapter_3', 'authenticated'],
-            ['chapter_4', 'authenticated'],
-            ['chapter_5', 'authenticated'],
-            ['bibliography', 'authenticated'],
-            ['appendix', 'admin'],
-        ];
-
-        return array_map(fn (array $section): array => [
-            'section' => $section[0],
-            'title' => static::sectionOptions()[$section[0]],
-            'visibility' => $section[1],
-            'allow_download' => false,
-        ], $sections);
-    }
-}
-</file>
-
 <file path="app/Filament/Resources/Topics/Tables/TopicsTable.php">
 <?php
 
@@ -6829,562 +6557,6 @@ class TopicsTable
                     ->requiresConfirmation(),
                 BulkActionGroup::make([DeleteBulkAction::make()]),
             ]);
-    }
-}
-</file>
-
-<file path="app/Models/Publication.php">
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Jobs\GenerateRecommendations;
-
-class Publication extends Model
-{
-    protected $guarded = [];
-
-    public const TYPE_LABELS = [
-        'thesis' => 'Skripsi / Tesis / Disertasi',
-        'scientific_paper' => 'Penulisan Ilmiah',
-        'article' => 'Artikel Jurnal',
-        'book' => 'Buku',
-        'proceeding' => 'Prosiding',
-        'report' => 'Laporan Penelitian',
-    ];
-
-    // Relasi: Banyak Publication dimiliki oleh Satu Container
-    public function container()
-    {
-        return $this->belongsTo(Container::class);
-    }
-
-    public function files()
-    {
-        return $this->hasMany(PublicationFile::class)->orderBy('sort_order');
-    }
-
-    public function topics(): BelongsToMany
-    {
-        return $this->belongsToMany(Topic::class)->withPivot('is_auto');
-    }
-
-    public function bookmarks()
-    {
-        return $this->hasMany(Bookmark::class);
-    }
-
-    public function getTypeLabelAttribute(): string
-    {
-        return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);
-    }
-
-    /**
-     * Scope untuk Weighted Search (Bobot: Judul > Keyword > Author > Abstrak)
-     */
-    public function scopeSearch(Builder $query, ?string $term, array $semanticTerms = []): Builder
-    {
-        if (empty($term) && empty($semanticTerms)) {
-            return $query;
-        }
-
-        $term = strtolower(trim((string) $term));
-
-        return $query->where(function (Builder $q) use ($term, $semanticTerms) {
-            // Pencarian keyword utama
-            if ($term !== '') {
-                $q->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
-                  ->orWhereRaw('LOWER(keywords) LIKE ?', ["%{$term}%"])
-                  ->orWhereRaw('LOWER(abstract) LIKE ?', ["%{$term}%"])
-                  ->orWhereRaw('LOWER(author) LIKE ?', ["%{$term}%"])
-                  ->orWhereRaw('year LIKE ?', ["%{$term}%"])
-                  ->orWhereHas('container', function ($containerQuery) use ($term) {
-                      $containerQuery->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"])
-                                     ->orWhereRaw('LOWER(identifier) LIKE ?', ["%{$term}%"]);
-                  })
-                  ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]));
-            }
-
-            // Pencarian perluasan sinonim dan topik (dari expandSearchTerms)
-            foreach ($semanticTerms as $semanticTerm) {
-                $semanticTerm = strtolower(trim((string) $semanticTerm));
-                if ($semanticTerm === '') continue;
-
-                $q->orWhereRaw('LOWER(title) LIKE ?', ["%{$semanticTerm}%"])
-                  ->orWhereRaw('LOWER(abstract) LIKE ?', ["%{$semanticTerm}%"])
-                  ->orWhereRaw('LOWER(keywords) LIKE ?', ["%{$semanticTerm}%"])
-                  ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->whereRaw('LOWER(name) LIKE ?', ["%{$semanticTerm}%"]));
-            }
-        })
-        // Pengurutan bobot kecocokan keyword utama menggunakan CASE statement
-        ->when($term !== '', function (Builder $q) use ($term) {
-            $q->orderByRaw("
-                CASE 
-                    WHEN LOWER(title) LIKE ? THEN 4
-                    WHEN LOWER(keywords) LIKE ? THEN 3
-                    WHEN LOWER(author) LIKE ? THEN 2
-                    WHEN LOWER(abstract) LIKE ? THEN 1
-                    ELSE 0 
-                END DESC
-            ", [
-                "%{$term}%", // Bobot 4 (Judul)
-                "%{$term}%", // Bobot 3 (Keyword)
-                "%{$term}%", // Bobot 2 (Author)
-                "%{$term}%", // Bobot 1 (Abstrak)
-            ]);
-        })
-        ->latest(); // Fallback urutan berdasarkan dokumen terbaru
-    }
-
-    /**
-     * Return list of required section keys for a given publication type.
-     * These reflect reasonable defaults based on typical campus repository templates.
-     *
-     * @return array<int, string>
-     */
-    public static function requiredSectionsForType(?string $type): array
-    {
-        $type = $type ?? 'thesis';
-
-        // Defaults inspired by the list you provided (bintang = wajib)
-        $thesisRequired = [
-            'cover',
-            'originality_statement',
-            'approval_sheet',
-            'abstract_id',
-            'table_of_contents',
-            'chapter_1',
-            'chapter_2',
-            'chapter_3',
-            'bibliography',
-            'presentation',
-        ];
-
-        switch ($type) {
-            case 'scientific_paper':
-                // Penulisan ilmiah: mirip skripsi tapi lebih ringkas
-                return $thesisRequired;
-
-            case 'article':
-            case 'book':
-            case 'proceeding':
-            case 'report':
-                // Dokumen tunggal: minimal dokumen lengkap dan daftar pustaka
-                return [
-                    'full_document',
-                    'abstract_id',
-                    'bibliography',
-                ];
-
-            case 'thesis':
-            default:
-                return $thesisRequired;
-        }
-    }
-
-    /**
-     * Return missing required section keys for this publication using persisted files.
-     *
-     * @return array<int, string>
-     */
-    public function missingRequiredSections(): array
-    {
-        $present = $this->files()->pluck('section')->filter()->values()->all();
-
-        $required = self::requiredSectionsForType($this->type ?? null);
-
-        return array_values(array_diff($required, $present));
-    }
-
-    /**
-     * Same as missingRequiredSections but based on incoming form data array (files as array).
-     * Useful when validating form state before the record is persisted.
-     *
-     * @param  array<int, array<string,mixed>>  $filesData
-     * @return array<int, string>
-     */
-    public static function missingRequiredSectionsFromArray(?string $type, array $filesData = []): array
-    {
-        $present = array_values(array_filter(array_map(fn($f) => $f['section'] ?? null, $filesData)));
-
-        $required = self::requiredSectionsForType($type);
-
-        return array_values(array_diff($required, $present));
-    }
-
-    /**
-     * Helper: Parse string author menjadi array nama-nama bersih.
-     * Mendukung pemisah titik koma (;), kata 'dan', 'and', atau koma untuk banyak penulis.
-     */
-    protected function parseAuthors(): array
-    {
-        if (empty($this->author)) {
-            return ['Anonim'];
-        }
-
-        if (str_contains($this->author, ';')) {
-            $authors = explode(';', $this->author);
-        } elseif (str_contains(strtolower($this->author), ' dan ')) {
-            $authors = preg_split('/[\s]+dan[\s]+/i', $this->author);
-        } elseif (str_contains(strtolower($this->author), ' and ')) {
-            $authors = preg_split('/[\s]+and[\s]+/i', $this->author);
-        } else {
-            $authors = explode(',', $this->author);
-            if (count($authors) === 2 && strlen(trim($authors[1])) <= 6) {
-                // Anggap gelar pendek, misal "Nama, S.Kom" -> 1 author
-                return [trim($this->author)];
-            }
-        }
-
-        return array_values(array_filter(array_map('trim', $authors)));
-    }
-
-    /**
-     * Helper: Format single author untuk APA & Harvard -> "Nama Belakang, Inisial."
-     */
-    protected function formatAuthorAPA(string $fullName): string
-    {
-        $cleanName = preg_replace('/,?\s*(S\.Kom|M\.Kom|S\.T|M\.T|Ph\.D|Dr\.|Prof\.).*/i', '', $fullName);
-        $parts = explode(' ', trim($cleanName));
-        
-        if (count($parts) === 1) {
-            return $parts[0];
-        }
-
-        $lastName = array_pop($parts);
-        $initials = '';
-        foreach ($parts as $part) {
-            if (!empty($part)) {
-                $initials .= strtoupper(substr($part, 0, 1)) . '. ';
-            }
-        }
-
-        return $lastName . ', ' . trim($initials);
-    }
-
-    /**
-     * [BARU - FASE 2A] Mengubah format author menjadi format sitasi single/multi author default.
-     */
-    public function getFormattedAuthorAttribute(): string
-    {
-        $authors = array_map([$this, 'formatAuthorAPA'], $this->parseAuthors());
-        $count = count($authors);
-
-        if ($count === 1) return $authors[0];
-        if ($count === 2) return $authors[0] . ' & ' . $authors[1];
-        
-        $lastAuthor = array_pop($authors);
-        return implode(', ', $authors) . ', & ' . $lastAuthor;
-    }
-
-    /**
-     * [BARU - FASE 2A PLUS BILINGUAL] Generate format sitasi pintar (APA, IEEE, Harvard) 
-     * dengan dukungan Multi-Author & Auto-Detect Bahasa (dkk. / et al.)
-     */
-    public function getCitation(string $style = 'APA'): string
-    {
-        $authors = $this->parseAuthors();
-        $authorCount = count($authors);
-        $year = $this->year ?? date('Y');
-        $title = $this->title ?? 'Tanpa Judul';
-        $container = $this->container ? $this->container->name : 'Universitas Gunadarma';
-
-        // Cek bahasa dokumen (default ke 'id' / Indonesia kalau kosong)
-        $isIndo = !isset($this->language) || in_array(strtolower(trim($this->language)), ['id', 'indonesia', 'in']);
-        $etAl = $isIndo ? 'dkk.' : 'et al.';
-        $andWord = $isIndo ? 'dan' : 'and';
-
-        switch (strtoupper($style)) {
-            case 'IEEE':
-                $formatIEEE = function($fullName) {
-                    $cleanName = preg_replace('/,?\s*(S\.Kom|M\.Kom|S\.T|M\.T|Ph\.D|Dr\.|Prof\.).*/i', '', $fullName);
-                    $parts = explode(' ', trim($cleanName));
-                    if (count($parts) === 1) return $parts[0];
-                    $lastName = array_pop($parts);
-                    $initials = '';
-                    foreach ($parts as $part) {
-                        if (!empty($part)) $initials .= strtoupper(substr($part, 0, 1)) . '. ';
-                    }
-                    return trim($initials) . ' ' . $lastName;
-                };
-
-                // IEEE: > 6 penulis langsung dipangkas
-                if ($authorCount > 6) {
-                    $authorStr = $formatIEEE($authors[0]) . ' ' . $etAl;
-                } elseif ($authorCount === 1) {
-                    $authorStr = $formatIEEE($authors[0]);
-                } elseif ($authorCount === 2) {
-                    $authorStr = $formatIEEE($authors[0]) . ' ' . $andWord . ' ' . $formatIEEE($authors[1]);
-                } else {
-                    $lastAuthor = $formatIEEE(array_pop($authors));
-                    $authorStr = implode(', ', array_map($formatIEEE, $authors)) . ', ' . $andWord . ' ' . $lastAuthor;
-                }
-
-                if ($this->type === 'article') {
-                    return sprintf('%s, "%s," %s, %s.', $authorStr, $title, $container, $year);
-                }
-                return sprintf('%s, "%s," %s, %s, %s.', $authorStr, $title, $this->type_label, $container, $year);
-
-            case 'HARVARD':
-                $formattedAuthors = array_map([$this, 'formatAuthorAPA'], $authors);
-
-                // Harvard: > 3 penulis dipangkas
-                if ($authorCount === 1) {
-                    $authorStr = $formattedAuthors[0];
-                } elseif ($authorCount === 2) {
-                    $authorStr = $formattedAuthors[0] . ' ' . $andWord . ' ' . $formattedAuthors[1];
-                } elseif ($authorCount === 3) {
-                    $lastAuthor = array_pop($formattedAuthors);
-                    $authorStr = implode(', ', $formattedAuthors) . ' ' . $andWord . ' ' . $lastAuthor;
-                } else {
-                    $authorStr = $formattedAuthors[0] . ' ' . $etAl;
-                }
-
-                if ($this->type === 'article') {
-                    return sprintf('%s (%s) \'%s\', %s.', $authorStr, $year, $title, $container);
-                }
-                return sprintf('%s (%s) %s. %s: %s.', $authorStr, $year, $title, $this->type_label, $container);
-
-            case 'APA':
-            default:
-                $formattedAuthors = array_map([$this, 'formatAuthorAPA'], $authors);
-
-                // APA 7th: Toleran sampai 20 penulis
-                if ($authorCount === 1) {
-                    $authorStr = $formattedAuthors[0];
-                } elseif ($authorCount === 2) {
-                    // Di Indonesia, APA sering tetap pakai '&' atau 'dan' tergantung pedoman kampus
-                    $separator = $isIndo ? ' & ' : ' & '; 
-                    $authorStr = $formattedAuthors[0] . $separator . $formattedAuthors[1];
-                } elseif ($authorCount >= 3 && $authorCount <= 20) {
-                    $lastAuthor = array_pop($formattedAuthors);
-                    $authorStr = implode(', ', $formattedAuthors) . ', & ' . $lastAuthor;
-                } else {
-                    // APA 7th untuk > 20 penulis -> Penulis pertama dkk. / et al.
-                    $authorStr = $formattedAuthors[0] . ' ' . $etAl;
-                }
-
-                if ($this->type === 'article') {
-                    return sprintf('%s. (%s). %s. %s.', $authorStr, $year, $title, $container);
-                }
-                return sprintf('%s. (%s). %s [%s, %s].', $authorStr, $year, $title, $this->type_label, $container);
-        }
-    }
-}
-</file>
-
-<file path="app/Models/Topic.php">
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
-
-class Topic extends Model
-{
-    protected $guarded = [];
-
-    protected $casts = [
-        'is_active' => 'boolean',
-        'sort_order' => 'integer',
-        'merged_at' => 'datetime',
-    ];
-
-    protected static function booted(): void
-    {
-        static::saving(function (Topic $topic): void {
-            if (blank($topic->slug)) {
-                $topic->slug = Str::slug($topic->name);
-            }
-        });
-    }
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(self::class, 'parent_id');
-    }
-
-    public function children(): HasMany
-    {
-        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order')->orderBy('name');
-    }
-
-    public function ancestorIds(): array
-    {
-        $ids = [];
-        $current = $this->parent()->with('parent')->first();
-
-        while ($current) {
-            if (in_array($current->id, $ids, true)) {
-                break;
-            }
-
-            $ids[] = $current->id;
-            $current = $current->parent()->with('parent')->first();
-        }
-
-        return array_values(array_unique($ids));
-    }
-
-    public function relatedTopicIds(): array
-    {
-        $ids = [$this->id];
-
-        foreach ($this->ancestorIds() as $ancestorId) {
-            $ids[] = $ancestorId;
-        }
-
-        foreach ($this->children()->pluck('id') as $childId) {
-            $ids[] = $childId;
-        }
-
-        return array_values(array_unique($ids));
-    }
-
-    public function publications(): BelongsToMany
-    {
-        return $this->belongsToMany(Publication::class)->withPivot('is_auto');
-    }
-
-    public function userPreferences()
-    {
-        return $this->hasMany(UserTopicPreference::class);
-    }
-
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'user_topic_preferences');
-    }
-
-    // Scopes
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
-    // Admin helpers
-    public function activate(): void
-    {
-        $this->is_active = true;
-        $this->save();
-    }
-
-    public function deactivate(): void
-    {
-        $this->is_active = false;
-        $this->save();
-    }
-
-    /**
-     * Merge this topic into another topic.
-     * Moves publications relations to the $target and deletes this topic.
-     */
-    public function mergeInto(Topic $target): void
-    {
-        if ($this->id === $target->id) {
-            return;
-        }
-
-        // Gather related publication ids
-        $publicationIds = $this->publications()->pluck('publications.id')->all();
-
-        // Determine which publications will be newly attached to target
-        $added = [];
-
-        foreach ($publicationIds as $pubId) {
-            $publication = Publication::find($pubId);
-            if (! $publication) continue;
-
-            $already = $publication->topics()->where('topics.id', $target->id)->exists();
-            if (! $already) {
-                $publication->topics()->attach($target->id);
-                $added[] = $pubId;
-            }
-
-            // Detach this topic from publication
-            $publication->topics()->detach($this->id);
-        }
-
-        // Determine actor
-        $actorId = auth()->id() ?? null;
-
-        // Store backup for potential undo, including list of added attachments and audit info
-        \DB::table('topic_merge_backups')->insert([
-            'source_id' => $this->id,
-            'target_id' => $target->id,
-            'publication_ids' => json_encode($publicationIds),
-            'added_publication_ids' => json_encode($added),
-            'merged_by' => $actorId,
-            'merged_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Mark this topic as merged into target and deactivate it (do not delete)
-        $this->merged_into = $target->id;
-        $this->merged_by = $actorId;
-        $this->merged_at = now();
-        $this->is_active = false;
-        $this->save();
-    }
-
-    /**
-     * Undo the latest merge for this topic if any.
-     */
-    public function undoMerge(): bool
-    {
-        $backup = \DB::table('topic_merge_backups')
-            ->where('source_id', $this->id)
-            ->where('undone', false)
-            ->orderByDesc('created_at')
-            ->first();
-
-        if (! $backup) {
-            return false;
-        }
-
-        $publicationIds = json_decode($backup->publication_ids, true) ?? [];
-        $added = json_decode($backup->added_publication_ids ?? '[]', true) ?? [];
-        $target = Topic::find($backup->target_id);
-
-        if (! $target) {
-            return false;
-        }
-
-        // Reattach publications to source and detach from target only for those that were newly added
-        foreach ($publicationIds as $pubId) {
-            $publication = Publication::find($pubId);
-            if (! $publication) continue;
-
-            // Reattach to source if missing
-            if (! $publication->topics()->where('topics.id', $this->id)->exists()) {
-                $publication->topics()->attach($this->id);
-            }
-
-            // Detach from target only if it was added by the merge
-            if (in_array($pubId, $added, true)) {
-                $publication->topics()->detach($target->id);
-            }
-        }
-
-        // Reactivate topic and clear merged_into and audit fields
-        $this->merged_into = null;
-        $this->merged_by = null;
-        $this->merged_at = null;
-        $this->is_active = true;
-        $this->save();
-
-        // Mark backup undone
-        \DB::table('topic_merge_backups')->where('id', $backup->id)->update(['undone' => true, 'updated_at' => now()]);
-
-        return true;
     }
 }
 </file>
@@ -7874,6 +7046,313 @@ class ExampleTest extends TestCase
 }
 </file>
 
+<file path="app/Filament/Resources/Publications/Schemas/PublicationForm.php">
+<?php
+
+namespace App\Filament\Resources\Publications\Schemas;
+
+use App\Models\Publication;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Support\Str;
+
+class PublicationForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        $detectResearchMethod = function (Get $get, Set $set) {
+            $keywordsData = $get('keywords');
+            $keywordsString = is_array($keywordsData) ? implode(' ', $keywordsData) : (string) ($keywordsData ?? '');
+            
+            $keywords = strtolower($keywordsString);
+            $abstract = strtolower((string) ($get('abstract') ?? ''));
+
+            $methods = config('research.methods', []);
+
+            $detectedMethod = null;
+
+            foreach ($methods as $key => $label) {
+                if (Str::contains($keywords, $key)) {
+                    $detectedMethod = $label;
+                    break;
+                }
+            }
+
+            if (! $detectedMethod) {
+                foreach ($methods as $key => $label) {
+                    if (Str::contains($abstract, $key)) {
+                        $detectedMethod = $label;
+                        break;
+                    }
+                }
+            }
+
+            if ($detectedMethod && empty($get('research_method'))) {
+                $set('research_method', $detectedMethod);
+            }
+        };
+
+        return $schema
+            ->components([
+                Select::make('container_id')
+                    ->relationship('container', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+
+                Select::make('type')
+                    ->options(Publication::TYPE_LABELS)
+                    ->default('thesis')
+                    ->live()
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                        if (filled($get('files'))) {
+                            return;
+                        }
+
+                        $set('files', static::fileTemplate($state));
+                    })
+                    ->helperText('Jenis karya menentukan template berkas. Template hanya diterapkan pada berkas yang masih kosong.')
+                    ->required(),
+
+                Placeholder::make('required_sections_check')
+                    ->label('Pemeriksaan bagian wajib')
+                    ->content(function (Get $get) {
+                        $type = $get('type') ?? 'thesis';
+                        $files = $get('files') ?? [];
+
+                        $present = array_map(fn($f) => $f['section'] ?? null, $files);
+                        $required = Publication::requiredSectionsForType($type);
+                        $missing = array_values(array_diff($required, $present));
+                        $countMissing = count($missing);
+
+                        if ($countMissing === 0) {
+                            return '<span style="color:green">✓ Semua bagian wajib ada menurut template saat ini.</span>';
+                        }
+
+                        $labels = array_map(fn($k) => static::sectionOptions()[$k] ?? $k, $missing);
+                        $list = implode(', ', $labels);
+
+                        return "<strong style=\"color:#b45309\">⚠ {$countMissing} bagian wajib belum ada:</strong> {$list}.\n\nSilakan tambahkan bagian-bagian ini sebelum menyimpan jika kamu ingin memastikan kelengkapan publikasi.";
+                    })
+                    ->reactive(),
+
+                TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('author')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('year')
+                    ->numeric()
+                    ->required(),
+
+                Textarea::make('abstract')
+                    ->rows(5)
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
+                        $detectResearchMethod($get, $set);
+                    }),
+
+                TagsInput::make('keywords')
+                    ->label('Kata Kunci')
+                    ->separator(',')
+                    ->splitKeys(['Tab', 'Enter'])
+                    ->helperText('Tekan Enter atau Tab setelah setiap kata kunci. Tag ini digunakan oleh pencarian dan rekomendasi dokumen.')
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
+                        $detectResearchMethod($get, $set);
+                    }),
+
+                Select::make('topics')
+                    ->label('Topik Repository')
+                    ->relationship('topics', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        \Filament\Forms\Components\TextInput::make('name')
+                            ->label('Nama topik')
+                            ->required()
+                            ->afterStateUpdated(fn ($state, $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
+                        \Filament\Forms\Components\TextInput::make('slug')
+                            ->label('Slug')
+                            ->required(),
+                    ])
+                    ->helperText('Pilih topik terstruktur untuk mendukung pencarian dan rekomendasi bacaan pelengkap. Ketik untuk mencari, atau buat topik baru.'),
+
+                Select::make('language')
+                    ->label('Bahasa')
+                    ->options([
+                        'id' => 'Indonesia',
+                        'en' => 'Inggris',
+                    ])
+                    ->default('id')
+                    ->searchable(),
+
+                TextInput::make('research_method')
+                    ->label('Metode Riset')
+                    ->placeholder('Contoh: Kualitatif, Kuantitatif, SDLC Waterfall...')
+                    ->maxLength(255)
+                    ->helperText('Otomatis terdeteksi dari Kata Kunci atau Abstrak. Dapat diubah manual jika tidak sesuai.'),
+
+                Select::make('license')
+                    ->label('Lisensi')
+                    ->options([
+                        'Internal Use Only' => 'Internal Use Only (Khusus Kampus)',
+                        'All Rights Reserved' => 'All Rights Reserved (Hak Cipta Penuh)',
+                        'CC BY' => 'CC BY (Creative Commons - Atribusi)',
+                        'CC BY-NC' => 'CC BY-NC (Non-Komersial)',
+                    ])
+                    ->default('Internal Use Only')
+                    ->searchable(),
+
+                TextInput::make('doi')
+                    ->label('DOI (Digital Object Identifier)')
+                    ->placeholder('Contoh: 10.1000/xyz123')
+                    ->maxLength(255)
+                    ->helperText('Kosongkan jika publikasi belum memiliki DOI resmi.'),
+
+                Repeater::make('files')
+                    ->label('Berkas Publikasi')
+                    ->relationship('files')
+                    ->default(fn (Get $get): array => static::fileTemplate($get('type') ?? 'thesis'))
+                    ->schema([
+                        Select::make('section')
+                            ->label('Bagian')
+                            ->options(static::sectionOptions())
+                            ->searchable()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, ?string $state): void {
+                                if (filled($state)) {
+                                    $set('title', static::sectionOptions()[$state] ?? $state);
+                                }
+                            })
+                            ->required(),
+
+                        TextInput::make('title')
+                            ->label('Nama Bagian')
+                            ->placeholder('Contoh: Bab I – Pendahuluan')
+                            ->required()
+                            ->maxLength(255),
+
+                        Select::make('visibility')
+                            ->label('Siapa yang dapat membaca')
+                            ->options([
+                                'public' => 'Publik',
+                                'authenticated' => 'Mahasiswa internal (wajib login)',
+                                'admin' => 'Admin saja',
+                            ])
+                            ->default('authenticated')
+                            ->required(),
+
+                        Toggle::make('allow_download')
+                            ->label('Izinkan unduh PDF')
+                            ->helperText('Aktifkan hanya untuk dokumen yang memang berlisensi atau berizin untuk diunduh.')
+                            ->default(false),
+
+                        FileUpload::make('file_path')
+                            ->label('File PDF')
+                            ->disk('local')
+                            ->visibility('private')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('publications_pdf')
+                            ->maxSize(10240)
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->orderColumn('sort_order')
+                    ->defaultItems(1)
+                    ->addActionLabel('Tambah berkas atau bagian lain')
+                    ->helperText('Karya akademik menggunakan template per bagian. Artikel dan buku dapat diunggah sebagai satu dokumen lengkap.'),
+            ]);
+    }
+
+    public static function sectionOptions(): array
+    {
+        return [
+            'full_document' => 'Dokumen lengkap',
+            'cover' => 'Cover Penulisan',
+            'originality_statement' => 'Pernyataan Orisinalitas dan Publikasi',
+            'approval_sheet' => 'Lembar Pengesahan',
+            'abstract_id' => 'Abstrak Bahasa Indonesia',
+            'abstract_en' => 'Abstract Bahasa Inggris',
+            'preface' => 'Kata Pengantar',
+            'table_of_contents' => 'Daftar Isi',
+            'list_of_tables' => 'Daftar Tabel',
+            'list_of_figures' => 'Daftar Gambar',
+            'list_of_formulas' => 'Daftar Rumus',
+            'list_of_appendices' => 'Daftar Lampiran',
+            'chapter_1' => 'Bab I – Pendahuluan',
+            'chapter_2' => 'Bab II – Tinjauan Pustaka',
+            'chapter_3' => 'Bab III – Metodologi',
+            'chapter_4' => 'Bab IV – Hasil dan Pembahasan',
+            'chapter_5' => 'Bab V – Kesimpulan',
+            'chapter_6' => 'Bab VI',
+            'bibliography' => 'Daftar Pustaka',
+            'appendix' => 'Lampiran',
+            'application_test_statement' => 'Pernyataan Uji Coba Aplikasi',
+            'program_listing' => 'Listing Program',
+            'program_output' => 'Output Program',
+            'presentation' => 'Dokumen Presentasi Sidang',
+            'other' => 'Berkas Lainnya',
+        ];
+    }
+
+    private static function fileTemplate(?string $type): array
+    {
+        if (in_array($type, ['article', 'book', 'proceeding', 'report'], true)) {
+            return [[
+                'section' => 'full_document',
+                'title' => 'Dokumen lengkap',
+                'visibility' => 'public',
+                'allow_download' => false,
+            ]];
+        }
+
+        $sections = [
+            ['cover', 'public'],
+            ['originality_statement', 'admin'],
+            ['approval_sheet', 'admin'],
+            ['abstract_id', 'public'],
+            ['abstract_en', 'public'],
+            ['preface', 'authenticated'],
+            ['table_of_contents', 'authenticated'],
+            ['list_of_tables', 'authenticated'],
+            ['list_of_figures', 'authenticated'],
+            ['list_of_formulas', 'authenticated'],
+            ['list_of_appendices', 'authenticated'],
+            ['chapter_1', 'authenticated'],
+            ['chapter_2', 'authenticated'],
+            ['chapter_3', 'authenticated'],
+            ['chapter_4', 'authenticated'],
+            ['chapter_5', 'authenticated'],
+            ['bibliography', 'authenticated'],
+            ['appendix', 'admin'],
+        ];
+
+        return array_map(fn (array $section): array => [
+            'section' => $section[0],
+            'title' => static::sectionOptions()[$section[0]],
+            'visibility' => $section[1],
+            'allow_download' => false,
+        ], $sections);
+    }
+}
+</file>
+
 <file path="app/Http/Controllers/DocumentController.php">
 <?php
 
@@ -7935,6 +7414,594 @@ class DocumentController extends Controller
 }
 </file>
 
+<file path="app/Models/Topic.php">
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+
+class Topic extends Model
+{
+    protected $guarded = [];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'sort_order' => 'integer',
+        'merged_at' => 'datetime',
+    ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Topic $topic): void {
+            if (blank($topic->slug)) {
+                $topic->slug = Str::slug($topic->name);
+            }
+        });
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order')->orderBy('name');
+    }
+
+    public function ancestorIds(): array
+    {
+        $ids = [];
+        $current = $this->parent()->with('parent')->first();
+
+        while ($current) {
+            if (in_array($current->id, $ids, true)) {
+                break;
+            }
+
+            $ids[] = $current->id;
+            $current = $current->parent()->with('parent')->first();
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    public function relatedTopicIds(): array
+    {
+        $ids = [$this->id];
+
+        foreach ($this->ancestorIds() as $ancestorId) {
+            $ids[] = $ancestorId;
+        }
+
+        foreach ($this->children()->pluck('id') as $childId) {
+            $ids[] = $childId;
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    /**
+     * [PERBAIKAN] Mengambil daftar kata kunci semantik (nama topik, parent, dan children)
+     * untuk keperluan perluasan pencarian (query expansion) secara terpusat.
+     */
+    public function getSemanticKeywords(): array
+    {
+        $keywords = [
+            $this->name,
+            $this->slug,
+        ];
+
+        // Ambil dari seluruh leluhur (ancestors)
+        foreach ($this->ancestorIds() as $ancestorId) {
+            $ancestor = self::find($ancestorId);
+            if ($ancestor) {
+                $keywords[] = $ancestor->name;
+                $keywords[] = $ancestor->slug;
+            }
+        }
+
+        // Ambil nama dari children (cek apakah relationLoaded agar hemat query)
+        if ($this->relationLoaded('children')) {
+            $childrenNames = $this->children->pluck('name')->all();
+        } else {
+            $childrenNames = $this->children()->pluck('name')->all();
+        }
+
+        $keywords = array_merge($keywords, $childrenNames);
+
+        return array_values(array_unique(array_filter(array_map('trim', $keywords))));
+    }
+
+    public function publications(): BelongsToMany
+    {
+        return $this->belongsToMany(Publication::class)->withPivot('is_auto');
+    }
+
+    public function userPreferences()
+    {
+        return $this->hasMany(UserTopicPreference::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_topic_preferences');
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    // Admin helpers
+    public function activate(): void
+    {
+        $this->is_active = true;
+        $this->save();
+    }
+
+    public function deactivate(): void
+    {
+        $this->is_active = false;
+        $this->save();
+    }
+
+    /**
+     * Merge this topic into another topic.
+     * Moves publications relations to the $target and deletes this topic.
+     */
+    public function mergeInto(Topic $target): void
+    {
+        if ($this->id === $target->id) {
+            return;
+        }
+
+        // Gather related publication ids
+        $publicationIds = $this->publications()->pluck('publications.id')->all();
+
+        // Determine which publications will be newly attached to target
+        $added = [];
+
+        foreach ($publicationIds as $pubId) {
+            $publication = Publication::find($pubId);
+            if (! $publication) continue;
+
+            $already = $publication->topics()->where('topics.id', $target->id)->exists();
+            if (! $already) {
+                $publication->topics()->attach($target->id);
+                $added[] = $pubId;
+            }
+
+            // Detach this topic from publication
+            $publication->topics()->detach($this->id);
+        }
+
+        // Determine actor
+        $actorId = auth()->id() ?? null;
+
+        // Store backup for potential undo, including list of added attachments and audit info
+        \DB::table('topic_merge_backups')->insert([
+            'source_id' => $this->id,
+            'target_id' => $target->id,
+            'publication_ids' => json_encode($publicationIds),
+            'added_publication_ids' => json_encode($added),
+            'merged_by' => $actorId,
+            'merged_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Mark this topic as merged into target and deactivate it (do not delete)
+        $this->merged_into = $target->id;
+        $this->merged_by = $actorId;
+        $this->merged_at = now();
+        $this->is_active = false;
+        $this->save();
+    }
+
+    /**
+     * Undo the latest merge for this topic if any.
+     */
+    public function undoMerge(): bool
+    {
+        $backup = \DB::table('topic_merge_backups')
+            ->where('source_id', $this->id)
+            ->where('undone', false)
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (! $backup) {
+            return false;
+        }
+
+        $publicationIds = json_decode($backup->publication_ids, true) ?? [];
+        $added = json_decode($backup->added_publication_ids ?? '[]', true) ?? [];
+        $target = Topic::find($backup->target_id);
+
+        if (! $target) {
+            return false;
+        }
+
+        // Reattach publications to source and detach from target only for those that were newly added
+        foreach ($publicationIds as $pubId) {
+            $publication = Publication::find($pubId);
+            if (! $publication) continue;
+
+            // Reattach to source if missing
+            if (! $publication->topics()->where('topics.id', $this->id)->exists()) {
+                $publication->topics()->attach($this->id);
+            }
+
+            // Detach from target only if it was added by the merge
+            if (in_array($pubId, $added, true)) {
+                $publication->topics()->detach($target->id);
+            }
+        }
+
+        // Reactivate topic and clear merged_into and audit fields
+        $this->merged_into = null;
+        $this->merged_by = null;
+        $this->merged_at = null;
+        $this->is_active = true;
+        $this->save();
+
+        // Mark backup undone
+        \DB::table('topic_merge_backups')->where('id', $backup->id)->update(['undone' => true, 'updated_at' => now()]);
+
+        return true;
+    }
+}
+</file>
+
+<file path="app/Models/Publication.php">
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Jobs\GenerateRecommendations;
+
+class Publication extends Model
+{
+    protected $guarded = [];
+
+    public const TYPE_LABELS = [
+        'thesis' => 'Skripsi / Tesis / Disertasi',
+        'scientific_paper' => 'Penulisan Ilmiah',
+        'article' => 'Artikel Jurnal',
+        'book' => 'Buku',
+        'proceeding' => 'Prosiding',
+        'report' => 'Laporan Penelitian',
+    ];
+
+    /**
+     * Accessor untuk merapikan judul publikasi (Title Case + Special Terms).
+     */
+    protected function title(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value) {
+                if (!$value) return '';
+
+                $specialCases = config('topic_dictionary.title_cases', []);
+
+                $words = explode(' ', strtolower(trim($value)));
+                
+                foreach ($words as $key => $word) {
+                    $cleanWord = trim($word, '(),.!?:"\'');
+                    
+                    if (array_key_exists($cleanWord, $specialCases)) {
+                        $words[$key] = str_replace($cleanWord, $specialCases[$cleanWord], $word);
+                    } else {
+                        if (str_starts_with($word, '(') && strlen($word) > 1) {
+                            $words[$key] = '(' . ucfirst(substr($word, 1));
+                        } else {
+                            $words[$key] = ucfirst($word);
+                        }
+                    }
+                }
+
+                $firstWordLower = strtolower(trim($words[0] ?? '', '(),.!?:"\''));
+                if (array_key_exists($firstWordLower, $specialCases) && !in_array($specialCases[$firstWordLower], ['dan', 'atau', 'di', 'ke', 'dari', 'yang', 'pada', 'untuk', 'dengan', 'dalam', 'terhadap', 'sebagai'])) {
+                    $words[0] = str_replace($firstWordLower, $specialCases[$firstWordLower], strtolower($words[0]));
+                } else {
+                    if (str_starts_with($words[0], '(') && strlen($words[0]) > 1) {
+                        $words[0] = '(' . ucfirst(substr($words[0], 1));
+                    } else {
+                        $words[0] = ucfirst($words[0]);
+                    }
+                }
+
+                return implode(' ', $words);
+            }
+        );
+    }
+
+    public function container()
+    {
+        return $this->belongsTo(Container::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(PublicationFile::class)->orderBy('sort_order');
+    }
+
+    public function topics(): BelongsToMany
+    {
+        return $this->belongsToMany(Topic::class)->withPivot('is_auto');
+    }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    public function getTypeLabelAttribute(): string
+    {
+        return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);
+    }
+
+    public function scopeSearch(Builder $query, ?string $term, array $semanticTerms = []): Builder
+    {
+        if (empty($term) && empty($semanticTerms)) {
+            return $query;
+        }
+
+        $term = strtolower(trim((string) $term));
+
+        return $query->where(function (Builder $q) use ($term, $semanticTerms) {
+            if ($term !== '') {
+                $q->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('LOWER(keywords) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('LOWER(abstract) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('LOWER(author) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('year LIKE ?', ["%{$term}%"])
+                  ->orWhereHas('container', function ($containerQuery) use ($term) {
+                      $containerQuery->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"])
+                                     ->orWhereRaw('LOWER(identifier) LIKE ?', ["%{$term}%"]);
+                  })
+                  ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]));
+            }
+
+            foreach ($semanticTerms as $semanticTerm) {
+                $semanticTerm = strtolower(trim((string) $semanticTerm));
+                if ($semanticTerm === '') continue;
+
+                $q->orWhereRaw('LOWER(title) LIKE ?', ["%{$semanticTerm}%"])
+                  ->orWhereRaw('LOWER(abstract) LIKE ?', ["%{$semanticTerm}%"])
+                  ->orWhereRaw('LOWER(keywords) LIKE ?', ["%{$semanticTerm}%"])
+                  ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->whereRaw('LOWER(name) LIKE ?', ["%{$semanticTerm}%"]));
+            }
+        })
+        ->when($term !== '', function (Builder $q) use ($term) {
+            $q->orderByRaw("
+                CASE 
+                    WHEN LOWER(title) LIKE ? THEN 4
+                    WHEN LOWER(keywords) LIKE ? THEN 3
+                    WHEN LOWER(author) LIKE ? THEN 2
+                    WHEN LOWER(abstract) LIKE ? THEN 1
+                    ELSE 0 
+                END DESC
+            ", [
+                "%{$term}%", 
+                "%{$term}%", 
+                "%{$term}%", 
+                "%{$term}%", 
+            ]);
+        })
+        ->latest(); 
+    }
+
+    public static function requiredSectionsForType(?string $type): array
+    {
+        $type = $type ?? 'thesis';
+
+        $thesisRequired = [
+            'cover',
+            'originality_statement',
+            'approval_sheet',
+            'abstract_id',
+            'table_of_contents',
+            'chapter_1',
+            'chapter_2',
+            'chapter_3',
+            'bibliography',
+            'presentation',
+        ];
+
+        $scientificPaperRequired = [
+            'cover',
+            'originality_statement',
+            'abstract_id',
+            'table_of_contents',
+            'chapter_1',
+            'chapter_2',
+            'chapter_3',
+            'bibliography',
+        ];
+
+        $singleDocumentRequired = [
+            'full_document',
+            'abstract_id',
+            'bibliography',
+        ];
+
+        return match ($type) {
+            'scientific_paper' => $scientificPaperRequired,
+            'article', 'book', 'proceeding', 'report' => $singleDocumentRequired,
+            'thesis' => $thesisRequired,
+            default => $singleDocumentRequired,
+        };
+    }
+
+    public function missingRequiredSections(): array
+    {
+        $present = $this->files()->pluck('section')->filter()->values()->all();
+
+        $required = self::requiredSectionsForType($this->type ?? null);
+
+        return array_values(array_diff($required, $present));
+    }
+
+    public static function missingRequiredSectionsFromArray(?string $type, array $filesData = []): array
+    {
+        $present = array_values(array_filter(array_map(fn($f) => $f['section'] ?? null, $filesData)));
+
+        $required = self::requiredSectionsForType($type);
+
+        return array_values(array_diff($required, $present));
+    }
+
+    protected function parseAuthors(): array
+    {
+        if (empty($this->author)) {
+            return ['Anonim'];
+        }
+
+        if (str_contains($this->author, ';')) {
+            $authors = explode(';', $this->author);
+        } elseif (str_contains(strtolower($this->author), ' dan ')) {
+            $authors = preg_split('/[\s]+dan[\s]+/i', $this->author);
+        } elseif (str_contains(strtolower($this->author), ' and ')) {
+            $authors = preg_split('/[\s]+and[\s]+/i', $this->author);
+        } else {
+            $authors = explode(',', $this->author);
+            if (count($authors) === 2 && strlen(trim($authors[1])) <= 6) {
+                return [trim($this->author)];
+            }
+        }
+
+        return array_values(array_filter(array_map('trim', $authors)));
+    }
+
+    protected function formatAuthorAPA(string $fullName): string
+    {
+        $cleanName = preg_replace('/,?\s*(S\.Kom|M\.Kom|S\.T|M\.T|Ph\.D|Dr\.|Prof\.).*/i', '', $fullName);
+        $parts = explode(' ', trim($cleanName));
+        
+        if (count($parts) === 1) {
+            return $parts[0];
+        }
+
+        $lastName = array_pop($parts);
+        $initials = '';
+        foreach ($parts as $part) {
+            if (!empty($part)) {
+                $initials .= strtoupper(substr($part, 0, 1)) . '. ';
+            }
+        }
+
+        return $lastName . ', ' . trim($initials);
+    }
+
+    public function getFormattedAuthorAttribute(): string
+    {
+        $authors = array_map([$this, 'formatAuthorAPA'], $this->parseAuthors());
+        $count = count($authors);
+
+        if ($count === 1) return $authors[0];
+        if ($count === 2) return $authors[0] . ' & ' . $authors[1];
+        
+        $lastAuthor = array_pop($authors);
+        return implode(', ', $authors) . ', & ' . $lastAuthor;
+    }
+
+    public function getCitation(string $style = 'APA'): string
+    {
+        $authors = $this->parseAuthors();
+        $authorCount = count($authors);
+        $year = $this->year ?? date('Y');
+        $title = $this->title ?? 'Tanpa Judul'; 
+        $container = $this->container ? $this->container->name : 'Universitas Gunadarma';
+
+        $isIndo = !isset($this->language) || in_array(strtolower(trim($this->language)), ['id', 'indonesia', 'in']);
+        $etAl = $isIndo ? 'dkk.' : 'et al.';
+        $andWord = $isIndo ? 'dan' : 'and';
+
+        switch (strtoupper($style)) {
+            case 'IEEE':
+                $formatIEEE = function($fullName) {
+                    $cleanName = preg_replace('/,?\s*(S\.Kom|M\.Kom|S\.T|M\.T|Ph\.D|Dr\.|Prof\.).*/i', '', $fullName);
+                    $parts = explode(' ', trim($cleanName));
+                    if (count($parts) === 1) return $parts[0];
+                    $lastName = array_pop($parts);
+                    $initials = '';
+                    foreach ($parts as $part) {
+                        if (!empty($part)) $initials .= strtoupper(substr($part, 0, 1)) . '. ';
+                    }
+                    return trim($initials) . ' ' . $lastName;
+                };
+
+                if ($authorCount > 6) {
+                    $authorStr = $formatIEEE($authors[0]) . ' ' . $etAl;
+                } elseif ($authorCount === 1) {
+                    $authorStr = $formatIEEE($authors[0]);
+                } elseif ($authorCount === 2) {
+                    $authorStr = $formatIEEE($authors[0]) . ' ' . $andWord . ' ' . $formatIEEE($authors[1]);
+                } else {
+                    $lastAuthor = $formatIEEE(array_pop($authors));
+                    $authorStr = implode(', ', array_map($formatIEEE, $authors)) . ', ' . $andWord . ' ' . $lastAuthor;
+                }
+
+                if ($this->type === 'article') {
+                    return sprintf('%s, "%s," %s, %s.', $authorStr, $title, $container, $year);
+                }
+                return sprintf('%s, "%s," %s, %s, %s.', $authorStr, $title, $this->type_label, $container, $year);
+
+            case 'HARVARD':
+                $formattedAuthors = array_map([$this, 'formatAuthorAPA'], $authors);
+
+                if ($authorCount === 1) {
+                    $authorStr = $formattedAuthors[0];
+                } elseif ($authorCount === 2) {
+                    $authorStr = $formattedAuthors[0] . ' ' . $andWord . ' ' . $formattedAuthors[1];
+                } elseif ($authorCount === 3) {
+                    $lastAuthor = array_pop($formattedAuthors);
+                    $authorStr = implode(', ', $formattedAuthors) . ' ' . $andWord . ' ' . $lastAuthor;
+                } else {
+                    $authorStr = $formattedAuthors[0] . ' ' . $etAl;
+                }
+
+                if ($this->type === 'article') {
+                    return sprintf('%s (%s) \'%s\', %s.', $authorStr, $year, $title, $container);
+                }
+                return sprintf('%s (%s) %s. %s: %s.', $authorStr, $year, $title, $this->type_label, $container);
+
+            case 'APA':
+            default:
+                $formattedAuthors = array_map([$this, 'formatAuthorAPA'], $authors);
+
+                if ($authorCount === 1) {
+                    $authorStr = $formattedAuthors[0];
+                } elseif ($authorCount === 2) {
+                    $separator = $isIndo ? ' & ' : ' & '; 
+                    $authorStr = $formattedAuthors[0] . $separator . $formattedAuthors[1];
+                } elseif ($authorCount >= 3 && $authorCount <= 20) {
+                    $lastAuthor = array_pop($formattedAuthors);
+                    $authorStr = implode(', ', $formattedAuthors) . ', & ' . $lastAuthor;
+                } else {
+                    $authorStr = $formattedAuthors[0] . ' ' . $etAl;
+                }
+
+                if ($this->type === 'article') {
+                    return sprintf('%s. (%s). %s. %s.', $authorStr, $year, $title, $container);
+                }
+                return sprintf('%s. (%s). %s [%s, %s].', $authorStr, $year, $title, $this->type_label, $container);
+        }
+    }
+}
+</file>
+
 <file path="app/Http/Controllers/PublicationController.php">
 <?php
 
@@ -7954,10 +8021,8 @@ class PublicationController extends Controller
         $search = trim((string) $request->input('search'));
         $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
         
-        // 1. Tangkap parameter filter metode riset dari URL (?method=...)
         $methodFilter = trim((string) $request->input('method', ''));
 
-        // [MODIFIKASI] Hapus ->latest() di sini agar tidak berbenturan dengan order by bobot search
         $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
 
@@ -7978,12 +8043,10 @@ class PublicationController extends Controller
             }
         }
 
-        // [MODIFIKASI] Gunakan scopeSearch dan kirimkan hasil semanticTerms kamu
         if ($search !== '') {
             $semanticTerms = $this->expandSearchTerms($search);
             $query->search($search, $semanticTerms);
         } else {
-            // Jika tidak ada keyword pencarian, urutkan dokumen dari terbaru
             $query->latest();
         }
 
@@ -7994,12 +8057,10 @@ class PublicationController extends Controller
             });
         }
 
-        // 2. Terapkan filter research_method jika mahasiswa memilih dari dropdown
         if ($methodFilter !== '') {
             $query->where('research_method', $methodFilter);
         }
 
-        // 3. Tambahkan 'method' ke dalam pagination appends
         $publications = $query->paginate(12)->appends($request->only(['search', 'topic', 'method']));
 
         foreach ($publications as $pub) {
@@ -8012,7 +8073,6 @@ class PublicationController extends Controller
             : null;
         $taxonomyTopics = $topics->whereNull('parent_id');
 
-        // 4. Ambil daftar metode unik yang ada di database untuk opsi dropdown filter
         $availableMethods = Publication::whereNotNull('research_method')
             ->where('research_method', '!=', '')
             ->distinct()
@@ -8034,7 +8094,6 @@ class PublicationController extends Controller
 
     public function show(Publication $publication)
     {
-        // [BARU - FASE 2B] Increment View Counter (+1) dengan proteksi Session
         $viewKey = 'publication_viewed_' . $publication->id;
         if (!session()->has($viewKey)) {
             $publication->increment('views_count');
@@ -8082,17 +8141,12 @@ class PublicationController extends Controller
               ->take(10);
         }
 
-        // --- PEMISAHAN 5 KATEGORI REKOMENDASI ---
-
-        // 1. Dokumen Paling Mirip (Berdasarkan skor tertinggi / TF-IDF)
         $similarRecommendations = $recommendations->sortByDesc('similarity_score')->take(3);
 
-        // 2. Bacaan Pelengkap (Berdasarkan irisan topik / knowledge overlap > 0)
         $complementaryRecommendations = $recommendations->filter(function ($item) {
             return isset($item->knowledge_overlap) && $item->knowledge_overlap > 0;
         })->take(3);
 
-        // 3. Konsep Dasar (Dokumen yang terhubung via topik induk / parent topics)
         $parentTopicIds = $publication->topics->pluck('parent_id')->filter()->unique();
         $basicConcepts = Publication::where('id', '!=', $publication->id)
             ->whereHas('topics', function ($q) use ($parentTopicIds) {
@@ -8102,7 +8156,6 @@ class PublicationController extends Controller
             ->limit(3)
             ->get();
 
-        // 4. Metode Serupa (Cari berdasarkan research_method yang sama dulu, kalau kosong baru fallback ke tipe karya)
         $similarMethods = Publication::where('id', '!=', $publication->id)
             ->where(function ($q) use ($publication) {
                 if (!empty($publication->research_method)) {
@@ -8115,7 +8168,6 @@ class PublicationController extends Controller
             ->limit(3)
             ->get();
 
-        // 5. Bacaan Lanjutan (Dokumen yang terhubung via topik anak / child topics)
         $publicationTopicIds = $publication->topics->pluck('id');
         $childTopicIds = Topic::whereIn('parent_id', $publicationTopicIds)->pluck('id');
         $advancedReadings = Publication::where('id', '!=', $publication->id)
@@ -8137,53 +8189,46 @@ class PublicationController extends Controller
         ));
     }
 
-    /**
-     * [BARU - FASE 2B] Handle proses download file dan increment counter (Support Private & Public Storage).
-     */
-    public function downloadFile(Request $request, PublicationFile $file)
+    public function downloadFile(Request $request, Publication $publication, PublicationFile $file)
     {
-        // 0. Proteksi jika ada record database yang file_path-nya tidak sengaja kosong (NULL)
-        if (empty($file->file_path)) {
-            abort(404, 'Gagal mengunduh: Path file belum tercatat di database (NULL).');
+        if ($file->publication_id !== $publication->id) {
+            abort(404, 'File tidak ditemukan pada karya ilmiah ini.');
         }
 
-        // 1. Cek Hak Akses User terhadap File (jika method canBeDownloadedBy tersedia di model)
         if (method_exists($file, 'canBeDownloadedBy') && ! $file->canBeDownloadedBy($request->user())) {
             abort(403, 'Anda tidak memiliki izin untuk mengunduh dokumen ini. Silakan login sebagai mahasiswa terlebih dahulu.');
         }
 
-        $path = $file->file_path;
-        $fileName = $file->original_name ?? basename($path);
-
-        // 2. OPSI A: Cek langsung ke folder private (storage/app/{path})
-        $privatePath = storage_path('app/' . ltrim($path, '/'));
-        if (file_exists($privatePath) && is_file($privatePath)) {
-            $file->increment('downloads_count');
-            return response()->download($privatePath, $fileName);
+        if (empty($file->file_path)) {
+            abort(404, 'Gagal mengunduh: Path file belum tercatat di database (NULL).');
         }
 
-        // 3. OPSI B: Cek langsung ke folder public (storage/app/public/{path})
+        $file->increment('downloads_count');
+
+        $path = ltrim($file->file_path, '/');
+        $fileName = $file->original_name ?? basename($path);
+
+        $privateAppPath = storage_path('app/private/' . $path);
+        if (file_exists($privateAppPath) && is_file($privateAppPath)) {
+            return response()->download($privateAppPath, $fileName);
+        }
+
+        $standardPath = storage_path('app/' . $path);
+        if (file_exists($standardPath) && is_file($standardPath)) {
+            return response()->download($standardPath, $fileName);
+        }
+
         $cleanPublicPath = ltrim(str_replace(['public/', 'storage/'], '', $path), '/');
         $publicPath = storage_path('app/public/' . $cleanPublicPath);
         if (file_exists($publicPath) && is_file($publicPath)) {
-            $file->increment('downloads_count');
             return response()->download($publicPath, $fileName);
         }
 
-        // 4. OPSI C: Cek via Storage Facade Default (disk lokal)
         if (Storage::exists($path)) {
-            $file->increment('downloads_count');
             return Storage::download($path, $fileName);
         }
 
-        // 5. OPSI D: Cek via Storage Facade disk 'public'
-        if (Storage::disk('public')->exists($cleanPublicPath)) {
-            $file->increment('downloads_count');
-            return Storage::disk('public')->download($cleanPublicPath, $fileName);
-        }
-
-        // Jika ke-4 cara di atas gagal menemukan fisik filenya:
-        abort(404, "File fisik tidak ditemukan di server. (Path tercatat di DB: {$path} | Cek juga folder: storage/app/{$path})");
+        abort(404, "File fisik tidak ditemukan di server. (Path tercatat di DB: {$path} | Cek folder: storage/app/private/{$path})");
     }
 
     private function expandSearchTerms(string $search): array
@@ -8192,39 +8237,20 @@ class PublicationController extends Controller
         $terms = array_values(array_filter($terms));
         $expanded = [];
 
-        $synonyms = [
-            'ai' => ['artificial intelligence', 'machine learning'],
-            'machine' => ['machine learning'],
-            'learning' => ['machine learning', 'deep learning'],
-            'recommendation' => ['recommendation systems', 'recommender'],
-            'systems' => ['system', 'recommendation systems'],
-            'deep' => ['deep learning'],
-        ];
+        // Mengambil daftar sinonim dari Config!
+        $synonyms = config('topic_dictionary.mappings', []);
 
         foreach ($terms as $term) {
             $expanded[] = $term;
             $expanded = array_merge($expanded, $synonyms[$term] ?? []);
 
-            $topicMatches = Topic::active()->where(function ($query) use ($term): void {
+            $topicMatches = Topic::with('children')->active()->where(function ($query) use ($term): void {
                 $query->where('name', 'like', '%' . $term . '%')
                     ->orWhere('slug', 'like', '%' . $term . '%');
             })->get();
 
             foreach ($topicMatches as $topic) {
-                $expanded[] = $topic->name;
-                $expanded[] = $topic->slug;
-
-                foreach ($topic->ancestorIds() as $ancestorId) {
-                    $ancestor = Topic::find($ancestorId);
-                    if ($ancestor) {
-                        $expanded[] = $ancestor->name;
-                        $expanded[] = $ancestor->slug;
-                    }
-                }
-
-                foreach ($topic->children()->pluck('name') as $childName) {
-                    $expanded[] = $childName;
-                }
+                $expanded = array_merge($expanded, $topic->getSemanticKeywords());
             }
         }
 
@@ -8411,7 +8437,7 @@ class PublicationController extends Controller
             <header class="mb-10">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
                     <span class="inline-flex items-center rounded bg-gundar-primary/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-gundar-primary">
-                        {{ $publication->type }}
+                        {{ $publication->type_label }}
                     </span>
                     <span class="inline-flex items-center rounded bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
                         {{ $publication->year }}
@@ -8671,7 +8697,7 @@ class PublicationController extends Controller
                                         </a>
                                         @if($file->canBeDownloadedBy(auth()->user()))
                                             <!-- [MODIFIKASI] Gunakan route publications.files.download untuk menambah download counter -->
-                                            <a href="{{ route('publications.files.download', $file) }}" class="rounded border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
+                                            <a href="{{ route('publications.files.download', ['publication' => $publication, 'file' => $file]) }}" class="rounded border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
                                                 Unduh PDF
                                             </a>
                                         @endif
@@ -8702,7 +8728,7 @@ class PublicationController extends Controller
                         @foreach($similarRecommendations as $item)
                             @if($pub = $item->recommendedPublication ?? null)
                                 <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                     <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                                 </a>
                             @endif
@@ -8721,7 +8747,7 @@ class PublicationController extends Controller
                         @foreach($complementaryRecommendations as $item)
                             @if($pub = $item->recommendedPublication ?? null)
                                 <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                     <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                                 </a>
                             @endif
@@ -8739,7 +8765,7 @@ class PublicationController extends Controller
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach($basicConcepts as $pub)
                             <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                 <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                             </a>
                         @endforeach
@@ -8756,7 +8782,7 @@ class PublicationController extends Controller
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach($similarMethods as $pub)
                             <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                 <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                             </a>
                         @endforeach
@@ -8773,7 +8799,7 @@ class PublicationController extends Controller
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach($advancedReadings as $pub)
                             <a href="{{ route('publications.show', $pub) }}" class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:border-gundar-primary hover:shadow-sm">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type }}</p>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-gundar-primary">{{ $pub->type_label }}</p>
                                 <h3 class="mt-2 text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-2">{{ $pub->title }}</h3>
                             </a>
                         @endforeach
@@ -8808,9 +8834,8 @@ if (! Route::has('student.register')) {
 Route::get('/', [PublicationController::class, 'index'])->name('home');
 Route::get('/topic/{slug}', [PublicationController::class, 'index'])->name('topic.show');
 
-// [FASE 2B] Route Download File - Ditaruh SBLM /publication/{publication}
-Route::get('/publication/file/{file}/download', [PublicationController::class, 'downloadFile'])->name('publications.files.download');
-
+// [FASE 2B] Route Download & Viewer (Disamakan strukturnya dengan menerima {publication} dan {file})
+Route::get('/publication/{publication}/file/{file}/download', [PublicationController::class, 'downloadFile'])->name('publications.files.download');
 Route::get('/publication/{publication}', [PublicationController::class, 'show'])->name('publications.show');
 Route::get('/publication/{publication}/read', [DocumentController::class, 'publicationViewer'])->name('publications.viewer');
 
@@ -8843,18 +8868,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/topics/{topic}/preference', [BookmarkController::class, 'preference'])->name('topics.preference');
 });
 
-// Route untuk pengunjung yang belum login (Guest) - generic auth (if used)
+// Route untuk pengunjung yang belum login (Guest) - generic auth (jika dipakai admin)
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/admin-login', [AuthController::class, 'showLogin'])->name('admin.login');
+    Route::post('/admin-login', [AuthController::class, 'login']);
     
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
-});
-
-// Route untuk yang sudah login (Auth)
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 </file>
 

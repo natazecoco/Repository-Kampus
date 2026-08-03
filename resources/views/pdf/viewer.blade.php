@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- FIX: Konfigurasi warna khusus agar Ungu Gunadarma terbaca di halaman ini -->
+    <!-- Konfigurasi warna khusus agar Ungu Gunadarma terbaca di halaman ini -->
     <script>
         tailwind.config = {
             theme: {
@@ -57,21 +57,13 @@
             </div>
         </div>
 
-        <!-- Tengah: Kontrol Navigasi Halaman -->
-        <div class="flex items-center justify-center gap-1 sm:gap-2 shrink-0 w-1/3">
-            <button id="prev-page" type="button" class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-white/10 text-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed" title="Halaman Sebelumnya">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            
-            <div class="flex items-center rounded-lg bg-black/20 px-3 py-1.5 text-xs font-medium tracking-widest text-slate-300 border border-white/10 shadow-inner">
-                <span id="page-num" class="text-white font-bold w-4 text-center">-</span> 
-                <span class="mx-1 text-slate-400">/</span> 
-                <span id="page-count" class="text-slate-300 w-4 text-center">-</span>
+        <!-- Tengah: Indikator Info Dokumen (Continuous Scroll) -->
+        <div class="flex items-center justify-center gap-2 shrink-0 w-1/3">
+            <div class="flex items-center rounded-lg bg-black/20 px-4 py-1.5 text-xs font-medium tracking-wide text-slate-300 border border-white/10 shadow-inner">
+                <span class="text-white font-bold mr-1.5">📄 Mode Scroll</span> 
+                <span class="text-slate-400">&bull;</span>
+                <span id="page-count-label" class="ml-1.5 text-slate-300">Memuat...</span>
             </div>
-            
-            <button id="next-page" type="button" class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-white/10 text-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed" title="Halaman Selanjutnya">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-            </button>
         </div>
 
         <!-- Kanan: Kontrol Zoom -->
@@ -90,13 +82,13 @@
 
     <main class="flex flex-1 overflow-hidden">
         
-        <!-- SIDEBAR: DAFTAR BAGIAN (Tema Selaras) -->
+        <!-- SIDEBAR: DAFTAR BAGIAN (Struktur Dokumen) -->
         <nav class="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50">
                 <h2 class="text-[11px] font-black uppercase tracking-widest text-slate-500">Struktur Dokumen</h2>
             </div>
             <div class="flex-1 overflow-y-auto p-3 space-y-1 no-scrollbar">
-                @foreach($files as $documentFile)
+                @foreach($publication->files as $documentFile)
                     <a href="{{ route('publications.viewer', ['publication' => $publication, 'file' => $documentFile]) }}" 
                        class="block rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 {{ $documentFile->is($file) ? 'bg-gundar-primary/10 text-gundar-primary shadow-sm border border-gundar-primary/20' : 'text-slate-600 hover:bg-slate-50 hover:text-gundar-dark' }}">
                         <div class="flex items-start gap-3">
@@ -108,23 +100,17 @@
             </div>
         </nav>
 
-        <!-- KANVAS RENDER PDF (Dengan area scroll) -->
-        <div id="pdf-scroll-area" class="relative flex-1 overflow-auto bg-slate-200/80 flex justify-center p-4 sm:p-8">
+        <!-- KANVAS RENDER PDF (Mode Continuous Scroll) -->
+        <div id="pdf-scroll-area" class="relative flex-1 overflow-auto bg-slate-200/80 flex flex-col items-center p-4 sm:p-8">
             
-            <!-- Wrapper untuk shadow yang lebih realistis -->
-            <div class="relative flex-shrink-0 h-max">
-                <canvas id="pdf-render" class="bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] ring-1 ring-slate-900/5 pointer-events-none"></canvas>
+            <!-- Loading Indicator Minimalis -->
+            <div id="pdf-loader" class="flex flex-col items-center justify-center my-auto py-12 text-slate-500">
+                <div class="h-8 w-8 animate-spin rounded-full border-4 border-gundar-primary border-t-transparent mb-3"></div>
+                <p class="text-xs font-bold tracking-wider uppercase">Memuat Dokumen PDF...</p>
             </div>
-            
-            <!-- WATERMARK (Modern Frosted Glass) -->
-            @if($isWatermarked)
-                <div class="pointer-events-none fixed bottom-8 right-8 z-50 -rotate-6 rounded-2xl border border-white/40 bg-white/60 px-6 py-3 backdrop-blur-md shadow-xl">
-                    <p class="text-xs font-black tracking-[0.15em] text-slate-800/80 uppercase">
-                        {{ $currentUser->name }} <br>
-                        <span class="text-[10px] text-gundar-primary">{{ $currentUser->npm ?? 'NPM' }} &bull; {{ now()->format('d M Y') }}</span>
-                    </p>
-                </div>
-            @endif
+
+            <!-- Kontainer Utama Tempat Halaman-Halaman PDF Disusun -->
+            <div id="pdf-pages-container" class="flex flex-col items-center gap-6 pb-12 w-full"></div>
             
         </div>
     </main>
@@ -133,62 +119,87 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         
         const url = @json(route('document.stream', $file));
-        const canvas = document.getElementById('pdf-render');
-        const context = canvas.getContext('2d');
+        const scrollArea = document.getElementById('pdf-scroll-area');
+        const pagesContainer = document.getElementById('pdf-pages-container');
+        const loader = document.getElementById('pdf-loader');
         
         let pdfDocument = null;
-        let pageNumber = 1;
-        let isRendering = false;
-        let pendingPage = null;
         let currentScale = 1.5; // Skala default 150%
+        const isWatermarked = @json($isWatermarked);
+        const userName = @json($currentUser->name ?? 'User');
+        const userNpm = @json($currentUser->npm ?? 'NPM');
+        const watermarkDate = @json(now()->format('d M Y'));
 
         function updateZoomLabel() {
             document.getElementById('zoom-label').textContent = Math.round(currentScale * 100) + '%';
         }
 
-        function renderPage(number) {
-            isRendering = true;
-            pdfDocument.getPage(number).then((page) => {
-                const viewport = page.getViewport({ scale: currentScale }); 
+        // Fungsi utama render semua halaman secara berurutan (Scroll Mode)
+        async function renderAllPages() {
+            if (!pdfDocument) return;
+            
+            // Tampilkan loader saat memrender ulang
+            loader.style.display = 'flex';
+            pagesContainer.innerHTML = '';
+            
+            const totalPages = pdfDocument.numPages;
+            document.getElementById('page-count-label').textContent = `${totalPages} Halaman`;
+
+            // Loop untuk membuat kanvas tiap halaman
+            for (let num = 1; num <= totalPages; num++) {
+                const page = await pdfDocument.getPage(num);
+                const viewport = page.getViewport({ scale: currentScale });
+
+                // Wrapper per halaman supaya ada shadow dan support watermark per page
+                const pageWrapper = document.createElement('div');
+                pageWrapper.className = 'relative flex-shrink-0 bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] ring-1 ring-slate-900/5 overflow-hidden';
+                pageWrapper.style.width = `${viewport.width}px`;
+                pageWrapper.style.height = `${viewport.height}px`;
+
+                // Element Canvas
+                const canvas = document.createElement('canvas');
+                canvas.className = 'block pointer-events-none';
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
+                
+                const context = canvas.getContext('2d');
+                pageWrapper.appendChild(canvas);
 
-                return page.render({ canvasContext: context, viewport }).promise;
-            }).then(() => {
-                isRendering = false;
-                if (pendingPage !== null) {
-                    const nextPage = pendingPage;
-                    pendingPage = null;
-                    renderPage(nextPage);
+                // Tambahkan Watermark jika dokumen dibatasi
+                if (isWatermarked) {
+                    const watermark = document.createElement('div');
+                    // z-20 untuk di atas kanvas, pointer-events-none agar tidak mengganggu klik/scroll
+                    watermark.className = 'pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden z-20';
+                    watermark.innerHTML = `
+                        <!-- Menggunakan opacity-20 agar sangat transparan dan mix-blend-multiply agar menyatu dengan tinta PDF -->
+                        <div class="-rotate-[35deg] select-none text-center opacity-20 mix-blend-multiply w-full px-10">
+                            <p class="text-4xl sm:text-5xl font-black tracking-widest text-slate-600 uppercase leading-tight">
+                                ${userName} <br>
+                                <span class="text-xl sm:text-2xl text-slate-600 font-bold">${userNpm} &bull; ${watermarkDate}</span>
+                            </p>
+                        </div>
+                    `;
+                    pageWrapper.appendChild(watermark);
                 }
-            });
 
-            document.getElementById('page-num').textContent = number;
-        }
+                pagesContainer.appendChild(pageWrapper);
 
-        function queueRenderPage(number) {
-            if (isRendering) {
-                pendingPage = number;
-                return;
+                // Render halaman ke dalam canvas-nya masing-masing
+                await page.render({ canvasContext: context, viewport }).promise;
             }
-            renderPage(number);
+
+            // Sembunyikan loader setelah selesai
+            loader.style.display = 'none';
         }
-
-        // Navigasi Halaman
-        document.getElementById('prev-page').addEventListener('click', () => {
-            if (pageNumber > 1) queueRenderPage(--pageNumber);
-        });
-
-        document.getElementById('next-page').addEventListener('click', () => {
-            if (pdfDocument && pageNumber < pdfDocument.numPages) queueRenderPage(++pageNumber);
-        });
 
         // Kontrol Zoom
         document.getElementById('zoom-in').addEventListener('click', () => {
             if (currentScale < 3.0) { // Max zoom 300%
                 currentScale += 0.25;
                 updateZoomLabel();
-                queueRenderPage(pageNumber);
+                renderAllPages().then(() => {
+                    scrollArea.scrollTop = 0; // Balikkan scroll ke atas dengan mulus saat ganti zoom
+                });
             }
         });
 
@@ -196,20 +207,24 @@
             if (currentScale > 0.5) { // Min zoom 50%
                 currentScale -= 0.25;
                 updateZoomLabel();
-                queueRenderPage(pageNumber);
+                renderAllPages().then(() => {
+                    scrollArea.scrollTop = 0;
+                });
             }
         });
 
-        // Inisialisasi Dokumen
+        // Inisialisasi Memuat PDF
         pdfjsLib.getDocument({ url, disableAutoFetch: true, disableStream: true }).promise
             .then((pdf) => {
                 pdfDocument = pdf;
-                window.document.getElementById('page-count').textContent = pdfDocument.numPages;
-                renderPage(pageNumber);
+                renderAllPages();
             })
-            .catch(() => alert('Gagal memuat dokumen. Periksa akses atau ketersediaan berkas.'));
+            .catch(() => {
+                loader.style.display = 'none';
+                alert('Gagal memuat dokumen. Periksa akses atau ketersediaan berkas.');
+            });
 
-        // Proteksi Keyboard (Mencegah Save/Print)
+        // Proteksi Keyboard (Mencegah Shortcut Save/Print)
         document.addEventListener('keydown', (event) => {
             if ((event.ctrlKey || event.metaKey) && ['s', 'p'].includes(event.key.toLowerCase())) {
                 event.preventDefault();

@@ -58,8 +58,46 @@ return [
             'frontend', 
             'backend'
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kamus Format Judul (Title Case)
+    |--------------------------------------------------------------------------
+    | Digunakan untuk memastikan singkatan dan istilah teknis tetap menggunakan
+    | huruf kapital yang benar, serta kata hubung tetap menggunakan huruf kecil.
+    */
+    'title_cases' => [
+        'mysql' => 'MySQL',
+        'php' => 'PHP',
+        'laravel' => 'Laravel',
+        'filament' => 'Filament',
+        'react' => 'React',
+        'api' => 'API',
+        'ui/ux' => 'UI/UX',
+        'ui' => 'UI',
+        'ux' => 'UX',
+        'nlp' => 'NLP',
+        'tf-idf' => 'TF-IDF',
+        'ai' => 'AI',
+        'html' => 'HTML',
+        'css' => 'CSS',
+        'spmb' => 'SPMB',
+        'ueq' => 'UEQ',
+        'sus' => 'SUS',
         
-        // Kamu bisa menambahkan lebih banyak topik dan sinonimnya di sini nanti
-        // seiring dengan berkembangnya skripsimu.
+        // Kata Hubung & Depan
+        'dan' => 'dan',
+        'atau' => 'atau',
+        'di' => 'di',
+        'ke' => 'ke',
+        'dari' => 'dari',
+        'yang' => 'yang',
+        'pada' => 'pada',
+        'untuk' => 'untuk',
+        'dengan' => 'dengan',
+        'dalam' => 'dalam',
+        'terhadap' => 'terhadap',
+        'sebagai' => 'sebagai',
     ],
 ];

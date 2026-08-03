@@ -16,10 +16,8 @@ class PublicationController extends Controller
         $search = trim((string) $request->input('search'));
         $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
         
-        // 1. Tangkap parameter filter metode riset dari URL (?method=...)
         $methodFilter = trim((string) $request->input('method', ''));
 
-        // Hapus ->latest() di sini agar tidak berbenturan dengan order by bobot search
         $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
 
@@ -40,12 +38,10 @@ class PublicationController extends Controller
             }
         }
 
-        // Gunakan scopeSearch dan kirimkan hasil semanticTerms kamu
         if ($search !== '') {
             $semanticTerms = $this->expandSearchTerms($search);
             $query->search($search, $semanticTerms);
         } else {
-            // Jika tidak ada keyword pencarian, urutkan dokumen dari terbaru
             $query->latest();
         }
 
@@ -56,12 +52,10 @@ class PublicationController extends Controller
             });
         }
 
-        // 2. Terapkan filter research_method jika mahasiswa memilih dari dropdown
         if ($methodFilter !== '') {
             $query->where('research_method', $methodFilter);
         }
 
-        // 3. Tambahkan 'method' ke dalam pagination appends
         $publications = $query->paginate(12)->appends($request->only(['search', 'topic', 'method']));
 
         foreach ($publications as $pub) {
@@ -74,7 +68,6 @@ class PublicationController extends Controller
             : null;
         $taxonomyTopics = $topics->whereNull('parent_id');
 
-        // 4. Ambil daftar metode unik yang ada di database untuk opsi dropdown filter
         $availableMethods = Publication::whereNotNull('research_method')
             ->where('research_method', '!=', '')
             ->distinct()
@@ -96,7 +89,6 @@ class PublicationController extends Controller
 
     public function show(Publication $publication)
     {
-        // Increment View Counter (+1) dengan proteksi Session
         $viewKey = 'publication_viewed_' . $publication->id;
         if (!session()->has($viewKey)) {
             $publication->increment('views_count');
@@ -144,17 +136,12 @@ class PublicationController extends Controller
               ->take(10);
         }
 
-        // --- PEMISAHAN 5 KATEGORI REKOMENDASI ---
-
-        // 1. Dokumen Paling Mirip (Berdasarkan skor tertinggi / TF-IDF)
         $similarRecommendations = $recommendations->sortByDesc('similarity_score')->take(3);
 
-        // 2. Bacaan Pelengkap (Berdasarkan irisan topik / knowledge overlap > 0)
         $complementaryRecommendations = $recommendations->filter(function ($item) {
             return isset($item->knowledge_overlap) && $item->knowledge_overlap > 0;
         })->take(3);
 
-        // 3. Konsep Dasar (Dokumen yang terhubung via topik induk / parent topics)
         $parentTopicIds = $publication->topics->pluck('parent_id')->filter()->unique();
         $basicConcepts = Publication::where('id', '!=', $publication->id)
             ->whereHas('topics', function ($q) use ($parentTopicIds) {
@@ -164,7 +151,6 @@ class PublicationController extends Controller
             ->limit(3)
             ->get();
 
-        // 4. Metode Serupa (Cari berdasarkan research_method yang sama dulu, kalau kosong baru fallback ke tipe karya)
         $similarMethods = Publication::where('id', '!=', $publication->id)
             ->where(function ($q) use ($publication) {
                 if (!empty($publication->research_method)) {
@@ -177,7 +163,6 @@ class PublicationController extends Controller
             ->limit(3)
             ->get();
 
-        // 5. Bacaan Lanjutan (Dokumen yang terhubung via topik anak / child topics)
         $publicationTopicIds = $publication->topics->pluck('id');
         $childTopicIds = Topic::whereIn('parent_id', $publicationTopicIds)->pluck('id');
         $advancedReadings = Publication::where('id', '!=', $publication->id)
@@ -199,91 +184,67 @@ class PublicationController extends Controller
         ));
     }
 
-    /**
-     * Handle proses download file dan increment counter (Support Private Storage & Filament Upload).
-     */
     public function downloadFile(Request $request, Publication $publication, PublicationFile $file)
     {
-        // 0. Proteksi kepemilikan file terhadap publikasi
         if ($file->publication_id !== $publication->id) {
             abort(404, 'File tidak ditemukan pada karya ilmiah ini.');
         }
 
-        // 1. Cek Hak Akses Unduh (Visibility & allow_download)
         if (method_exists($file, 'canBeDownloadedBy') && ! $file->canBeDownloadedBy($request->user())) {
             abort(403, 'Anda tidak memiliki izin untuk mengunduh dokumen ini. Silakan login sebagai mahasiswa terlebih dahulu.');
         }
 
-        // 2. Proteksi jika file_path kosong di database
         if (empty($file->file_path)) {
             abort(404, 'Gagal mengunduh: Path file belum tercatat di database (NULL).');
         }
 
-        // 3. Tambahkan Counter Download +1
         $file->increment('downloads_count');
 
         $path = ltrim($file->file_path, '/');
         $fileName = $file->original_name ?? basename($path);
 
-        // 4. OPSI A: Cek di folder private Filament (storage/app/private/{path})
         $privateAppPath = storage_path('app/private/' . $path);
         if (file_exists($privateAppPath) && is_file($privateAppPath)) {
             return response()->download($privateAppPath, $fileName);
         }
 
-        // 5. OPSI B: Cek di folder standard storage/app/{path}
         $standardPath = storage_path('app/' . $path);
         if (file_exists($standardPath) && is_file($standardPath)) {
             return response()->download($standardPath, $fileName);
         }
 
-        // 6. OPSI C: Cek di folder public storage (storage/app/public/{path})
         $cleanPublicPath = ltrim(str_replace(['public/', 'storage/'], '', $path), '/');
         $publicPath = storage_path('app/public/' . $cleanPublicPath);
         if (file_exists($publicPath) && is_file($publicPath)) {
             return response()->download($publicPath, $fileName);
         }
 
-        // 7. OPSI D: Gunakan Storage Facade bawaan Laravel
         if (Storage::exists($path)) {
             return Storage::download($path, $fileName);
         }
 
-        // Jika fisik file benar-benar tidak ditemukan di semua direktori server
         abort(404, "File fisik tidak ditemukan di server. (Path tercatat di DB: {$path} | Cek folder: storage/app/private/{$path})");
     }
 
-    /**
-     * [PERBAIKAN] Sentralisasi pemanggilan taksonomi semantik
-     * menggunakan method getSemanticKeywords() dari Model Topic.
-     */
     private function expandSearchTerms(string $search): array
     {
         $terms = preg_split('/\s+/', strtolower(trim($search))) ?: [];
         $terms = array_values(array_filter($terms));
         $expanded = [];
 
-        $synonyms = [
-            'ai' => ['artificial intelligence', 'machine learning'],
-            'machine' => ['machine learning'],
-            'learning' => ['machine learning', 'deep learning'],
-            'recommendation' => ['recommendation systems', 'recommender'],
-            'systems' => ['system', 'recommendation systems'],
-            'deep' => ['deep learning'],
-        ];
+        // Mengambil daftar sinonim dari Config!
+        $synonyms = config('topic_dictionary.mappings', []);
 
         foreach ($terms as $term) {
             $expanded[] = $term;
             $expanded = array_merge($expanded, $synonyms[$term] ?? []);
 
-            // Eager-load children untuk efisiensi
             $topicMatches = Topic::with('children')->active()->where(function ($query) use ($term): void {
                 $query->where('name', 'like', '%' . $term . '%')
                     ->orWhere('slug', 'like', '%' . $term . '%');
             })->get();
 
             foreach ($topicMatches as $topic) {
-                // Gunakan helper terpusat model Topic agar sinkron
                 $expanded = array_merge($expanded, $topic->getSemanticKeywords());
             }
         }

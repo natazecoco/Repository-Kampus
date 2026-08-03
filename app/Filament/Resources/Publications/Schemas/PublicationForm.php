@@ -21,31 +21,16 @@ class PublicationForm
     public static function configure(Schema $schema): Schema
     {
         $detectResearchMethod = function (Get $get, Set $set) {
-            // TagsInput mengembalikan array, jadi kita gabungkan menjadi satu string
             $keywordsData = $get('keywords');
             $keywordsString = is_array($keywordsData) ? implode(' ', $keywordsData) : (string) ($keywordsData ?? '');
             
             $keywords = strtolower($keywordsString);
             $abstract = strtolower((string) ($get('abstract') ?? ''));
 
-            $methods = [
-                'agile' => 'Agile',
-                'waterfall' => 'SDLC Waterfall',
-                'sdlc' => 'SDLC',
-                'rad' => 'Rapid Application Development (RAD)',
-                'prototyping' => 'Prototyping',
-                'scrum' => 'Scrum',
-                'kuantitatif' => 'Kuantitatif',
-                'kualitatif' => 'Kualitatif',
-                'studi kasus' => 'Studi Kasus',
-                'eksperimental' => 'Eksperimental',
-                'tindakan' => 'Penelitian Tindakan (Action Research)',
-                'blackbox' => 'Black Box Testing',
-            ];
+            $methods = config('research.methods', []);
 
             $detectedMethod = null;
 
-            // 1. Cek di Keywords
             foreach ($methods as $key => $label) {
                 if (Str::contains($keywords, $key)) {
                     $detectedMethod = $label;
@@ -53,7 +38,6 @@ class PublicationForm
                 }
             }
 
-            // 2. Cek di Abstrak (Jika tidak ada di keywords)
             if (! $detectedMethod) {
                 foreach ($methods as $key => $label) {
                     if (Str::contains($abstract, $key)) {
@@ -63,7 +47,6 @@ class PublicationForm
                 }
             }
 
-            // 3. Set nilai hanya jika ditemukan dan kolom masih kosong
             if ($detectedMethod && empty($get('research_method'))) {
                 $set('research_method', $detectedMethod);
             }
@@ -161,9 +144,6 @@ class PublicationForm
                     ])
                     ->helperText('Pilih topik terstruktur untuk mendukung pencarian dan rekomendasi bacaan pelengkap. Ketik untuk mencari, atau buat topik baru.'),
 
-                // ==========================================
-                // TAMBAHAN METADATA BARU DIMULAI DARI SINI
-                // ==========================================
                 Select::make('language')
                     ->label('Bahasa')
                     ->options([
@@ -195,9 +175,6 @@ class PublicationForm
                     ->placeholder('Contoh: 10.1000/xyz123')
                     ->maxLength(255)
                     ->helperText('Kosongkan jika publikasi belum memiliki DOI resmi.'),
-                // ==========================================
-                // BATAS TAMBAHAN METADATA BARU
-                // ==========================================
 
                 Repeater::make('files')
                     ->label('Berkas Publikasi')

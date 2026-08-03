@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Jobs\GenerateRecommendations;
 
@@ -20,7 +21,49 @@ class Publication extends Model
         'report' => 'Laporan Penelitian',
     ];
 
-    // Relasi: Banyak Publication dimiliki oleh Satu Container
+    /**
+     * Accessor untuk merapikan judul publikasi (Title Case + Special Terms).
+     */
+    protected function title(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value) {
+                if (!$value) return '';
+
+                $specialCases = config('topic_dictionary.title_cases', []);
+
+                $words = explode(' ', strtolower(trim($value)));
+                
+                foreach ($words as $key => $word) {
+                    $cleanWord = trim($word, '(),.!?:"\'');
+                    
+                    if (array_key_exists($cleanWord, $specialCases)) {
+                        $words[$key] = str_replace($cleanWord, $specialCases[$cleanWord], $word);
+                    } else {
+                        if (str_starts_with($word, '(') && strlen($word) > 1) {
+                            $words[$key] = '(' . ucfirst(substr($word, 1));
+                        } else {
+                            $words[$key] = ucfirst($word);
+                        }
+                    }
+                }
+
+                $firstWordLower = strtolower(trim($words[0] ?? '', '(),.!?:"\''));
+                if (array_key_exists($firstWordLower, $specialCases) && !in_array($specialCases[$firstWordLower], ['dan', 'atau', 'di', 'ke', 'dari', 'yang', 'pada', 'untuk', 'dengan', 'dalam', 'terhadap', 'sebagai'])) {
+                    $words[0] = str_replace($firstWordLower, $specialCases[$firstWordLower], strtolower($words[0]));
+                } else {
+                    if (str_starts_with($words[0], '(') && strlen($words[0]) > 1) {
+                        $words[0] = '(' . ucfirst(substr($words[0], 1));
+                    } else {
+                        $words[0] = ucfirst($words[0]);
+                    }
+                }
+
+                return implode(' ', $words);
+            }
+        );
+    }
+
     public function container()
     {
         return $this->belongsTo(Container::class);
@@ -46,9 +89,6 @@ class Publication extends Model
         return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);
     }
 
-    /**
-     * Scope untuk Weighted Search (Bobot: Judul > Keyword > Author > Abstrak)
-     */
     public function scopeSearch(Builder $query, ?string $term, array $semanticTerms = []): Builder
     {
         if (empty($term) && empty($semanticTerms)) {
@@ -58,7 +98,6 @@ class Publication extends Model
         $term = strtolower(trim((string) $term));
 
         return $query->where(function (Builder $q) use ($term, $semanticTerms) {
-            // Pencarian keyword utama
             if ($term !== '') {
                 $q->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
                   ->orWhereRaw('LOWER(keywords) LIKE ?', ["%{$term}%"])
@@ -72,7 +111,6 @@ class Publication extends Model
                   ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]));
             }
 
-            // Pencarian perluasan sinonim dan topik (dari expandSearchTerms)
             foreach ($semanticTerms as $semanticTerm) {
                 $semanticTerm = strtolower(trim((string) $semanticTerm));
                 if ($semanticTerm === '') continue;
@@ -83,7 +121,6 @@ class Publication extends Model
                   ->orWhereHas('topics', fn ($topicQuery) => $topicQuery->whereRaw('LOWER(name) LIKE ?', ["%{$semanticTerm}%"]));
             }
         })
-        // Pengurutan bobot kecocokan keyword utama menggunakan CASE statement
         ->when($term !== '', function (Builder $q) use ($term) {
             $q->orderByRaw("
                 CASE 
@@ -94,26 +131,19 @@ class Publication extends Model
                     ELSE 0 
                 END DESC
             ", [
-                "%{$term}%", // Bobot 4 (Judul)
-                "%{$term}%", // Bobot 3 (Keyword)
-                "%{$term}%", // Bobot 2 (Author)
-                "%{$term}%", // Bobot 1 (Abstrak)
+                "%{$term}%", 
+                "%{$term}%", 
+                "%{$term}%", 
+                "%{$term}%", 
             ]);
         })
-        ->latest(); // Fallback urutan berdasarkan dokumen terbaru
+        ->latest(); 
     }
 
-    /**
-     * [PERBAIKAN] Return list of required section keys for a given publication type.
-     * scientific_paper kini memiliki aturan ringkas (tanpa lembar pengesahan dan presentasi skripsi).
-     *
-     * @return array<int, string>
-     */
     public static function requiredSectionsForType(?string $type): array
     {
         $type = $type ?? 'thesis';
 
-        // 1. Berkas wajib skripsi (10 section)
         $thesisRequired = [
             'cover',
             'originality_statement',
@@ -127,7 +157,6 @@ class Publication extends Model
             'presentation',
         ];
 
-        // 2. Berkas wajib Penulisan Ilmiah (Lebih ringkas dibanding skripsi)
         $scientificPaperRequired = [
             'cover',
             'originality_statement',
@@ -139,7 +168,6 @@ class Publication extends Model
             'bibliography',
         ];
 
-        // 3. Berkas untuk publikasi lepas (Artikel, Buku, Prosiding, Laporan)
         $singleDocumentRequired = [
             'full_document',
             'abstract_id',
@@ -154,11 +182,6 @@ class Publication extends Model
         };
     }
 
-    /**
-     * Return missing required section keys for this publication using persisted files.
-     *
-     * @return array<int, string>
-     */
     public function missingRequiredSections(): array
     {
         $present = $this->files()->pluck('section')->filter()->values()->all();
@@ -168,13 +191,6 @@ class Publication extends Model
         return array_values(array_diff($required, $present));
     }
 
-    /**
-     * Same as missingRequiredSections but based on incoming form data array (files as array).
-     * Useful when validating form state before the record is persisted.
-     *
-     * @param  array<int, array<string,mixed>>  $filesData
-     * @return array<int, string>
-     */
     public static function missingRequiredSectionsFromArray(?string $type, array $filesData = []): array
     {
         $present = array_values(array_filter(array_map(fn($f) => $f['section'] ?? null, $filesData)));
@@ -184,10 +200,6 @@ class Publication extends Model
         return array_values(array_diff($required, $present));
     }
 
-    /**
-     * Helper: Parse string author menjadi array nama-nama bersih.
-     * Mendukung pemisah titik koma (;), kata 'dan', 'and', atau koma untuk banyak penulis.
-     */
     protected function parseAuthors(): array
     {
         if (empty($this->author)) {
@@ -203,7 +215,6 @@ class Publication extends Model
         } else {
             $authors = explode(',', $this->author);
             if (count($authors) === 2 && strlen(trim($authors[1])) <= 6) {
-                // Anggap gelar pendek, misal "Nama, S.Kom" -> 1 author
                 return [trim($this->author)];
             }
         }
@@ -211,9 +222,6 @@ class Publication extends Model
         return array_values(array_filter(array_map('trim', $authors)));
     }
 
-    /**
-     * Helper: Format single author untuk APA & Harvard -> "Nama Belakang, Inisial."
-     */
     protected function formatAuthorAPA(string $fullName): string
     {
         $cleanName = preg_replace('/,?\s*(S\.Kom|M\.Kom|S\.T|M\.T|Ph\.D|Dr\.|Prof\.).*/i', '', $fullName);
@@ -234,9 +242,6 @@ class Publication extends Model
         return $lastName . ', ' . trim($initials);
     }
 
-    /**
-     * [BARU - FASE 2A] Mengubah format author menjadi format sitasi single/multi author default.
-     */
     public function getFormattedAuthorAttribute(): string
     {
         $authors = array_map([$this, 'formatAuthorAPA'], $this->parseAuthors());
@@ -249,19 +254,14 @@ class Publication extends Model
         return implode(', ', $authors) . ', & ' . $lastAuthor;
     }
 
-    /**
-     * [BARU - FASE 2A PLUS BILINGUAL] Generate format sitasi pintar (APA, IEEE, Harvard) 
-     * dengan dukungan Multi-Author & Auto-Detect Bahasa (dkk. / et al.)
-     */
     public function getCitation(string $style = 'APA'): string
     {
         $authors = $this->parseAuthors();
         $authorCount = count($authors);
         $year = $this->year ?? date('Y');
-        $title = $this->title ?? 'Tanpa Judul';
+        $title = $this->title ?? 'Tanpa Judul'; 
         $container = $this->container ? $this->container->name : 'Universitas Gunadarma';
 
-        // Cek bahasa dokumen (default ke 'id' / Indonesia kalau kosong)
         $isIndo = !isset($this->language) || in_array(strtolower(trim($this->language)), ['id', 'indonesia', 'in']);
         $etAl = $isIndo ? 'dkk.' : 'et al.';
         $andWord = $isIndo ? 'dan' : 'and';
@@ -280,7 +280,6 @@ class Publication extends Model
                     return trim($initials) . ' ' . $lastName;
                 };
 
-                // IEEE: > 6 penulis langsung dipangkas
                 if ($authorCount > 6) {
                     $authorStr = $formatIEEE($authors[0]) . ' ' . $etAl;
                 } elseif ($authorCount === 1) {
@@ -300,7 +299,6 @@ class Publication extends Model
             case 'HARVARD':
                 $formattedAuthors = array_map([$this, 'formatAuthorAPA'], $authors);
 
-                // Harvard: > 3 penulis dipangkas
                 if ($authorCount === 1) {
                     $authorStr = $formattedAuthors[0];
                 } elseif ($authorCount === 2) {
@@ -321,18 +319,15 @@ class Publication extends Model
             default:
                 $formattedAuthors = array_map([$this, 'formatAuthorAPA'], $authors);
 
-                // APA 7th: Toleran sampai 20 penulis
                 if ($authorCount === 1) {
                     $authorStr = $formattedAuthors[0];
                 } elseif ($authorCount === 2) {
-                    // Di Indonesia, APA sering tetap pakai '&' atau 'dan' tergantung pedoman kampus
                     $separator = $isIndo ? ' & ' : ' & '; 
                     $authorStr = $formattedAuthors[0] . $separator . $formattedAuthors[1];
                 } elseif ($authorCount >= 3 && $authorCount <= 20) {
                     $lastAuthor = array_pop($formattedAuthors);
                     $authorStr = implode(', ', $formattedAuthors) . ', & ' . $lastAuthor;
                 } else {
-                    // APA 7th untuk > 20 penulis -> Penulis pertama dkk. / et al.
                     $authorStr = $formattedAuthors[0] . ' ' . $etAl;
                 }
 
