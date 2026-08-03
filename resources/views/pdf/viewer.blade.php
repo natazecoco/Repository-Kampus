@@ -9,14 +9,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $file->title }} - {{ $publication->title }}</title>
     
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Konfigurasi warna khusus agar Ungu Gunadarma terbaca di halaman ini -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
                     colors: {
                         'gundar-primary': '#763a97', 
                         'gundar-dark': '#4b2163',    
@@ -32,7 +39,7 @@
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        /* Custom scrollbar untuk area dokumen */
+        
         #pdf-scroll-area::-webkit-scrollbar { width: 8px; height: 8px; }
         #pdf-scroll-area::-webkit-scrollbar-track { background: transparent; }
         #pdf-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -41,7 +48,10 @@
 </head>
 <body class="bg-[#f8fbff] font-sans text-slate-800 overflow-hidden h-screen flex flex-col selection:bg-gundar-primary/30" oncontextmenu="return false;">
     
-    <!-- TOOLBAR ADVANCED (Ungu Gelap, Teks Putih) -->
+    <!-- [BARU] Reading Progress Bar di Paling Atas -->
+    <div id="reading-progress" class="absolute top-0 left-0 h-1 bg-gradient-to-r from-gundar-primary via-gundar-accent to-orange-400 z-50 transition-all duration-100" style="width: 0%;"></div>
+
+    <!-- TOOLBAR ADVANCED -->
     <header class="relative z-40 flex h-16 shrink-0 items-center justify-between bg-gundar-dark px-4 sm:px-6 shadow-md text-white border-b-[3px] border-gundar-accent">
         
         <!-- Kiri: Tombol Kembali & Judul -->
@@ -57,10 +67,10 @@
             </div>
         </div>
 
-        <!-- Tengah: Indikator Info Dokumen (Continuous Scroll) -->
+        <!-- Tengah: Indikator Info Dokumen -->
         <div class="flex items-center justify-center gap-2 shrink-0 w-1/3">
             <div class="flex items-center rounded-lg bg-black/20 px-4 py-1.5 text-xs font-medium tracking-wide text-slate-300 border border-white/10 shadow-inner">
-                <span class="text-white font-bold mr-1.5">📄 Mode Scroll</span> 
+                <span class="text-white font-bold mr-1.5">Mode Scroll</span> 
                 <span class="text-slate-400">&bull;</span>
                 <span id="page-count-label" class="ml-1.5 text-slate-300">Memuat...</span>
             </div>
@@ -82,7 +92,7 @@
 
     <main class="flex flex-1 overflow-hidden">
         
-        <!-- SIDEBAR: DAFTAR BAGIAN (Struktur Dokumen) -->
+        <!-- SIDEBAR: DAFTAR BAGIAN -->
         <nav class="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50">
                 <h2 class="text-[11px] font-black uppercase tracking-widest text-slate-500">Struktur Dokumen</h2>
@@ -100,16 +110,16 @@
             </div>
         </nav>
 
-        <!-- KANVAS RENDER PDF (Mode Continuous Scroll) -->
+        <!-- KANVAS RENDER PDF -->
         <div id="pdf-scroll-area" class="relative flex-1 overflow-auto bg-slate-200/80 flex flex-col items-center p-4 sm:p-8">
             
-            <!-- Loading Indicator Minimalis -->
+            <!-- Loading Indicator -->
             <div id="pdf-loader" class="flex flex-col items-center justify-center my-auto py-12 text-slate-500">
                 <div class="h-8 w-8 animate-spin rounded-full border-4 border-gundar-primary border-t-transparent mb-3"></div>
                 <p class="text-xs font-bold tracking-wider uppercase">Memuat Dokumen PDF...</p>
             </div>
 
-            <!-- Kontainer Utama Tempat Halaman-Halaman PDF Disusun -->
+            <!-- Kontainer Halaman PDF -->
             <div id="pdf-pages-container" class="flex flex-col items-center gap-6 pb-12 w-full"></div>
             
         </div>
@@ -122,9 +132,10 @@
         const scrollArea = document.getElementById('pdf-scroll-area');
         const pagesContainer = document.getElementById('pdf-pages-container');
         const loader = document.getElementById('pdf-loader');
+        const progressBar = document.getElementById('reading-progress');
         
         let pdfDocument = null;
-        let currentScale = 1.5; // Skala default 150%
+        let currentScale = 1.5; 
         const isWatermarked = @json($isWatermarked);
         const userName = @json($currentUser->name ?? 'User');
         const userNpm = @json($currentUser->npm ?? 'NPM');
@@ -134,29 +145,34 @@
             document.getElementById('zoom-label').textContent = Math.round(currentScale * 100) + '%';
         }
 
-        // Fungsi utama render semua halaman secara berurutan (Scroll Mode)
+        // [BARU] Logika untuk mengisi Reading Progress Bar saat digulir
+        scrollArea.addEventListener('scroll', () => {
+            const scrollTop = scrollArea.scrollTop;
+            const scrollHeight = scrollArea.scrollHeight - scrollArea.clientHeight;
+            if (scrollHeight > 0) {
+                const progress = (scrollTop / scrollHeight) * 100;
+                progressBar.style.width = progress + '%';
+            }
+        });
+
         async function renderAllPages() {
             if (!pdfDocument) return;
             
-            // Tampilkan loader saat memrender ulang
             loader.style.display = 'flex';
             pagesContainer.innerHTML = '';
             
             const totalPages = pdfDocument.numPages;
             document.getElementById('page-count-label').textContent = `${totalPages} Halaman`;
 
-            // Loop untuk membuat kanvas tiap halaman
             for (let num = 1; num <= totalPages; num++) {
                 const page = await pdfDocument.getPage(num);
                 const viewport = page.getViewport({ scale: currentScale });
 
-                // Wrapper per halaman supaya ada shadow dan support watermark per page
                 const pageWrapper = document.createElement('div');
-                pageWrapper.className = 'relative flex-shrink-0 bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] ring-1 ring-slate-900/5 overflow-hidden';
+                pageWrapper.className = 'relative flex-shrink-0 bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] ring-1 ring-slate-900/5 overflow-hidden rounded-lg';
                 pageWrapper.style.width = `${viewport.width}px`;
                 pageWrapper.style.height = `${viewport.height}px`;
 
-                // Element Canvas
                 const canvas = document.createElement('canvas');
                 canvas.className = 'block pointer-events-none';
                 canvas.height = viewport.height;
@@ -165,13 +181,10 @@
                 const context = canvas.getContext('2d');
                 pageWrapper.appendChild(canvas);
 
-                // Tambahkan Watermark jika dokumen dibatasi
                 if (isWatermarked) {
                     const watermark = document.createElement('div');
-                    // z-20 untuk di atas kanvas, pointer-events-none agar tidak mengganggu klik/scroll
                     watermark.className = 'pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden z-20';
                     watermark.innerHTML = `
-                        <!-- Menggunakan opacity-20 agar sangat transparan dan mix-blend-multiply agar menyatu dengan tinta PDF -->
                         <div class="-rotate-[35deg] select-none text-center opacity-20 mix-blend-multiply w-full px-10">
                             <p class="text-4xl sm:text-5xl font-black tracking-widest text-slate-600 uppercase leading-tight">
                                 ${userName} <br>
@@ -183,37 +196,28 @@
                 }
 
                 pagesContainer.appendChild(pageWrapper);
-
-                // Render halaman ke dalam canvas-nya masing-masing
                 await page.render({ canvasContext: context, viewport }).promise;
             }
 
-            // Sembunyikan loader setelah selesai
             loader.style.display = 'none';
         }
 
-        // Kontrol Zoom
         document.getElementById('zoom-in').addEventListener('click', () => {
-            if (currentScale < 3.0) { // Max zoom 300%
+            if (currentScale < 3.0) {
                 currentScale += 0.25;
                 updateZoomLabel();
-                renderAllPages().then(() => {
-                    scrollArea.scrollTop = 0; // Balikkan scroll ke atas dengan mulus saat ganti zoom
-                });
+                renderAllPages().then(() => { scrollArea.scrollTop = 0; });
             }
         });
 
         document.getElementById('zoom-out').addEventListener('click', () => {
-            if (currentScale > 0.5) { // Min zoom 50%
+            if (currentScale > 0.5) {
                 currentScale -= 0.25;
                 updateZoomLabel();
-                renderAllPages().then(() => {
-                    scrollArea.scrollTop = 0;
-                });
+                renderAllPages().then(() => { scrollArea.scrollTop = 0; });
             }
         });
 
-        // Inisialisasi Memuat PDF
         pdfjsLib.getDocument({ url, disableAutoFetch: true, disableStream: true }).promise
             .then((pdf) => {
                 pdfDocument = pdf;
@@ -224,7 +228,6 @@
                 alert('Gagal memuat dokumen. Periksa akses atau ketersediaan berkas.');
             });
 
-        // Proteksi Keyboard (Mencegah Shortcut Save/Print)
         document.addEventListener('keydown', (event) => {
             if ((event.ctrlKey || event.metaKey) && ['s', 'p'].includes(event.key.toLowerCase())) {
                 event.preventDefault();
