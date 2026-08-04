@@ -55,7 +55,7 @@
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 </head>
-<body class="min-h-screen font-sans text-slate-800 selection:bg-gundar-primary selection:text-white relative bg-[#fdfcfb]">
+<body class="min-h-screen font-sans text-slate-800 selection:bg-gundar-primary selection:text-white relative bg-[#fdfcfb] overflow-x-hidden">
 
     <!-- [BARU] Ambient Glow Background -->
     <!-- Elemen ini diam di tempat dan memberikan pancaran warna ungu sangat halus dari sudut kanan atas -->
