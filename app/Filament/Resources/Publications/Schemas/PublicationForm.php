@@ -111,7 +111,7 @@ class PublicationForm
 
                 Textarea::make('abstract')
                     ->rows(5)
-                    ->required()
+                    ->required(fn (Get $get) => $get('type') !== 'book') // Tidak wajib khusus untuk Buku
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
                         $detectResearchMethod($get, $set);
@@ -122,7 +122,7 @@ class PublicationForm
                     ->separator(',')
                     ->splitKeys(['Tab', 'Enter'])
                     ->helperText('Tekan Enter atau Tab setelah setiap kata kunci. Tag ini digunakan oleh pencarian dan rekomendasi dokumen.')
-                    ->required()
+                    ->required(fn (Get $get) => $get('type') !== 'book') // Tidak wajib khusus untuk Buku
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Get $get, Set $set) use ($detectResearchMethod) {
                         $detectResearchMethod($get, $set);
@@ -134,6 +134,7 @@ class PublicationForm
                     ->multiple()
                     ->searchable()
                     ->preload()
+                    ->required(fn (Get $get) => $get('type') === 'book') // WAJIB khusus untuk Buku agar tidak jadi "hantu"
                     ->createOptionForm([
                         \Filament\Forms\Components\TextInput::make('name')
                             ->label('Nama topik')

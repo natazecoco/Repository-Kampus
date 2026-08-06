@@ -163,9 +163,9 @@ class RecommendationScorer
             : (string) $publication->keywords;
 
         return trim(implode(' ', array_filter([
-            $publication->title,
+            $publication->title ?? '',
             $keywords,
-            $publication->abstract,
+            $publication->abstract ?? '',
         ])));
     }
 

@@ -279,14 +279,14 @@
         <!-- KOTAK REKOMENDASI ILMU TERKAIT -->
         <div class="space-y-12">
             
-            {{-- 1. DOKUMEN PALING MIRIP --}}
+            {{-- 1. KARYA ILMIAH TERKAIT (TF-IDF) --}}
             @if(isset($similarRecommendations) && $similarRecommendations->isNotEmpty())
                 <div>
                     <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
                         <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
-                        Mirip dengan dokumen ini
+                        Karya Ilmiah Terkait
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($similarRecommendations->take(3) as $item)
@@ -298,7 +298,7 @@
                                         <p class="mt-2 text-xs text-slate-500">{{ $pub->author }}</p>
                                     </div>
                                     <div class="mt-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                                        <span>Karena topik serupa</span>
+                                        <span>Mirip secara konten</span>
                                         <span>{{ $pub->year ?? 'N/A' }}</span>
                                     </div>
                                 </a>
@@ -308,14 +308,86 @@
                 </div>
             @endif
 
-            {{-- 2. BACAAN PELENGKAP --}}
+            {{-- 2. BUKU & LITERATUR RUJUKAN (Khusus Buku) --}}
+            @if(isset($bookReferences) && $bookReferences->isNotEmpty())
+                <div>
+                    <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
+                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-600">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.82 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.496 1.509 1.333 1.509 2.316V18" /></svg>
+                        </div>
+                        Buku & Literatur Rujukan
+                    </h2>
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach($bookReferences->take(3) as $pub)
+                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50/50 to-white p-5 transition-all duration-300 hover:border-amber-400/50 hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)] hover:-translate-y-1">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0013 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path></svg>
+                                        <p class="text-[9px] font-black uppercase tracking-widest text-amber-600">{{ $pub->type_label }}</p>
+                                    </div>
+                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-amber-600 line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                    <p class="mt-2 text-xs text-slate-500">Buku referensi yang membahas fondasi teori</p>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- 3. EKSPLORASI TOPIK SPESIFIK --}}
+            @if(isset($advancedReadings) && $advancedReadings->isNotEmpty())
+                <div>
+                    <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
+                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-100 text-rose-600">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.433 4.433 0 002.771 2.771 4.902 4.902 0 003.123.06 4.5 4.5 0 002.592-2.592c.451-1.034.031-2.25-1.024-2.856M8.25 15.75l-3-3m0 0l3-3m-3 3h15" /></svg>
+                        </div>
+                        Eksplorasi Topik Spesifik
+                    </h2>
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach($advancedReadings->take(3) as $pub)
+                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
+                                <div>
+                                    <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
+                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                    <p class="mt-2 text-xs text-slate-500">Membahas cabang ilmu yang lebih spesifik</p>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- 4. REFERENSI METODE SERUPA --}}
+            @if(isset($similarMethods) && $similarMethods->isNotEmpty())
+                <div>
+                    <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
+                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 text-purple-600">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" /></svg>
+                        </div>
+                        Referensi Metode Serupa
+                    </h2>
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach($similarMethods->take(3) as $pub)
+                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
+                                <div>
+                                    <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
+                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                    <p class="mt-2 text-xs text-slate-500">Inspirasi penerapan metode riset yang sama</p>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- 5. REKOMENDASI TAMBAHAN --}}
             @if(isset($complementaryRecommendations) && $complementaryRecommendations->isNotEmpty())
                 <div>
                     <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
                         <div class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-600">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
                         </div>
-                        Referensi Pelengkap
+                        Rekomendasi Tambahan
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($complementaryRecommendations->take(3) as $item)
@@ -324,83 +396,10 @@
                                     <div>
                                         <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
                                         <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                        <p class="mt-2 text-xs text-slate-500">Pelengkap bacaan untuk topik inti</p>
-                                    </div>
-                                    <div class="mt-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                                        <span>Referensi pelengkap</span>
-                                        <span>{{ $pub->year ?? 'N/A' }}</span>
+                                        <p class="mt-2 text-xs text-slate-500">Memiliki irisan topik kajian</p>
                                     </div>
                                 </a>
                             @endif
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
-            {{-- 3. KONSEP DASAR --}}
-            @if(isset($basicConcepts) && $basicConcepts->isNotEmpty())
-                <div>
-                    <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
-                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-600">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.82 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.496 1.509 1.333 1.509 2.316V18" /></svg>
-                        </div>
-                        Konsep Dasar Terkait
-                    </h2>
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($basicConcepts->take(3) as $pub)
-                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
-                                <div>
-                                    <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
-                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                    <p class="mt-2 text-xs text-slate-500">Konsep dasar yang membantu memahami latar belakang</p>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
-            {{-- 4. METODE / TIPE SERUPA --}}
-            @if(isset($similarMethods) && $similarMethods->isNotEmpty())
-                <div>
-                    <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
-                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 text-purple-600">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" /></svg>
-                        </div>
-                        Metode & Tipe Dokumen Serupa
-                    </h2>
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($similarMethods->take(3) as $pub)
-                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
-                                <div>
-                                    <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
-                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                    <p class="mt-2 text-xs text-slate-500">Metode dan pendekatan yang serupa</p>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
-            {{-- 5. BACAAN LANJUTAN --}}
-            @if(isset($advancedReadings) && $advancedReadings->isNotEmpty())
-                <div>
-                    <h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900">
-                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-100 text-rose-600">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.433 4.433 0 002.771 2.771 4.902 4.902 0 003.123.06 4.5 4.5 0 002.592-2.592c.451-1.034.031-2.25-1.024-2.856M8.25 15.75l-3-3m0 0l3-3m-3 3h15" /></svg>
-                        </div>
-                        Bacaan Lanjutan Spesifik
-                    </h2>
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($advancedReadings->take(3) as $pub)
-                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
-                                <div>
-                                    <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
-                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                    <p class="mt-2 text-xs text-slate-500">Bacaan lanjutan yang lebih spesifik</p>
-                                </div>
-                            </a>
                         @endforeach
                     </div>
                 </div>

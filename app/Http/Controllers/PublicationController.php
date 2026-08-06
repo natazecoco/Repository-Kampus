@@ -185,11 +185,16 @@ class PublicationController extends Controller
         })->take(3);
 
         $parentTopicIds = $publication->topics->pluck('parent_id')->filter()->unique();
-        $basicConcepts = Publication::where('id', '!=', $publication->id)
-            ->whereHas('topics', function ($q) use ($parentTopicIds) {
-                $q->whereIn('id', $parentTopicIds);
+        $allRelevantTopicIds = $publication->topics->pluck('id')->merge($parentTopicIds)->unique();
+        
+        // KHUSUS BUKU: Cari buku yang memiliki irisan dengan topik saat ini atau topik induknya
+        $bookReferences = Publication::where('id', '!=', $publication->id)
+            ->where('type', 'book')
+            ->whereHas('topics', function ($q) use ($allRelevantTopicIds) {
+                $q->whereIn('topics.id', $allRelevantTopicIds);
             })
             ->with('topics')
+            ->latest()
             ->limit(3)
             ->get();
 
@@ -220,7 +225,7 @@ class PublicationController extends Controller
             'recommendations', 
             'similarRecommendations', 
             'complementaryRecommendations', 
-            'basicConcepts', 
+            'bookReferences',
             'similarMethods', 
             'advancedReadings'
         ));
