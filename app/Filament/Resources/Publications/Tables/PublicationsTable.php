@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -42,6 +43,20 @@ class PublicationsTable
                     ->label('Jumlah Dokumen')
                     ->badge()
                     ->color('success'),
+                IconColumn::make('admin_completion_state.is_complete')
+                    ->label('Kelengkapan')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-exclamation-triangle')
+                    ->trueColor('success')
+                    ->falseColor('warning'),
+                TextColumn::make('admin_completion_state.status_label')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn ($state): string => $state === 'Lengkap' ? 'success' : 'warning'),
+                TextColumn::make('metadata_summary.category')
+                    ->label('Kategori')
+                    ->sortable(false),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -52,8 +67,9 @@ class PublicationsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 Action::make('view_publication')
                     ->label('Baca Publikasi')

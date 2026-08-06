@@ -53,7 +53,7 @@
                 @auth
                     @if($personalizedRecommendations->isNotEmpty())
                         <div class="mb-8 rounded-3xl bg-gundar-primary/5 p-6 border border-gundar-primary/10 transition duration-300 hover:shadow-sm">
-                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gundar-primary">Disarankan Untuk Anda</h3>
+                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gundar-primary">Rekomendasi untukmu</h3>
                             <p class="mt-1 text-xs text-slate-500">Berdasarkan dokumen tersimpan dan riwayat topik.</p>
                             
                             <div class="mt-4 grid gap-4 sm:grid-cols-2">
@@ -68,6 +68,28 @@
                     @endif
                 @endauth
 
+                @if($topics->isNotEmpty())
+                    <div class="mb-8 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-[0_2px_10px_rgb(0,0,0,0.02)] backdrop-blur-sm">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Insight Repository</h3>
+                                <p class="mt-1 text-sm text-slate-500">Topik yang paling aktif saat ini membantu Anda memulai pencarian dengan arah yang lebih jelas.</p>
+                            </div>
+                            <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{{ $topics->count() }} topik</span>
+                        </div>
+
+                        <div class="mt-5 grid gap-3 sm:grid-cols-3">
+                            @foreach($topics->sortByDesc('publications_count')->take(3) as $topic)
+                                <a href="{{ route('home', ['topic' => $topic->slug]) }}" class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 transition-all duration-300 hover:border-gundar-primary/30 hover:bg-white hover:shadow-sm">
+                                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gundar-primary">Topik aktif</p>
+                                    <h4 class="mt-2 text-sm font-bold text-slate-800">{{ $topic->name }}</h4>
+                                    <p class="mt-2 text-xs text-slate-500">{{ $topic->publications_count }} publikasi terkait</p>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Bagian Judul dan Filter Dropdown Metode Riset -->
                 <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
                     <div>
@@ -79,33 +101,72 @@
                         @elseif(isset($methodFilter) && $methodFilter !== '')
                             <p class="mt-1 text-sm text-slate-500">Metode Riset: <span class="font-bold text-gundar-primary">{{ $methodFilter }}</span></p>
                         @else
-                            <p class="mt-1 text-sm text-slate-500">Terbaru diunggah ke dalam sistem.</p>
+                            <p class="mt-1 text-sm text-slate-500">Relevansi, popularitas, dan pembaruan dipertimbangkan secara bersamaan.</p>
                         @endif
+                        <p class="mt-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                            Telusuri dokumen, filter topik, dan simpan karya yang relevan.
+                        </p>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-3">
-                        <!-- Dropdown Filter Metode Riset -->
-                        @if(isset($availableMethods) && $availableMethods->isNotEmpty())
-                            <form action="{{ route('home') }}" method="GET" class="inline-block">
+                    <div class="flex flex-wrap items-center justify-end gap-2 sm:gap-2">
+                        <div class="flex flex-wrap items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50/70 p-1.5 shadow-sm">
+                            <form action="{{ route('home') }}" method="GET" class="flex flex-wrap items-center gap-1.5">
                                 @if($search) <input type="hidden" name="search" value="{{ $search }}"> @endif
                                 @if(request('topic')) <input type="hidden" name="topic" value="{{ request('topic') }}"> @endif
-                                
-                                <select name="method" onchange="this.form.submit()" class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 focus:border-gundar-primary focus:ring-1 focus:ring-gundar-primary focus:outline-none shadow-sm cursor-pointer transition-colors hover:bg-slate-50">
-                                    <option value="">-- Semua Metode Riset --</option>
-                                    @foreach($availableMethods as $m)
-                                        <option value="{{ $m }}" {{ (isset($methodFilter) && $methodFilter == $m) ? 'selected' : '' }}>
-                                            {{ $m }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </form>
-                        @endif
 
-                        @if($search || $activeTopic || (isset($methodFilter) && $methodFilter !== ''))
-                            <a href="{{ route('home') }}" class="text-sm font-semibold text-gundar-accent hover:text-orange-600 hover:underline transition-colors">Hapus Filter</a>
+                                @if(isset($typeOptions) && count($typeOptions) > 1)
+                                    <select name="type" onchange="this.form.submit()" class="min-w-[120px] rounded-full border border-transparent bg-white px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600 transition hover:border-slate-200 focus:border-gundar-primary focus:outline-none">
+                                        @foreach($typeOptions as $value => $label)
+                                            <option value="{{ $value }}" {{ (isset($typeFilter) && $typeFilter == $value) ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+
+                                @if(isset($availableMethods) && $availableMethods->isNotEmpty())
+                                    <select name="method" onchange="this.form.submit()" class="min-w-[120px] rounded-full border border-transparent bg-white px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600 transition hover:border-slate-200 focus:border-gundar-primary focus:outline-none">
+                                        <option value="">Semua Metode</option>
+                                        @foreach($availableMethods as $m)
+                                            <option value="{{ $m }}" {{ (isset($methodFilter) && $methodFilter == $m) ? 'selected' : '' }}>
+                                                {{ $m }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @endif
+
+                                @if(isset($availableYears) && $availableYears->isNotEmpty())
+                                    <select name="year" onchange="this.form.submit()" class="min-w-[100px] rounded-full border border-transparent bg-white px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600 transition hover:border-slate-200 focus:border-gundar-primary focus:outline-none">
+                                        <option value="">Semua Tahun</option>
+                                        @foreach($availableYears as $year)
+                                            <option value="{{ $year }}" {{ (isset($yearFilter) && $yearFilter == $year) ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                            </form>
+                        </div>
+
+                        @if($search || $activeTopic || (isset($methodFilter) && $methodFilter !== '') || (isset($typeFilter) && $typeFilter !== '') || (isset($yearFilter) && $yearFilter !== ''))
+                            <a href="{{ route('home') }}" class="text-[10px] font-semibold uppercase tracking-[0.16em] text-gundar-accent hover:text-orange-600 hover:underline transition-colors">Reset</a>
                         @endif
                     </div>
                 </div>
+
+                @if($search || (isset($typeFilter) && $typeFilter !== '') || (isset($methodFilter) && $methodFilter !== '') || (isset($yearFilter) && $yearFilter !== ''))
+                    <div class="mb-6 flex flex-wrap gap-2">
+                        @if($search)
+                            <a href="{{ route('home', array_filter(['type' => $typeFilter ?: null, 'method' => $methodFilter ?: null, 'year' => $yearFilter ?: null])) }}" class="rounded-full border border-gundar-primary/20 bg-gundar-primary/5 px-3 py-1.5 text-xs font-semibold text-gundar-primary">Kata kunci: {{ $search }}</a>
+                        @endif
+                        @if($typeFilter)
+                            <a href="{{ route('home', array_filter(['search' => $search ?: null, 'method' => $methodFilter ?: null, 'year' => $yearFilter ?: null])) }}" class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600">Kategori: {{ $typeOptions[$typeFilter] ?? $typeFilter }}</a>
+                        @endif
+                        @if($methodFilter)
+                            <a href="{{ route('home', array_filter(['search' => $search ?: null, 'type' => $typeFilter ?: null, 'year' => $yearFilter ?: null])) }}" class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600">Metode: {{ $methodFilter }}</a>
+                        @endif
+                        @if($yearFilter)
+                            <a href="{{ route('home', array_filter(['search' => $search ?: null, 'type' => $typeFilter ?: null, 'method' => $methodFilter ?: null])) }}" class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600">Tahun: {{ $yearFilter }}</a>
+                        @endif
+                    </div>
+                @endif
 
                 <!-- Notifikasi Pencarian Semantik -->
                 @if($search && !empty($semanticTerms))

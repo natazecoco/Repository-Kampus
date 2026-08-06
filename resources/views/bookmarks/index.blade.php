@@ -12,6 +12,10 @@
             <p class="mt-4 text-base text-slate-500 max-w-xl mx-auto font-medium">
                 Kumpulan publikasi ilmiah yang Anda simpan untuk dibaca atau diunduh kembali nanti.
             </p>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm font-semibold text-slate-600">
+                <span class="rounded-full border border-slate-200 bg-white px-4 py-2 shadow-sm">{{ $bookmarks->count() }} dokumen tersimpan</span>
+                <span class="rounded-full border border-slate-200 bg-white px-4 py-2 shadow-sm">Topik favorit membantu sistem memberi rekomendasi yang lebih relevan</span>
+            </div>
         </div>
 
         <!-- AREA DAFTAR BACAAN & TOPIK FAVORIT -->
@@ -19,8 +23,11 @@
             <!-- Aksen Header Kotak -->
             <div class="absolute left-0 top-0 w-full h-1.5 bg-gradient-to-r from-gundar-primary to-gundar-accent"></div>
 
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-                <h2 class="text-lg font-black text-slate-800">Daftar Tersimpan</h2>
+            <div class="flex flex-col gap-3 border-b border-slate-100 pb-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-lg font-black text-slate-800">Daftar Tersimpan</h2>
+                    <p class="mt-1 text-sm text-slate-500">Koleksi ini membantu Anda kembali ke dokumen yang relevan tanpa perlu mencarinya lagi.</p>
+                </div>
                 <span class="rounded-full bg-gundar-primary/10 px-3.5 py-1 text-xs font-extrabold text-gundar-primary">
                     {{ $bookmarks->count() }} item
                 </span>

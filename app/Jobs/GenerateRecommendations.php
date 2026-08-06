@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Jobs\GenerateRecommendations;
 use App\Models\Publication;
 use App\Models\Recommendation;
 use App\Services\RecommendationScorer;
@@ -18,18 +17,48 @@ class GenerateRecommendations implements ShouldQueue
 
     public $publication;
 
-    // Menerima data skripsi yang akan dicarikan rekomendasinya
     public function __construct(Publication $publication)
     {
         $this->publication = $publication;
     }
 
-    // Fungsi handle() ini adalah tombol "START" dari pekerja belakang layar
     public function handle(): void
     {
         $target = $this->publication;
-        $others = Publication::where('id', '!=', $target->id)->get();
+        
+        // 1. Ambil semua ID Topik yang dimiliki oleh skripsi target
+        $topicIds = $target->topics->pluck('id')->toArray();
 
+        // 2. PRE-FILTERING: Jangan ambil semua isi database!
+        // Ambil skripsi yang minimal punya 1 kesamaan logis (Topik, Metode, Penulis, atau Tipe)
+        $others = Publication::with('topics') // Eager load topics agar tidak N+1 Query
+            ->where('id', '!=', $target->id)
+            ->where(function($query) use ($target, $topicIds) {
+                
+                // Syarat A: Punya irisan topik yang sama
+                if (!empty($topicIds)) {
+                    $query->whereHas('topics', function($q) use ($topicIds) {
+                        $q->whereIn('topics.id', $topicIds);
+                    });
+                }
+                
+                // Syarat B: Punya metode riset yang sama
+                if (!empty($target->research_method)) {
+                    $query->orWhere('research_method', $target->research_method);
+                }
+
+                // Syarat C: Penulisnya sama
+                if (!empty($target->author)) {
+                    $query->orWhere('author', $target->author);
+                }
+
+                // Syarat D (Fallback): Tipe dokumennya sama (misal sesama "Skripsi")
+                $query->orWhere('type', $target->type);
+                
+            })
+            ->get();
+
+        // Jika tidak ada kandidat sama sekali, berhenti.
         if ($others->isEmpty()) {
             return;
         }
@@ -44,13 +73,21 @@ class GenerateRecommendations implements ShouldQueue
                 continue;
             }
 
+            $recommendedPub = $entry['publication'];
+            
+            // Hitung jumlah irisan topik antara target dan kandidat rekomendasi
+            $sharedTopicsCount = $target->topics->pluck('id')
+                ->intersect($recommendedPub->topics->pluck('id'))
+                ->count();
+
             Recommendation::updateOrCreate(
                 [
                     'publication_id' => $target->id,
-                    'recommended_id' => $entry['publication']->id,
+                    'recommended_id' => $recommendedPub->id,
                 ],
                 [
                     'similarity_score' => $entry['score'],
+                    'knowledge_overlap' => $sharedTopicsCount, // Simpan hasil hitungan ke DB!
                 ]
             );
         }

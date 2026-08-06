@@ -89,6 +89,62 @@ class Publication extends Model
         return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);
     }
 
+    public function getMetadataSummaryAttribute(): array
+    {
+        return [
+            'type' => $this->type ?? 'unknown',
+            'document_type' => $this->getTypeLabelAttribute(),
+            'category' => $this->resolveCategory(),
+            'year' => (int) ($this->year ?? 0),
+            'has_author' => filled($this->author),
+            'has_abstract' => filled($this->abstract),
+            'has_keywords' => filled($this->keywords),
+        ];
+    }
+
+    public function getAdminCompletionStateAttribute(): array
+    {
+        $requiredSections = self::requiredSectionsForType($this->type ?? null);
+        $presentSections = $this->files()->pluck('section')->filter()->values()->all();
+        $missingSections = array_values(array_diff($requiredSections, $presentSections));
+
+        $isComplete = empty($missingSections);
+
+        return [
+            'is_complete' => $isComplete,
+            'status_label' => $isComplete ? 'Lengkap' : 'Perlu Dilengkapi',
+            'missing_sections' => $missingSections,
+            'required_count' => count($requiredSections),
+            'present_count' => count($presentSections),
+        ];
+    }
+
+    public function resolveCategory(): string
+    {
+        return match ($this->type) {
+            'thesis' => 'Dokumen Akademik',
+            'scientific_paper' => 'Artikel Ilmiah',
+            'article' => 'Artikel Jurnal',
+            'book' => 'Buku',
+            'proceeding' => 'Prosiding',
+            'report' => 'Laporan Penelitian',
+            default => 'Dokumen',
+        };
+    }
+
+    public static function typeFilterOptions(): array
+    {
+        return [
+            '' => 'Semua Kategori',
+            'thesis' => 'Skripsi / Tesis / Disertasi',
+            'scientific_paper' => 'Penulisan Ilmiah',
+            'article' => 'Artikel Jurnal',
+            'book' => 'Buku',
+            'proceeding' => 'Prosiding',
+            'report' => 'Laporan Penelitian',
+        ];
+    }
+
     public function scopeSearch(Builder $query, ?string $term, array $semanticTerms = []): Builder
     {
         if (empty($term) && empty($semanticTerms)) {

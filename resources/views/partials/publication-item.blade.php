@@ -38,19 +38,41 @@
             {{ $pub->author }} <span class="text-slate-300 mx-2">|</span> <span class="text-slate-500 font-normal">{{ $pub->container ? $pub->container->name : 'Universitas Gunadarma' }}</span>
         </p>
 
-        <!-- Abstrak -->
-        <p class="mt-3 text-sm leading-relaxed text-slate-500 line-clamp-2">
-            {!! $pub->highlighted_abstract ?? $pub->abstract ?? 'Abstrak tidak tersedia untuk dokumen ini.' !!}
-        </p>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <a href="{{ route('home', ['type' => $pub->type]) }}" class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 transition hover:border-gundar-primary hover:text-gundar-primary">
+                        {{ $pub->type_label }}
+                    </a>
+                    @if($pub->year)
+                        <a href="{{ route('home', ['year' => $pub->year]) }}" class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 transition hover:border-gundar-primary hover:text-gundar-primary">
+                            {{ $pub->year }}
+                        </a>
+                    @endif
+                    @if($pub->research_method)
+                        <a href="{{ route('home', ['method' => $pub->research_method]) }}" class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 transition hover:border-gundar-primary hover:text-gundar-primary">
+                            {{ $pub->research_method }}
+                        </a>
+                    @endif
+                </div>
+
+                @php
+                    $abstractPreview = \Illuminate\Support\Str::limit(
+                        strip_tags($pub->highlighted_abstract ?? $pub->abstract ?? 'Abstrak tidak tersedia untuk dokumen ini.'),
+                        160
+                    );
+                @endphp
+
+                <p class="mt-3 text-sm leading-6 text-slate-600 line-clamp-2">
+                    {{ $abstractPreview }}
+                </p>
 
         <div class="mt-5 flex flex-wrap items-center justify-between gap-4 relative z-10 border-t border-slate-100/60 pt-4">
             
             <div class="flex flex-wrap items-center gap-4">
                 <!-- Topik Tags -->
                 @if($pub->topics->isNotEmpty())
-                    <div class="flex gap-2">
-                        @foreach($pub->topics->take(2) as $topic)
-                            <a href="{{ route('topic.show', $topic->slug) }}" class="rounded-full bg-gundar-primary/5 px-3 py-1 text-[10px] font-bold text-gundar-primary hover:bg-gundar-primary hover:text-white transition-colors border border-gundar-primary/10 hover:border-gundar-primary">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($pub->topics->take(3) as $topic)
+                            <a href="{{ route('home', ['search' => $topic->name]) }}" class="rounded-full bg-gundar-primary/5 px-3 py-1 text-[10px] font-bold text-gundar-primary hover:bg-gundar-primary hover:text-white transition-colors border border-gundar-primary/10 hover:border-gundar-primary">
                                 #{{ $topic->name }}
                             </a>
                         @endforeach
@@ -59,9 +81,9 @@
                 
                 <!-- Akses File -->
                 @if($pub->files->count() > 0)
-                    <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
+                    <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider {{ $pub->files->contains(fn ($file) => $file->isRestricted()) ? 'text-amber-600 bg-amber-50 border-amber-100' : 'text-emerald-600 bg-emerald-50 border-emerald-100' }} px-2.5 py-1 rounded-lg border">
                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        PDF
+                        {{ $pub->files->contains(fn ($file) => $file->isRestricted()) ? 'Login Diperlukan' : 'Akses Publik' }}
                     </div>
                 @endif
             </div>
@@ -98,12 +120,13 @@
                 <form action="{{ route('bookmarks.toggle') }}" method="POST">
                     @csrf
                     <input type="hidden" name="publication_id" value="{{ $pub->id }}">
-                    <button type="submit" class="group relative z-30 flex items-center justify-center w-10 h-10 rounded-full transition-transform duration-300 hover:scale-110 active:scale-90" title="Simpan ke koleksi">
+                    <button type="submit" class="group relative z-30 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm transition-all duration-300 hover:scale-105 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-600" title="Simpan ke koleksi">
                         <span class="absolute inset-0 rounded-full bg-amber-100 opacity-0 group-hover:opacity-50 transition-opacity duration-300"></span>
                         
-                        <svg class="w-7 h-7 relative z-10 transition-colors duration-300 {{ $isBookmarked ? 'text-amber-400 fill-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)]' : 'text-slate-300 fill-none group-hover:text-amber-400' }}" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <svg class="relative z-10 h-4 w-4 transition-colors duration-300 {{ $isBookmarked ? 'text-amber-400 fill-amber-400' : 'text-slate-400 fill-none group-hover:text-amber-400' }}" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
                         </svg>
+                        <span class="relative z-10">{{ $isBookmarked ? '★ Tersimpan' : '☆ Simpan' }}</span>
                     </button>
                 </form>
             @endif

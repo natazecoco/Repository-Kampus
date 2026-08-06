@@ -6,7 +6,9 @@ use App\Models\Publication;
 use App\Models\PublicationFile;
 use App\Models\Recommendation;
 use App\Models\Topic;
+use App\Models\TopicDictionary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class PublicationController extends Controller
@@ -17,6 +19,8 @@ class PublicationController extends Controller
         $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
         
         $methodFilter = trim((string) $request->input('method', ''));
+        $typeFilter = trim((string) $request->input('type', ''));
+        $yearFilter = trim((string) $request->input('year', ''));
 
         $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
@@ -41,9 +45,27 @@ class PublicationController extends Controller
         if ($search !== '') {
             $semanticTerms = $this->expandSearchTerms($search);
             $query->search($search, $semanticTerms);
-        } else {
-            $query->latest();
         }
+
+        if ($search !== '') {
+            $query->orderByRaw(
+                "CASE " .
+                "WHEN LOWER(title) LIKE ? THEN 6 " .
+                "WHEN LOWER(keywords) LIKE ? THEN 5 " .
+                "WHEN LOWER(abstract) LIKE ? THEN 4 " .
+                "WHEN LOWER(author) LIKE ? THEN 3 " .
+                "ELSE 0 END DESC",
+                [
+                    "%{$search}%",
+                    "%{$search}%",
+                    "%{$search}%",
+                    "%{$search}%",
+                ]
+            );
+        }
+
+        $query->orderByDesc('views_count')
+            ->orderByDesc('created_at');
 
         if ($topicSlug !== '') {
             $query->whereHas('topics', function ($topicQuery) use ($topicSlug): void {
@@ -56,7 +78,15 @@ class PublicationController extends Controller
             $query->where('research_method', $methodFilter);
         }
 
-        $publications = $query->paginate(12)->appends($request->only(['search', 'topic', 'method']));
+        if ($typeFilter !== '') {
+            $query->where('type', $typeFilter);
+        }
+
+        if ($yearFilter !== '') {
+            $query->where('year', $yearFilter);
+        }
+
+        $publications = $query->paginate(12)->appends($request->only(['search', 'topic', 'method', 'type', 'year']));
 
         foreach ($publications as $pub) {
             $pub->highlighted_abstract = $this->highlightKeyword($pub->abstract, $search);
@@ -74,6 +104,14 @@ class PublicationController extends Controller
             ->orderBy('research_method')
             ->pluck('research_method');
 
+        $availableYears = Publication::whereNotNull('year')
+            ->where('year', '!=', '')
+            ->distinct()
+            ->orderByDesc('year')
+            ->pluck('year');
+
+        $typeOptions = Publication::typeFilterOptions();
+
         return view('index', compact(
             'publications', 
             'search', 
@@ -83,7 +121,11 @@ class PublicationController extends Controller
             'taxonomyTopics', 
             'semanticTerms',
             'availableMethods',
-            'methodFilter'
+            'methodFilter',
+            'typeFilter',
+            'yearFilter',
+            'availableYears',
+            'typeOptions'
         ));
     }
 
@@ -139,7 +181,7 @@ class PublicationController extends Controller
         $similarRecommendations = $recommendations->sortByDesc('similarity_score')->take(3);
 
         $complementaryRecommendations = $recommendations->filter(function ($item) {
-            return isset($item->knowledge_overlap) && $item->knowledge_overlap > 0;
+            return $item->knowledge_overlap > 0;
         })->take(3);
 
         $parentTopicIds = $publication->topics->pluck('parent_id')->filter()->unique();
@@ -232,8 +274,13 @@ class PublicationController extends Controller
         $terms = array_values(array_filter($terms));
         $expanded = [];
 
-        // Mengambil daftar sinonim dari Config!
-        $synonyms = config('topic_dictionary.mappings', []);
+        // [KODE BARU] Ambil dari Database & Cache selama 24 jam (86400 detik)
+        $synonyms = Cache::remember('topic_dictionary_mappings', 86400, function () {
+            return TopicDictionary::all()
+                ->groupBy('target_topic')
+                ->map(fn ($items) => $items->pluck('keyword')->toArray())
+                ->toArray();
+        });
 
         foreach ($terms as $term) {
             $expanded[] = $term;

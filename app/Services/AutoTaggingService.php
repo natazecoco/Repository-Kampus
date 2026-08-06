@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Publication;
 use App\Models\Topic;
+use App\Models\TopicDictionary;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class AutoTaggingService
 {
@@ -20,7 +22,14 @@ class AutoTaggingService
      */
     public function tag(Publication $publication): void
     {   
-        $dictionary = config('topic_dictionary.mappings', []);
+        // [KODE BARU] Ambil dari Database & Cache agar saat tagging massal performanya tetap ngebut!
+        $dictionary = Cache::remember('topic_dictionary_mappings', 86400, function () {
+            return TopicDictionary::all()
+                ->groupBy('target_topic')
+                ->map(fn ($items) => $items->pluck('keyword')->toArray())
+                ->toArray();
+        });
+        
         $threshold = config('topic_dictionary.threshold', 10);
 
         if (empty($dictionary)) {

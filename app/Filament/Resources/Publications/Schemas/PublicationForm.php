@@ -14,6 +14,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class PublicationForm
@@ -92,7 +93,7 @@ class PublicationForm
                         $labels = array_map(fn($k) => static::sectionOptions()[$k] ?? $k, $missing);
                         $list = implode(', ', $labels);
 
-                        return "<strong style=\"color:#b45309\">⚠ {$countMissing} bagian wajib belum ada:</strong> {$list}.\n\nSilakan tambahkan bagian-bagian ini sebelum menyimpan jika kamu ingin memastikan kelengkapan publikasi.";
+                        return new HtmlString("<strong style=\"color:#b45309\">⚠ {$countMissing} bagian wajib belum ada:</strong> {$list}.<br><br>Silakan tambahkan bagian-bagian ini sebelum menyimpan jika kamu ingin memastikan kelengkapan publikasi.");
                     })
                     ->reactive(),
 

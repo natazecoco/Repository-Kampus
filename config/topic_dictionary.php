@@ -20,45 +20,45 @@ return [
     | Pastikan key (sebelah kiri) adalah nama topik dalam huruf kecil.
     |
     */
-    'mappings' => [
-        'artificial intelligence' => [
-            'ai', 
-            'kecerdasan buatan'
-        ],
+    // 'mappings' => [
+    //     'artificial intelligence' => [
+    //         'ai', 
+    //         'kecerdasan buatan'
+    //     ],
         
-        'machine learning' => [
-            'ml', 
-            'supervised learning', 
-            'unsupervised learning',
-            'klasifikasi',
-            'regresi'
-        ],
+    //     'machine learning' => [
+    //         'ml', 
+    //         'supervised learning', 
+    //         'unsupervised learning',
+    //         'klasifikasi',
+    //         'regresi'
+    //     ],
         
-        'deep learning' => [
-            'neural network', 
-            'cnn', 
-            'rnn', 
-            'jaringan saraf tiruan'
-        ],
+    //     'deep learning' => [
+    //         'neural network', 
+    //         'cnn', 
+    //         'rnn', 
+    //         'jaringan saraf tiruan'
+    //     ],
         
-        'recommendation systems' => [
-            'recommendation', 
-            'recommender', 
-            'sistem rekomendasi', 
-            'collaborative filtering', 
-            'content based'
-        ],
+    //     'recommendation systems' => [
+    //         'recommendation', 
+    //         'recommender', 
+    //         'sistem rekomendasi', 
+    //         'collaborative filtering', 
+    //         'content based'
+    //     ],
         
-        'web development' => [
-            'web', 
-            'website', 
-            'php', 
-            'laravel', 
-            'filament', 
-            'frontend', 
-            'backend'
-        ],
-    ],
+    //     'web development' => [
+    //         'web', 
+    //         'website', 
+    //         'php', 
+    //         'laravel', 
+    //         'filament', 
+    //         'frontend', 
+    //         'backend'
+    //     ],
+    // ],
 
     /*
     |--------------------------------------------------------------------------

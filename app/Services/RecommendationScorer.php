@@ -117,7 +117,12 @@ class RecommendationScorer
 
             if ($user) {
                 $rawScore += $this->userPreferenceBonus($user, $candidate, $candidateTopicIds);
+                $rawScore += $this->bookmarkBehaviorBonus($user, $candidate);
             }
+
+            $rawScore += $this->documentTypeBonus($target, $candidate);
+            $rawScore += $this->recencyBonus($candidate);
+            $rawScore += $this->accessibilityBonus($candidate);
 
             // [PERBAIKAN] Normalisasi akhir agar skor selalu dicap dalam batas 0.0 sampai 1.0 (0 - 100%)
             $finalScore = min(1.0, max(0.0, $rawScore / $maxPossibleScore));
@@ -179,6 +184,55 @@ class RecommendationScorer
         }
 
         return min(count($sharedPreferences) * 0.18, 0.54);
+    }
+
+    private function documentTypeBonus(Publication $target, Publication $candidate): float
+    {
+        if ($target->type === null || $candidate->type === null) {
+            return 0.0;
+        }
+
+        return $target->type === $candidate->type ? 0.08 : 0.0;
+    }
+
+    private function recencyBonus(Publication $candidate): float
+    {
+        $year = (int) ($candidate->year ?? 0);
+
+        if ($year <= 0) {
+            return 0.0;
+        }
+
+        if ($year >= now()->year) {
+            return 0.05;
+        }
+
+        return max(0.0, 0.03 - (($year < now()->year) ? 0.002 * (now()->year - $year) : 0.0));
+    }
+
+    private function bookmarkBehaviorBonus(User $user, Publication $candidate): float
+    {
+        $bookmarkedIds = $user->bookmarks()->pluck('publication_id')->all();
+        if ($bookmarkedIds === []) {
+            return 0.0;
+        }
+
+        $sharedBookmarks = array_intersect($bookmarkedIds, [$candidate->id]);
+        if ($sharedBookmarks === []) {
+            return 0.0;
+        }
+
+        return 0.05;
+    }
+
+    private function accessibilityBonus(Publication $candidate): float
+    {
+        $hasFiles = $candidate->files()->exists();
+        if (! $hasFiles) {
+            return 0.0;
+        }
+
+        return 0.03;
     }
 
     private function expandTopicContextIds(array $topicIds): array

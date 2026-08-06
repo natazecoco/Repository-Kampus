@@ -2,6 +2,22 @@
 
 @section('content')
 
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+    </style>
+
     <!-- Kontainer Utama Detail Jurnal -->
     <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         
@@ -55,89 +71,26 @@
                     <div>
                         <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">Penulis Utama</p>
                         <p class="mt-1 text-lg font-bold text-slate-800">{{ $publication->author }}</p>
+                        <p class="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-slate-500">
+                            <span class="h-2 w-2 rounded-full bg-gundar-primary"></span>
+                            {{ $publication->metadata_summary['category'] ?? 'Dokumen Akademik' }} • {{ $publication->metadata_summary['document_type'] ?? $publication->type_label }}
+                        </p>
                     </div>
                     
                     <div class="flex flex-wrap items-center gap-3">
-                        <!-- Tombol & Modal Sitasi -->
-                        <div x-data="{ openCitation: false, copied: '' }" class="inline-block">
-                            <button @click="openCitation = true" 
+                        <div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm">
+                            <svg class="h-4 w-4 text-gundar-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg>
+                            <span>{{ $publication->files->count() }} dokumen tersedia</span>
+                        </div>
+                        
+                        <!-- TOMBOL KUTIP KARYA (Hanya tombolnya saja di sini) -->
+                        <div class="inline-block" x-data>
+                            <button @click="$dispatch('open-citation-modal')" 
                                     type="button"
                                     class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:border-gundar-primary hover:text-gundar-primary shadow-sm hover:shadow-md">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
                                 <span>Kutip Karya</span>
                             </button>
-
-                            <!-- Modal Background dengan efek Kaca -->
-                            <div x-cloak x-show="openCitation" 
-                                 x-transition:enter="transition ease-out duration-300"
-                                 x-transition:enter-start="opacity-0 backdrop-blur-none"
-                                 x-transition:enter-end="opacity-100 backdrop-blur-sm"
-                                 x-transition:leave="transition ease-in duration-200"
-                                 x-transition:leave-start="opacity-100 backdrop-blur-sm"
-                                 x-transition:leave-end="opacity-0 backdrop-blur-none"
-                                 class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
-                                 @keydown.escape.window="openCitation = false">
-                                
-                                <!-- Modal Box -->
-                                <div @click.away="openCitation = false" 
-                                     x-transition:enter="transition ease-out duration-300"
-                                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"
-                                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                     x-transition:leave="transition ease-in duration-200"
-                                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                                     x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-                                     class="w-full max-w-lg p-6 sm:p-8 bg-white rounded-3xl shadow-2xl border border-slate-100 relative">
-                                    
-                                    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                                        <h3 class="text-xl font-black text-slate-800">Sitasi Karya Ilmiah</h3>
-                                        <button @click="openCitation = false" type="button" class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                                        </button>
-                                    </div>
-
-                                    <div class="mt-6 space-y-6 text-left">
-                                        <!-- APA 7th -->
-                                        <div>
-                                            <div class="flex items-center justify-between mb-2">
-                                                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">APA (7th Edition)</span>
-                                                <button @click="
-                                                            navigator.clipboard.writeText($refs.apaText.innerText);
-                                                            copied = 'APA';
-                                                            setTimeout(() => copied = '', 2000);
-                                                        " 
-                                                        type="button"
-                                                        class="flex items-center gap-1.5 text-xs font-bold text-gundar-primary hover:text-[#8743ad] transition-colors">
-                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
-                                                    <span x-text="copied === 'APA' ? 'Tersalin!' : 'Salin'"></span>
-                                                </button>
-                                            </div>
-                                            <div x-ref="apaText" class="p-4 bg-slate-50 rounded-xl text-slate-700 border border-slate-200 font-mono text-sm leading-relaxed selection:bg-purple-200">
-                                                {{ $publication->getCitation('APA') }}
-                                            </div>
-                                        </div>
-
-                                        <!-- IEEE -->
-                                        <div>
-                                            <div class="flex items-center justify-between mb-2">
-                                                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">IEEE</span>
-                                                <button @click="
-                                                            navigator.clipboard.writeText($refs.ieeeText.innerText);
-                                                            copied = 'IEEE';
-                                                            setTimeout(() => copied = '', 2000);
-                                                        " 
-                                                        type="button"
-                                                        class="flex items-center gap-1.5 text-xs font-bold text-gundar-primary hover:text-[#8743ad] transition-colors">
-                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
-                                                    <span x-text="copied === 'IEEE' ? 'Tersalin!' : 'Salin'"></span>
-                                                </button>
-                                            </div>
-                                            <div x-ref="ieeeText" class="p-4 bg-slate-50 rounded-xl text-slate-700 border border-slate-200 font-mono text-sm leading-relaxed selection:bg-purple-200">
-                                                {{ $publication->getCitation('IEEE') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Tombol Bookmark -->
@@ -342,6 +295,11 @@
                                     <div>
                                         <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
                                         <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                        <p class="mt-2 text-xs text-slate-500">{{ $pub->author }}</p>
+                                    </div>
+                                    <div class="mt-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                                        <span>Karena topik serupa</span>
+                                        <span>{{ $pub->year ?? 'N/A' }}</span>
                                     </div>
                                 </a>
                             @endif
@@ -366,6 +324,11 @@
                                     <div>
                                         <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
                                         <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                        <p class="mt-2 text-xs text-slate-500">Pelengkap bacaan untuk topik inti</p>
+                                    </div>
+                                    <div class="mt-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                                        <span>Referensi pelengkap</span>
+                                        <span>{{ $pub->year ?? 'N/A' }}</span>
                                     </div>
                                 </a>
                             @endif
@@ -389,6 +352,7 @@
                                 <div>
                                     <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
                                     <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                    <p class="mt-2 text-xs text-slate-500">Konsep dasar yang membantu memahami latar belakang</p>
                                 </div>
                             </a>
                         @endforeach
@@ -411,6 +375,7 @@
                                 <div>
                                     <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
                                     <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                    <p class="mt-2 text-xs text-slate-500">Metode dan pendekatan yang serupa</p>
                                 </div>
                             </a>
                         @endforeach
@@ -433,6 +398,7 @@
                                 <div>
                                     <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
                                     <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
+                                    <p class="mt-2 text-xs text-slate-500">Bacaan lanjutan yang lebih spesifik</p>
                                 </div>
                             </a>
                         @endforeach
@@ -441,5 +407,83 @@
             @endif
 
         </div>
+
+        <!-- BLOK MODAL SITASI (Dipindah ke luar article, sebelum tutup main) -->
+        <div x-data="{ openCitation: false, copied: '' }"
+             @open-citation-modal.window="openCitation = true">
+            
+            <!-- Modal Background dengan efek Kaca -->
+            <div x-cloak x-show="openCitation" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 backdrop-blur-none"
+                 x-transition:enter-end="opacity-100 backdrop-blur-sm"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 backdrop-blur-sm"
+                 x-transition:leave-end="opacity-0 backdrop-blur-none"
+                 class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+                 @keydown.escape.window="openCitation = false">
+                
+                <!-- Modal Box -->
+                <div @click.away="openCitation = false" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+                     class="w-full max-w-lg p-6 sm:p-8 bg-white rounded-3xl shadow-2xl border border-slate-100 relative">
+                    
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                        <h3 class="text-xl font-black text-slate-800">Sitasi Karya Ilmiah</h3>
+                        <button @click="openCitation = false" type="button" class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition-colors">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+
+                    <div class="mt-6 space-y-6 text-left">
+                        <!-- APA 7th -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">APA (7th Edition)</span>
+                                <button @click="
+                                            navigator.clipboard.writeText($refs.apaText.innerText);
+                                            copied = 'APA';
+                                            setTimeout(() => copied = '', 2000);
+                                        " 
+                                        type="button"
+                                        class="flex items-center gap-1.5 text-xs font-bold text-gundar-primary hover:text-[#8743ad] transition-colors">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+                                    <span x-text="copied === 'APA' ? 'Tersalin!' : 'Salin'"></span>
+                                </button>
+                            </div>
+                            <div x-ref="apaText" class="p-4 bg-slate-50 rounded-xl text-slate-700 border border-slate-200 font-mono text-sm leading-relaxed selection:bg-purple-200 break-words whitespace-normal break-all max-h-32 overflow-y-auto custom-scrollbar">
+                                {{ $publication->getCitation('APA') }}
+                            </div>
+                        </div>
+
+                        <!-- IEEE -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">IEEE</span>
+                                <button @click="
+                                            navigator.clipboard.writeText($refs.ieeeText.innerText);
+                                            copied = 'IEEE';
+                                            setTimeout(() => copied = '', 2000);
+                                        " 
+                                        type="button"
+                                        class="flex items-center gap-1.5 text-xs font-bold text-gundar-primary hover:text-[#8743ad] transition-colors">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+                                    <span x-text="copied === 'IEEE' ? 'Tersalin!' : 'Salin'"></span>
+                                </button>
+                            </div>
+                            <div x-ref="ieeeText" class="p-4 bg-slate-50 rounded-xl text-slate-700 border border-slate-200 font-mono text-sm leading-relaxed selection:bg-purple-200 break-words whitespace-normal break-all max-h-32 overflow-y-auto custom-scrollbar">
+                                {{ $publication->getCitation('IEEE') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Akhir Blok Modal -->
+
     </main>
 @endsection
