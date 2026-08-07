@@ -1,0 +1,988 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\laragon\www\repository\phpunit.xml" tests="14" assertions="37" errors="0" failures="4" skipped="0" time="5.181297">
+    <testsuite name="Feature" tests="14" assertions="37" errors="0" failures="4" skipped="0" time="5.181297">
+      <testsuite name="Tests\Feature\ExampleTest" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" tests="14" assertions="37" errors="0" failures="4" skipped="0" time="5.181297">
+        <testcase name="test_the_application_returns_a_successful_response" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="22" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="1.026490">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_home_page_can_filter_publications_by_topic" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="29" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="8" time="0.091331">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_a_registered_user_is_a_student_and_can_log_in_with_npm" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="83" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="3" time="0.122680">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ExampleTest::test_a_registered_user_is_a_student_and_can_log_in_with_npm&#13;
+Expected response status code [201, 301, 302, 303, 307, 308] but received 404.
+Failed asserting that false is true.
+&#13;
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:201
+C:\laragon\www\repository\tests\Feature\ExampleTest.php:102</failure>
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_only_administrators_can_access_the_filament_panel" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="105" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="2" time="0.097268">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_authenticated_user_can_view_their_bookmarks_page" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="114" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="3" time="0.352208">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_home_page_shows_bookmark_action_for_authenticated_users" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="144" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="2" time="0.091909">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_home_page_shows_personalized_recommendations_for_authenticated_users" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="167" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="3" time="0.087249">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_recommendations_can_use_topic_hierarchy_for_knowledge_based_scoring" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="212" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="2.960253">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_search_can_expand_queries_using_topic_hierarchy" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="263" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="2" time="0.068159">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_authenticated_student_can_open_their_dashboard_and_update_profile" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="299" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="2" time="0.046427">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ExampleTest::test_authenticated_student_can_open_their_dashboard_and_update_profile&#13;
+Failed asserting that '&lt;!DOCTYPE html&gt;\r\n
+&lt;html lang="id" class="scroll-smooth"&gt;\r\n
+&lt;head&gt;\r\n
+    &lt;meta charset="UTF-8"&gt;\r\n
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;\r\n
+    &lt;title&gt;Repositori Ilmiah - Universitas Gunadarma&lt;/title&gt;\r\n
+    \r\n
+    &lt;!-- [BARU] Google Fonts: Plus Jakarta Sans untuk kesan modern dan elegan --&gt;\r\n
+    &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;\r\n
+    &lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;\r\n
+    &lt;link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"&gt;\r\n
+\r\n
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;\r\n
+    &lt;script&gt;\r\n
+        tailwind.config = {\r\n
+            theme: {\r\n
+                extend: {\r\n
+                    fontFamily: {\r\n
+                        // Mengganti font bawaan Tailwind dengan Plus Jakarta Sans\r\n
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],\r\n
+                    },\r\n
+                    colors: {\r\n
+                        gundar: {\r\n
+                            primary: '#763a97', \r\n
+                            accent: '#f89723',\r\n
+                            dark: '#111111', \r\n
+                            muted: '#938a8e', \r\n
+                            light: '#fdfcfb',\r\n
+                        }\r\n
+                    }\r\n
+                }\r\n
+            }\r\n
+        }\r\n
+    &lt;/script&gt;\r\n
+\r\n
+    &lt;style&gt;\r\n
+        /* Mencegah kedipan UI Alpine.js saat halaman dimuat */\r\n
+        [x-cloak] { display: none !important; }\r\n
+\r\n
+        /* [BARU] Custom Scrollbar Premium */\r\n
+        ::-webkit-scrollbar {\r\n
+            width: 8px;\r\n
+        }\r\n
+        ::-webkit-scrollbar-track {\r\n
+            background: #f8fafc;\r\n
+        }\r\n
+        ::-webkit-scrollbar-thumb {\r\n
+            background: #cbd5e1;\r\n
+            border-radius: 10px;\r\n
+        }\r\n
+        ::-webkit-scrollbar-thumb:hover {\r\n
+            background: #94a3b8;\r\n
+        }\r\n
+    &lt;/style&gt;\r\n
+\r\n
+    &lt;script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"&gt;&lt;/script&gt;\r\n
+&lt;/head&gt;\r\n
+&lt;body class="min-h-screen font-sans text-slate-800 selection:bg-gundar-primary selection:text-white relative bg-[#fdfcfb] overflow-x-hidden"&gt;\r\n
+\r\n
+    &lt;!-- [BARU] Ambient Glow Background --&gt;\r\n
+    &lt;!-- Elemen ini diam di tempat dan memberikan pancaran warna ungu sangat halus dari sudut kanan atas --&gt;\r\n
+    &lt;div class="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gundar-primary/10 via-transparent to-transparent pointer-events-none"&gt;&lt;/div&gt;\r\n
+\r\n
+    &lt;!-- PANGGIL NAVBAR (PARTIALS) --&gt;\r\n
+    &lt;div class="fixed top-4 left-0 right-0 z-50 px-4"&gt;\r\n
+    &lt;!-- Navbar Glassmorphism --&gt;\r\n
+    &lt;nav class="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between gap-2 sm:gap-4 rounded-full border border-white/60 bg-white/70 px-4 sm:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-all"&gt;\r\n
+        &lt;div class="flex items-center gap-2 sm:gap-3"&gt;\r\n
+            &lt;a href="http://localhost" class="flex items-center gap-2 group"&gt;\r\n
+                &lt;div class="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-gundar-primary to-[#8743ad] text-white shadow-sm group-hover:scale-105 transition-transform"&gt;\r\n
+                    &lt;span class="text-[10px] sm:text-sm font-black uppercase tracking-wider"&gt;UG&lt;/span&gt;\r\n
+                &lt;/div&gt;\r\n
+                &lt;!-- Sembunyikan tulisan RepoIlmiah di layar HP yang sangat kecil --&gt;\r\n
+                &lt;span class="text-lg sm:text-xl font-black tracking-tight text-gundar-primary hidden md:block"&gt;Repo&lt;span class="text-gundar-dark transition-colors group-hover:text-gundar-primary"&gt;Ilmiah.&lt;/span&gt;&lt;/span&gt;\r\n
+            &lt;/a&gt;\r\n
+        &lt;/div&gt;\r\n
+\r\n
+        &lt;div class="flex items-center gap-3 sm:gap-6"&gt;\r\n
+            &lt;a href="http://localhost" class="hidden text-sm font-bold text-slate-800 hover:text-gundar-primary transition-colors sm:block"&gt;Beranda&lt;/a&gt;\r\n
+            \r\n
+            &lt;a href="http://localhost/bookmarks" class="hidden group flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-amber-500 transition-colors sm:flex"&gt;\r\n
+                &lt;svg class="w-4 h-4 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /&gt;&lt;/svg&gt;\r\n
+                Koleksi Saya\r\n
+            &lt;/a&gt;\r\n
+            \r\n
+            &lt;div class="h-4 w-px bg-slate-200 hidden sm:block"&gt;&lt;/div&gt;\r\n
+            \r\n
+                                        &lt;a href="http://localhost/dashboard" class="text-xs sm:text-sm font-bold text-slate-700 hover:text-gundar-primary flex items-center gap-2"&gt;\r\n
+                    &lt;span class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gundar-primary/10 text-gundar-primary flex items-center justify-center text-[10px] sm:text-xs uppercase"&gt;M&lt;/span&gt;\r\n
+                    &lt;!-- Sembunyikan nama di HP biar tidak menabrak tombol keluar --&gt;\r\n
+                    &lt;span class="hidden sm:inline"&gt;Mahasiswa&lt;/span&gt;\r\n
+                &lt;/a&gt;\r\n
+                &lt;form action="http://localhost/student/logout" method="POST"&gt;\r\n
+                    &lt;input type="hidden" name="_token" value="Jk8DuvDx6Z8NixIzxPLoMbCyGXawP7oNezsGeOy8" autocomplete="off"&gt;                    &lt;button type="submit" class="text-sm font-semibold text-slate-400 hover:text-rose-500 transition-colors p-1.5 sm:p-2" title="Keluar"&gt;\r\n
+                        &lt;svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /&gt;&lt;/svg&gt;\r\n
+                    &lt;/button&gt;\r\n
+                &lt;/form&gt;\r\n
+                    &lt;/div&gt;\r\n
+    &lt;/nav&gt;\r\n
+&lt;/div&gt;\r\n
+    &lt;!-- MAIN WRAPPER --&gt;\r\n
+    &lt;!-- Menambahkan z-10 agar konten selalu di atas background ambient --&gt;\r\n
+    &lt;div class="pt-28 pb-16 relative z-10"&gt;\r\n
+                \r\n
+    &lt;!-- KONTEN UTAMA: DASHBOARD --&gt;\r\n
+    &lt;main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8"&gt;\r\n
+        \r\n
+        &lt;!-- HEADER HALAMAN --&gt;\r\n
+        &lt;div class="mb-10 text-center lg:text-left flex flex-col lg:flex-row lg:items-end justify-between gap-6"&gt;\r\n
+            &lt;div&gt;\r\n
+                &lt;p class="text-[11px] font-black uppercase tracking-[0.28em] text-gundar-primary mb-2"&gt;Area Mahasiswa&lt;/p&gt;\r\n
+                &lt;h1 class="text-3xl font-black text-gundar-dark sm:text-4xl md:text-5xl"&gt;Dashboard Profil.&lt;/h1&gt;\r\n
+                &lt;p class="mt-4 text-base text-slate-500 max-w-xl"&gt;\r\n
+                    Kelola informasi akun, lihat pratinjau aktivitas, dan pantau topik kajian favorit Anda.\r\n
+                &lt;/p&gt;\r\n
+            &lt;/div&gt;\r\n
+            \r\n
+            &lt;!-- Tombol Logout Cepat --&gt;\r\n
+            &lt;form action="http://localhost/student/logout" method="POST" class="shrink-0"&gt;\r\n
+                &lt;input type="hidden" name="_token" value="Jk8DuvDx6Z8NixIzxPLoMbCyGXawP7oNezsGeOy8" autocomplete="off"&gt;                &lt;button type="submit" class="inline-flex items-center gap-2 rounded-full border-2 border-slate-200 bg-white px-6 py-2.5 text-sm font-bold text-slate-600 transition-all hover:border-rose-100 hover:bg-rose-50 hover:text-rose-600 shadow-sm hover:shadow"&gt;\r\n
+                    &lt;svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /&gt;&lt;/svg&gt;\r\n
+                    Keluar Akun\r\n
+                &lt;/button&gt;\r\n
+            &lt;/form&gt;\r\n
+        &lt;/div&gt;\r\n
+\r\n
+        &lt;!-- NOTIFIKASI SUKSES --&gt;\r\n
+        \r\n
+        &lt;!-- GRID LAYOUT --&gt;\r\n
+        &lt;div class="grid gap-8 lg:grid-cols-12"&gt;\r\n
+            \r\n
+            &lt;!-- KOLOM KIRI: FORM PROFIL (Lebar 7/12) --&gt;\r\n
+            &lt;section class="lg:col-span-7"&gt;\r\n
+                &lt;div class="rounded-[32px] border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-10 relative overflow-hidden h-full"&gt;\r\n
+                    &lt;!-- Aksen Header Kotak --&gt;\r\n
+                    &lt;div class="absolute left-0 top-0 w-full h-1.5 bg-gradient-to-r from-gundar-primary to-gundar-accent"&gt;&lt;/div&gt;\r\n
+                    \r\n
+                    &lt;h2 class="text-lg font-black text-slate-800 border-b border-slate-100 pb-4 mb-6"&gt;Informasi Akun&lt;/h2&gt;\r\n
+                    \r\n
+                    &lt;form action="http://localhost/dashboard/profile" method="POST" class="space-y-5"&gt;\r\n
+                        &lt;input type="hidden" name="_token" value="Jk8DuvDx6Z8NixIzxPLoMbCyGXawP7oNezsGeOy8" autocomplete="off"&gt;                        \r\n
+                        &lt;div&gt;\r\n
+                            &lt;label class="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-400"&gt;Nama Lengkap&lt;/label&gt;\r\n
+                            &lt;input name="name" value="Mahasiswa Lama" class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm font-semibold text-slate-900 transition focus:border-gundar-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-gundar-primary/20" required&gt;\r\n
+                        &lt;/div&gt;\r\n
+                        \r\n
+                        &lt;div&gt;\r\n
+                            &lt;label class="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-400"&gt;Email Utama&lt;/label&gt;\r\n
+                            &lt;input name="email" type="email" value="lama@example.com" class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm font-semibold text-slate-900 transition focus:border-gundar-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-gundar-primary/20" required&gt;\r\n
+                        &lt;/div&gt;\r\n
+                        \r\n
+                        &lt;div class="grid gap-5 md:grid-cols-2 pt-2 border-t border-slate-100 mt-2"&gt;\r\n
+                            &lt;div&gt;\r\n
+                                &lt;label class="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-400"&gt;Password Baru&lt;/label&gt;\r\n
+                                &lt;input name="password" type="password" class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm font-semibold transition focus:border-gundar-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-gundar-primary/20" placeholder="Kosongkan jika tetap"&gt;\r\n
+                            &lt;/div&gt;\r\n
+                            &lt;div&gt;\r\n
+                                &lt;label class="mb-2 block text-[11px] font-black uppercase tracking-wider text-slate-400"&gt;Konfirmasi Password&lt;/label&gt;\r\n
+                                &lt;input name="password_confirmation" type="password" class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm font-semibold transition focus:border-gundar-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-gundar-primary/20" placeholder="Ulangi password baru"&gt;\r\n
+                            &lt;/div&gt;\r\n
+                        &lt;/div&gt;\r\n
+                        \r\n
+                        &lt;div class="pt-4"&gt;\r\n
+                            &lt;button type="submit" class="w-full sm:w-auto rounded-full bg-gundar-dark px-8 py-3.5 text-sm font-bold text-white transition hover:bg-gundar-primary shadow-md hover:shadow-lg hover:-translate-y-0.5"&gt;\r\n
+                                Simpan Perubahan\r\n
+                            &lt;/button&gt;\r\n
+                        &lt;/div&gt;\r\n
+                    &lt;/form&gt;\r\n
+                &lt;/div&gt;\r\n
+            &lt;/section&gt;\r\n
+\r\n
+            &lt;!-- KOLOM KANAN: WIDGETS (Lebar 5/12) --&gt;\r\n
+            &lt;section class="lg:col-span-5 flex flex-col gap-8"&gt;\r\n
+                \r\n
+                &lt;!-- Widget: Bookmark Terbaru --&gt;\r\n
+                &lt;div class="rounded-[32px] border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8"&gt;\r\n
+                    &lt;div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5"&gt;\r\n
+                        &lt;h2 class="text-base font-black text-slate-800"&gt;Bookmark Terbaru&lt;/h2&gt;\r\n
+                        &lt;a href="http://localhost/bookmarks" class="text-[10px] font-black uppercase tracking-wider text-gundar-primary hover:text-gundar-accent transition"&gt;Lihat Semua &amp;rarr;&lt;/a&gt;\r\n
+                    &lt;/div&gt;\r\n
+                    \r\n
+                                            &lt;div class="text-center py-8 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200"&gt;\r\n
+                            &lt;svg class="w-8 h-8 text-slate-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /&gt;&lt;/svg&gt;\r\n
+                            &lt;p class="text-xs font-bold text-slate-400"&gt;Belum ada publikasi yang disimpan.&lt;/p&gt;\r\n
+                        &lt;/div&gt;\r\n
+                                    &lt;/div&gt;\r\n
+\r\n
+                &lt;!-- Widget: Topik Favorit --&gt;\r\n
+                &lt;div class="rounded-[32px] border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8"&gt;\r\n
+                    &lt;div class="flex items-center gap-2 border-b border-slate-100 pb-4 mb-5"&gt;\r\n
+                        &lt;svg class="w-5 h-5 text-gundar-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /&gt;&lt;/svg&gt;\r\n
+                        &lt;h2 class="text-base font-black text-slate-800"&gt;Topik Favorit&lt;/h2&gt;\r\n
+                    &lt;/div&gt;\r\n
+                    \r\n
+                                            &lt;p class="text-sm text-slate-400 font-medium italic"&gt;Belum ada topik favorit yang dipilih.&lt;/p&gt;\r\n
+                                    &lt;/div&gt;\r\n
+                \r\n
+            &lt;/section&gt;\r\n
+        &lt;/div&gt;\r\n
+    &lt;/main&gt;\r\n
+\r\n
+    &lt;/div&gt;\r\n
+\r\n
+    &lt;!-- PANGGIL FOOTER (PARTIALS) --&gt;\r\n
+    &lt;footer class="mt-16 bg-gradient-to-b from-white to-slate-50 border-t border-slate-100"&gt;\r\n
+    &lt;div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8"&gt;\r\n
+        &lt;div class="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr]"&gt;\r\n
+            &lt;div&gt;\r\n
+                &lt;div class="flex items-center gap-3 mb-5"&gt;\r\n
+                    &lt;div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gundar-primary text-white shadow-sm"&gt;\r\n
+                        &lt;span class="text-sm font-black uppercase tracking-wider"&gt;UG&lt;/span&gt;\r\n
+                    &lt;/div&gt;\r\n
+                    &lt;h3 class="text-xl font-black text-gundar-dark tracking-tight"&gt;RepoIlmiah.&lt;/h3&gt;\r\n
+                &lt;/div&gt;\r\n
+                &lt;p class="max-w-sm text-sm leading-relaxed text-slate-500"&gt;\r\n
+                    Pusat repositori digital terintegrasi untuk mengelola dan mendistribusikan publikasi akademik, skripsi, dan riset mahasiswa Universitas Gunadarma secara sistematis.\r\n
+                &lt;/p&gt;\r\n
+            &lt;/div&gt;\r\n
+            &lt;div&gt;\r\n
+                &lt;h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-900 mb-5"&gt;Layanan Pengguna&lt;/h3&gt;\r\n
+                &lt;ul class="space-y-3.5 text-sm font-medium text-slate-500"&gt;\r\n
+                    &lt;li&gt;&lt;a href="http://localhost" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Pencarian Dokumen&lt;/a&gt;&lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="http://localhost/student/login" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Portal Mahasiswa&lt;/a&gt;&lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="http://localhost/bookmarks" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Daftar Bacaan Anda&lt;/a&gt;&lt;/li&gt;\r\n
+                &lt;/ul&gt;\r\n
+            &lt;/div&gt;\r\n
+            &lt;div&gt;\r\n
+                &lt;h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-900 mb-5"&gt;Manajemen Sistem&lt;/h3&gt;\r\n
+                &lt;ul class="space-y-3.5 text-sm font-medium text-slate-500"&gt;\r\n
+                    &lt;li&gt;\r\n
+                        &lt;a href="/admin" class="group flex items-center gap-2 hover:text-gundar-accent transition-colors"&gt;\r\n
+                            &lt;span class="p-1.5 rounded-md bg-slate-100 group-hover:bg-gundar-accent/10 transition-colors"&gt;\r\n
+                                &lt;svg class="h-3.5 w-3.5 text-slate-400 group-hover:text-gundar-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"&gt;&lt;/path&gt;&lt;/svg&gt;\r\n
+                            &lt;/span&gt;\r\n
+                            Akses Administrator\r\n
+                        &lt;/a&gt;\r\n
+                    &lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="#" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Panduan Unggah Mandiri&lt;/a&gt;&lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="#" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Kebijakan Privasi&lt;/a&gt;&lt;/li&gt;\r\n
+                &lt;/ul&gt;\r\n
+            &lt;/div&gt;\r\n
+        &lt;/div&gt;\r\n
+        &lt;div class="mt-16 border-t border-slate-200/60 pt-8 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-4"&gt;\r\n
+            &lt;p class="text-xs font-medium text-slate-400"&gt;\r\n
+                &amp;copy; 2026 Universitas Gunadarma. Hak cipta dilindungi undang-undang.\r\n
+            &lt;/p&gt;\r\n
+            &lt;div class="flex gap-4"&gt;\r\n
+                &lt;span class="text-xs font-bold text-slate-300"&gt;v2.0.0&lt;/span&gt;\r\n
+            &lt;/div&gt;\r\n
+        &lt;/div&gt;\r\n
+    &lt;/div&gt;\r\n
+&lt;/footer&gt;\r\n
+&lt;/body&gt;\r\n
+&lt;/html&gt;' [ASCII](length: 17715) contains "Profil Saya" [ASCII](length: 11).
+&#13;
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:711
+C:\laragon\www\repository\tests\Feature\ExampleTest.php:310</failure>
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_home_page_can_show_topic_hierarchy_and_semantic_related_results" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="324" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="4" time="0.056129">
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_document_access_respects_visibility_and_download_permissions" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="364" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="3" time="0.049336">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ExampleTest::test_document_access_respects_visibility_and_download_permissions&#13;
+Failed asserting that '&lt;!DOCTYPE html&gt;\n
+&lt;html lang="id"&gt;\n
+&lt;head&gt;\n
+    &lt;meta charset="UTF-8"&gt;\n
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;\n
+    &lt;title&gt;Cover - Dokumen Test&lt;/title&gt;\n
+    \n
+    &lt;!-- Google Fonts: Plus Jakarta Sans --&gt;\n
+    &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;\n
+    &lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;\n
+    &lt;link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"&gt;\n
+\n
+    &lt;link rel="preload" as="style" href="http://localhost/build/assets/app-C2wUXXmA.css" /&gt;&lt;link rel="modulepreload" as="script" href="http://localhost/build/assets/app-BvRk9kiK.js" /&gt;&lt;link rel="stylesheet" href="http://localhost/build/assets/app-C2wUXXmA.css" data-navigate-track="reload" /&gt;&lt;script type="module" src="http://localhost/build/assets/app-BvRk9kiK.js" data-navigate-track="reload"&gt;&lt;/script&gt;    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;\n
+    \n
+    &lt;script&gt;\n
+        tailwind.config = {\n
+            theme: {\n
+                extend: {\n
+                    fontFamily: {\n
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],\n
+                    },\n
+                    colors: {\n
+                        'gundar-primary': '#763a97', \n
+                        'gundar-dark': '#4b2163',    \n
+                        'gundar-accent': '#911B62'   \n
+                    }\n
+                }\n
+            }\n
+        }\n
+    &lt;/script&gt;\n
+\n
+    &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"&gt;&lt;/script&gt;\n
+    \n
+    &lt;style&gt;\n
+        .no-scrollbar::-webkit-scrollbar { display: none; }\n
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }\n
+        \n
+        #pdf-scroll-area::-webkit-scrollbar { width: 8px; height: 8px; }\n
+        #pdf-scroll-area::-webkit-scrollbar-track { background: transparent; }\n
+        #pdf-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }\n
+        #pdf-scroll-area::-webkit-scrollbar-thumb:hover { background: #94a3b8; }\n
+    &lt;/style&gt;\n
+&lt;/head&gt;\n
+&lt;body class="bg-[#f8fbff] font-sans text-slate-800 overflow-hidden h-screen flex flex-col selection:bg-gundar-primary/30" oncontextmenu="return false;"&gt;\n
+    \n
+    &lt;!-- [BARU] Reading Progress Bar di Paling Atas --&gt;\n
+    &lt;div id="reading-progress" class="absolute top-0 left-0 h-1 bg-gradient-to-r from-gundar-primary via-gundar-accent to-orange-400 z-50 transition-all duration-100" style="width: 0%;"&gt;&lt;/div&gt;\n
+\n
+    &lt;!-- TOOLBAR ADVANCED --&gt;\n
+    &lt;header class="relative z-40 flex h-16 shrink-0 items-center justify-between bg-gundar-dark px-4 sm:px-6 shadow-md text-white border-b-[3px] border-gundar-accent"&gt;\n
+        \n
+        &lt;!-- Kiri: Tombol Kembali &amp; Judul --&gt;\n
+        &lt;div class="flex items-center gap-4 overflow-hidden pr-4 w-1/3"&gt;\n
+            &lt;a href="http://localhost/publication/1" class="shrink-0 flex items-center justify-center h-9 w-9 rounded-full bg-white/10 hover:bg-gundar-primary transition text-slate-200 hover:text-white" title="Kembali ke Detail"&gt;\n
+                &lt;svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /&gt;&lt;/svg&gt;\n
+            &lt;/a&gt;\n
+            &lt;div class="hidden sm:block truncate"&gt;\n
+                &lt;h1 class="truncate text-sm font-bold tracking-wide text-white" title="Dokumen Test"&gt;\n
+                    Dokumen Test\n
+                &lt;/h1&gt;\n
+                &lt;p class="text-[10px] text-slate-300 tracking-wider uppercase mt-0.5"&gt;Cover&lt;/p&gt;\n
+            &lt;/div&gt;\n
+        &lt;/div&gt;\n
+\n
+        &lt;!-- Tengah: Indikator Info Dokumen --&gt;\n
+        &lt;div class="flex items-center justify-center gap-2 shrink-0 w-1/3"&gt;\n
+            &lt;div class="flex items-center rounded-lg bg-black/20 px-4 py-1.5 text-xs font-medium tracking-wide text-slate-300 border border-white/10 shadow-inner"&gt;\n
+                &lt;span class="text-white font-bold mr-1.5"&gt;Mode Scroll&lt;/span&gt; \n
+                &lt;span class="text-slate-400"&gt;&amp;bull;&lt;/span&gt;\n
+                &lt;span id="page-count-label" class="ml-1.5 text-slate-300"&gt;Memuat...&lt;/span&gt;\n
+            &lt;/div&gt;\n
+        &lt;/div&gt;\n
+\n
+        &lt;!-- Kanan: Kontrol Zoom --&gt;\n
+        &lt;div class="flex items-center justify-end gap-1 w-1/3"&gt;\n
+            &lt;div class="flex items-center rounded-lg bg-black/20 p-1 border border-white/10 shadow-inner"&gt;\n
+                &lt;button id="zoom-out" type="button" class="flex h-7 w-7 items-center justify-center rounded hover:bg-white/10 text-slate-200 transition" title="Perkecil"&gt;\n
+                    &lt;svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /&gt;&lt;/svg&gt;\n
+                &lt;/button&gt;\n
+                &lt;span id="zoom-label" class="text-[11px] font-bold text-white w-12 text-center"&gt;150%&lt;/span&gt;\n
+                &lt;button id="zoom-in" type="button" class="flex h-7 w-7 items-center justify-center rounded hover:bg-white/10 text-slate-200 transition" title="Perbesar"&gt;\n
+                    &lt;svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /&gt;&lt;/svg&gt;\n
+                &lt;/button&gt;\n
+            &lt;/div&gt;\n
+        &lt;/div&gt;\n
+    &lt;/header&gt;\n
+\n
+    &lt;main class="flex flex-1 overflow-hidden"&gt;\n
+        \n
+        &lt;!-- SIDEBAR: DAFTAR BAGIAN --&gt;\n
+        &lt;nav class="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative"&gt;\n
+            &lt;div class="p-5 border-b border-slate-100 bg-slate-50/50"&gt;\n
+                &lt;h2 class="text-[11px] font-black uppercase tracking-widest text-slate-500"&gt;Struktur Dokumen&lt;/h2&gt;\n
+            &lt;/div&gt;\n
+            &lt;div class="flex-1 overflow-y-auto p-3 space-y-1 no-scrollbar"&gt;\n
+                                    &lt;a href="http://localhost/publication/1/read?file=1" \n
+                       class="block rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 bg-gundar-primary/10 text-gundar-primary shadow-sm border border-gundar-primary/20"&gt;\n
+                        &lt;div class="flex items-start gap-3"&gt;\n
+                            &lt;svg class="h-4 w-4 mt-0.5 shrink-0 text-gundar-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /&gt;&lt;/svg&gt;\n
+                            &lt;span class="leading-snug"&gt;Cover&lt;/span&gt;\n
+                        &lt;/div&gt;\n
+                    &lt;/a&gt;\n
+                                    &lt;a href="http://localhost/publication/1/read?file=2" \n
+                       class="block rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-gundar-dark"&gt;\n
+                        &lt;div class="flex items-start gap-3"&gt;\n
+                            &lt;svg class="h-4 w-4 mt-0.5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /&gt;&lt;/svg&gt;\n
+                            &lt;span class="leading-snug"&gt;Bab I&lt;/span&gt;\n
+                        &lt;/div&gt;\n
+                    &lt;/a&gt;\n
+                                    &lt;a href="http://localhost/publication/1/read?file=3" \n
+                       class="block rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-gundar-dark"&gt;\n
+                        &lt;div class="flex items-start gap-3"&gt;\n
+                            &lt;svg class="h-4 w-4 mt-0.5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /&gt;&lt;/svg&gt;\n
+                            &lt;span class="leading-snug"&gt;Lembar Pengesahan&lt;/span&gt;\n
+                        &lt;/div&gt;\n
+                    &lt;/a&gt;\n
+                            &lt;/div&gt;\n
+        &lt;/nav&gt;\n
+\n
+        &lt;!-- KANVAS RENDER PDF --&gt;\n
+        &lt;div id="pdf-scroll-area" class="relative flex-1 overflow-auto bg-slate-200/80 flex flex-col items-center p-4 sm:p-8"&gt;\n
+            \n
+            &lt;!-- Loading Indicator --&gt;\n
+            &lt;div id="pdf-loader" class="flex flex-col items-center justify-center my-auto py-12 text-slate-500"&gt;\n
+                &lt;div class="h-8 w-8 animate-spin rounded-full border-4 border-gundar-primary border-t-transparent mb-3"&gt;&lt;/div&gt;\n
+                &lt;p class="text-xs font-bold tracking-wider uppercase"&gt;Memuat Dokumen PDF...&lt;/p&gt;\n
+            &lt;/div&gt;\n
+\n
+            &lt;!-- Kontainer Halaman PDF --&gt;\n
+            &lt;div id="pdf-pages-container" class="flex flex-col items-center gap-6 pb-12 w-full"&gt;&lt;/div&gt;\n
+            \n
+        &lt;/div&gt;\n
+    &lt;/main&gt;\n
+\n
+    &lt;script&gt;\n
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';\n
+        \n
+        const url = "http:\/\/localhost\/document\/1\/stream";\n
+        const scrollArea = document.getElementById('pdf-scroll-area');\n
+        const pagesContainer = document.getElementById('pdf-pages-container');\n
+        const loader = document.getElementById('pdf-loader');\n
+        const progressBar = document.getElementById('reading-progress');\n
+        \n
+        let pdfDocument = null;\n
+        let currentScale = 1.5; \n
+        const isWatermarked = false;\n
+        const userName = "User";\n
+        const userNpm = "NPM";\n
+        const watermarkDate = "07 Aug 2026";\n
+\n
+        function updateZoomLabel() {\n
+            document.getElementById('zoom-label').textContent = Math.round(currentScale * 100) + '%';\n
+        }\n
+\n
+        // [BARU] Logika untuk mengisi Reading Progress Bar saat digulir\n
+        scrollArea.addEventListener('scroll', () =&gt; {\n
+            const scrollTop = scrollArea.scrollTop;\n
+            const scrollHeight = scrollArea.scrollHeight - scrollArea.clientHeight;\n
+            if (scrollHeight &gt; 0) {\n
+                const progress = (scrollTop / scrollHeight) * 100;\n
+                progressBar.style.width = progress + '%';\n
+            }\n
+        });\n
+\n
+        async function renderAllPages() {\n
+            if (!pdfDocument) return;\n
+            \n
+            loader.style.display = 'flex';\n
+            pagesContainer.innerHTML = '';\n
+            \n
+            const totalPages = pdfDocument.numPages;\n
+            document.getElementById('page-count-label').textContent = `${totalPages} Halaman`;\n
+\n
+            for (let num = 1; num &lt;= totalPages; num++) {\n
+                const page = await pdfDocument.getPage(num);\n
+                const viewport = page.getViewport({ scale: currentScale });\n
+\n
+                const pageWrapper = document.createElement('div');\n
+                pageWrapper.className = 'relative flex-shrink-0 bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] ring-1 ring-slate-900/5 overflow-hidden rounded-lg';\n
+                pageWrapper.style.width = `${viewport.width}px`;\n
+                pageWrapper.style.height = `${viewport.height}px`;\n
+\n
+                const canvas = document.createElement('canvas');\n
+                canvas.className = 'block pointer-events-none';\n
+                canvas.height = viewport.height;\n
+                canvas.width = viewport.width;\n
+                \n
+                const context = canvas.getContext('2d');\n
+                pageWrapper.appendChild(canvas);\n
+\n
+                if (isWatermarked) {\n
+                    const watermark = document.createElement('div');\n
+                    watermark.className = 'pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden z-20';\n
+                    watermark.innerHTML = `\n
+                        &lt;div class="-rotate-[35deg] select-none text-center opacity-20 mix-blend-multiply w-full px-10"&gt;\n
+                            &lt;p class="text-4xl sm:text-5xl font-black tracking-widest text-slate-600 uppercase leading-tight"&gt;\n
+                                ${userName} &lt;br&gt;\n
+                                &lt;span class="text-xl sm:text-2xl text-slate-600 font-bold"&gt;${userNpm} &amp;bull; ${watermarkDate}&lt;/span&gt;\n
+                            &lt;/p&gt;\n
+                        &lt;/div&gt;\n
+                    `;\n
+                    pageWrapper.appendChild(watermark);\n
+                }\n
+\n
+                pagesContainer.appendChild(pageWrapper);\n
+                await page.render({ canvasContext: context, viewport }).promise;\n
+            }\n
+\n
+            loader.style.display = 'none';\n
+        }\n
+\n
+        document.getElementById('zoom-in').addEventListener('click', () =&gt; {\n
+            if (currentScale &lt; 3.0) {\n
+                currentScale += 0.25;\n
+                updateZoomLabel();\n
+                renderAllPages().then(() =&gt; { scrollArea.scrollTop = 0; });\n
+            }\n
+        });\n
+\n
+        document.getElementById('zoom-out').addEventListener('click', () =&gt; {\n
+            if (currentScale &gt; 0.5) {\n
+                currentScale -= 0.25;\n
+                updateZoomLabel();\n
+                renderAllPages().then(() =&gt; { scrollArea.scrollTop = 0; });\n
+            }\n
+        });\n
+\n
+        pdfjsLib.getDocument({ url, disableAutoFetch: true, disableStream: true }).promise\n
+            .then((pdf) =&gt; {\n
+                pdfDocument = pdf;\n
+                renderAllPages();\n
+            })\n
+            .catch(() =&gt; {\n
+                loader.style.display = 'none';\n
+                alert('Gagal memuat dokumen. Periksa akses atau ketersediaan berkas.');\n
+            });\n
+\n
+        document.addEventListener('keydown', (event) =&gt; {\n
+            if ((event.ctrlKey || event.metaKey) &amp;&amp; ['s', 'p'].includes(event.key.toLowerCase())) {\n
+                event.preventDefault();\n
+            }\n
+        });\n
+    &lt;/script&gt;\n
+&lt;/body&gt;\n
+&lt;/html&gt;' [ASCII](length: 13838) does not contain "Bab I" [ASCII](length: 5).
+&#13;
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:803
+C:\laragon\www\repository\tests\Feature\ExampleTest.php:395</failure>
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_publication_detail_page_shows_related_recommendations_when_none_are_precomputed" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="413" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="2" time="0.053934">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ExampleTest::test_publication_detail_page_shows_related_recommendations_when_none_are_precomputed&#13;
+Failed asserting that '&lt;!DOCTYPE html&gt;\r\n
+&lt;html lang="id" class="scroll-smooth"&gt;\r\n
+&lt;head&gt;\r\n
+    &lt;meta charset="UTF-8"&gt;\r\n
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;\r\n
+    &lt;title&gt;Repositori Ilmiah - Universitas Gunadarma&lt;/title&gt;\r\n
+    \r\n
+    &lt;!-- [BARU] Google Fonts: Plus Jakarta Sans untuk kesan modern dan elegan --&gt;\r\n
+    &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;\r\n
+    &lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;\r\n
+    &lt;link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"&gt;\r\n
+\r\n
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;\r\n
+    &lt;script&gt;\r\n
+        tailwind.config = {\r\n
+            theme: {\r\n
+                extend: {\r\n
+                    fontFamily: {\r\n
+                        // Mengganti font bawaan Tailwind dengan Plus Jakarta Sans\r\n
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],\r\n
+                    },\r\n
+                    colors: {\r\n
+                        gundar: {\r\n
+                            primary: '#763a97', \r\n
+                            accent: '#f89723',\r\n
+                            dark: '#111111', \r\n
+                            muted: '#938a8e', \r\n
+                            light: '#fdfcfb',\r\n
+                        }\r\n
+                    }\r\n
+                }\r\n
+            }\r\n
+        }\r\n
+    &lt;/script&gt;\r\n
+\r\n
+    &lt;style&gt;\r\n
+        /* Mencegah kedipan UI Alpine.js saat halaman dimuat */\r\n
+        [x-cloak] { display: none !important; }\r\n
+\r\n
+        /* [BARU] Custom Scrollbar Premium */\r\n
+        ::-webkit-scrollbar {\r\n
+            width: 8px;\r\n
+        }\r\n
+        ::-webkit-scrollbar-track {\r\n
+            background: #f8fafc;\r\n
+        }\r\n
+        ::-webkit-scrollbar-thumb {\r\n
+            background: #cbd5e1;\r\n
+            border-radius: 10px;\r\n
+        }\r\n
+        ::-webkit-scrollbar-thumb:hover {\r\n
+            background: #94a3b8;\r\n
+        }\r\n
+    &lt;/style&gt;\r\n
+\r\n
+    &lt;script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"&gt;&lt;/script&gt;\r\n
+&lt;/head&gt;\r\n
+&lt;body class="min-h-screen font-sans text-slate-800 selection:bg-gundar-primary selection:text-white relative bg-[#fdfcfb] overflow-x-hidden"&gt;\r\n
+\r\n
+    &lt;!-- [BARU] Ambient Glow Background --&gt;\r\n
+    &lt;!-- Elemen ini diam di tempat dan memberikan pancaran warna ungu sangat halus dari sudut kanan atas --&gt;\r\n
+    &lt;div class="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gundar-primary/10 via-transparent to-transparent pointer-events-none"&gt;&lt;/div&gt;\r\n
+\r\n
+    &lt;!-- PANGGIL NAVBAR (PARTIALS) --&gt;\r\n
+    &lt;div class="fixed top-4 left-0 right-0 z-50 px-4"&gt;\r\n
+    &lt;!-- Navbar Glassmorphism --&gt;\r\n
+    &lt;nav class="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between gap-2 sm:gap-4 rounded-full border border-white/60 bg-white/70 px-4 sm:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-all"&gt;\r\n
+        &lt;div class="flex items-center gap-2 sm:gap-3"&gt;\r\n
+            &lt;a href="http://localhost" class="flex items-center gap-2 group"&gt;\r\n
+                &lt;div class="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-gundar-primary to-[#8743ad] text-white shadow-sm group-hover:scale-105 transition-transform"&gt;\r\n
+                    &lt;span class="text-[10px] sm:text-sm font-black uppercase tracking-wider"&gt;UG&lt;/span&gt;\r\n
+                &lt;/div&gt;\r\n
+                &lt;!-- Sembunyikan tulisan RepoIlmiah di layar HP yang sangat kecil --&gt;\r\n
+                &lt;span class="text-lg sm:text-xl font-black tracking-tight text-gundar-primary hidden md:block"&gt;Repo&lt;span class="text-gundar-dark transition-colors group-hover:text-gundar-primary"&gt;Ilmiah.&lt;/span&gt;&lt;/span&gt;\r\n
+            &lt;/a&gt;\r\n
+        &lt;/div&gt;\r\n
+\r\n
+        &lt;div class="flex items-center gap-3 sm:gap-6"&gt;\r\n
+            &lt;a href="http://localhost" class="hidden text-sm font-bold text-slate-800 hover:text-gundar-primary transition-colors sm:block"&gt;Beranda&lt;/a&gt;\r\n
+            \r\n
+            &lt;a href="http://localhost/bookmarks" class="hidden group flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-amber-500 transition-colors sm:flex"&gt;\r\n
+                &lt;svg class="w-4 h-4 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /&gt;&lt;/svg&gt;\r\n
+                Koleksi Saya\r\n
+            &lt;/a&gt;\r\n
+            \r\n
+            &lt;div class="h-4 w-px bg-slate-200 hidden sm:block"&gt;&lt;/div&gt;\r\n
+            \r\n
+                            &lt;a href="http://localhost/student/login" class="text-xs sm:text-sm font-bold text-slate-600 hover:text-gundar-primary transition-colors"&gt;Masuk&lt;/a&gt;\r\n
+                &lt;a href="http://localhost/student/register" class="rounded-full bg-slate-900 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all hover:bg-gundar-primary hover:shadow-lg hover:-translate-y-0.5"&gt;Daftar&lt;/a&gt;\r\n
+                                &lt;/div&gt;\r\n
+    &lt;/nav&gt;\r\n
+&lt;/div&gt;\r\n
+    &lt;!-- MAIN WRAPPER --&gt;\r\n
+    &lt;!-- Menambahkan z-10 agar konten selalu di atas background ambient --&gt;\r\n
+    &lt;div class="pt-28 pb-16 relative z-10"&gt;\r\n
+                \n
+    &lt;style&gt;\n
+        .custom-scrollbar::-webkit-scrollbar {\n
+            width: 6px;\n
+        }\n
+        .custom-scrollbar::-webkit-scrollbar-track {\n
+            background: transparent;\n
+        }\n
+        .custom-scrollbar::-webkit-scrollbar-thumb {\n
+            background: #e2e8f0; \n
+            border-radius: 4px;\n
+        }\n
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {\n
+            background: #cbd5e1;\n
+        }\n
+    &lt;/style&gt;\n
+\n
+    &lt;!-- Kontainer Utama Detail Jurnal --&gt;\n
+    &lt;main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8"&gt;\n
+        \n
+        &lt;!-- Tombol Kembali Minimalis dengan Hover Effect --&gt;\n
+        &lt;a href="http://localhost" class="group mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-400 transition-colors hover:text-gundar-primary"&gt;\n
+            &lt;svg class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"&gt;&lt;/path&gt;&lt;/svg&gt;\n
+            Kembali ke Katalog\n
+        &lt;/a&gt;\n
+\n
+        &lt;!-- HEADER ARTIKEL --&gt;\n
+        &lt;article class="rounded-[32px] border border-white/60 bg-white/80 backdrop-blur-xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-12 mb-12 relative overflow-hidden transition-all hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)]"&gt;\n
+            &lt;!-- Aksen Glow Kiri --&gt;\n
+            &lt;div class="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-gundar-primary to-[#8743ad]"&gt;&lt;/div&gt;\n
+            &lt;!-- Latar Cahaya Bias di Pojok --&gt;\n
+            &lt;div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-gundar-primary/5 blur-3xl pointer-events-none"&gt;&lt;/div&gt;\n
+\n
+            &lt;header class="mb-10 relative z-10"&gt;\n
+                &lt;div class="flex flex-wrap items-center gap-3 mb-6"&gt;\n
+                    &lt;span class="inline-flex items-center rounded-md bg-gundar-primary/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-gundar-primary"&gt;\n
+                        Skripsi / Tesis / Disertasi\n
+                    &lt;/span&gt;\n
+                    &lt;span class="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500"&gt;\n
+                        2026\n
+                    &lt;/span&gt;\n
+                    &lt;!-- Badge Metode Riset --&gt;\n
+                                    &lt;/div&gt;\n
+\n
+                &lt;!-- Baris Statistik View &amp; Download (Dengan SVG Heroicons) --&gt;\n
+                &lt;div class="mb-5 flex flex-wrap items-center gap-4 text-xs font-bold text-slate-500"&gt;\n
+                    &lt;span class="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-1.5 text-slate-600 border border-slate-100 shadow-sm"&gt;\n
+                        &lt;svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /&gt;&lt;/svg&gt;\n
+                        1 Kali Dilihat\n
+                    &lt;/span&gt;\n
+                    &lt;span class="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-1.5 text-slate-600 border border-slate-100 shadow-sm"&gt;\n
+                        &lt;svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /&gt;&lt;/svg&gt;\n
+                        0 Kali Diunduh\n
+                    &lt;/span&gt;\n
+                &lt;/div&gt;\n
+                \n
+                &lt;h1 class="text-3xl font-black leading-tight tracking-tight text-gundar-dark sm:text-4xl md:text-5xl lg:leading-[1.1]"&gt;\n
+                    Deep Learning For Recommendation Systems\n
+                &lt;/h1&gt;\n
+                \n
+                &lt;div class="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-t border-slate-100 pt-8"&gt;\n
+                    &lt;div&gt;\n
+                        &lt;p class="text-[11px] font-black uppercase tracking-widest text-slate-400"&gt;Penulis Utama&lt;/p&gt;\n
+                        &lt;p class="mt-1 text-lg font-bold text-slate-800"&gt;Penulis Target&lt;/p&gt;\n
+                        &lt;p class="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-slate-500"&gt;\n
+                            &lt;span class="h-2 w-2 rounded-full bg-gundar-primary"&gt;&lt;/span&gt;\n
+                            Dokumen Akademik • Skripsi / Tesis / Disertasi\n
+                        &lt;/p&gt;\n
+                    &lt;/div&gt;\n
+                    \n
+                    &lt;div class="flex flex-wrap items-center gap-3"&gt;\n
+                        &lt;div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm"&gt;\n
+                            &lt;svg class="h-4 w-4 text-gundar-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /&gt;&lt;/svg&gt;\n
+                            &lt;span&gt;0 dokumen tersedia&lt;/span&gt;\n
+                        &lt;/div&gt;\n
+                        \n
+                        &lt;!-- TOMBOL KUTIP KARYA (Hanya tombolnya saja di sini) --&gt;\n
+                        &lt;div class="inline-block" x-data&gt;\n
+                            &lt;button @click="$dispatch('open-citation-modal')" \n
+                                    type="button"\n
+                                    class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:border-gundar-primary hover:text-gundar-primary shadow-sm hover:shadow-md"&gt;\n
+                                &lt;svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /&gt;&lt;/svg&gt;\n
+                                &lt;span&gt;Kutip Karya&lt;/span&gt;\n
+                            &lt;/button&gt;\n
+                        &lt;/div&gt;\n
+\n
+                        &lt;!-- Tombol Bookmark --&gt;\n
+                                            &lt;/div&gt;\n
+                &lt;/div&gt;\n
+            &lt;/header&gt;\n
+\n
+            &lt;!-- KOTAK META DATA --&gt;\n
+            &lt;div class="mb-10 grid gap-4 rounded-2xl bg-slate-50/50 p-6 md:grid-cols-3 border border-slate-100 relative z-10"&gt;\n
+                &lt;div&gt;\n
+                    &lt;p class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400"&gt;\n
+                        &lt;svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.315 48.315 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /&gt;&lt;/svg&gt;\n
+                        Diterbitkan di\n
+                    &lt;/p&gt;\n
+                    &lt;p class="mt-2 text-sm font-bold text-slate-800"&gt;Repository Test&lt;/p&gt;\n
+                &lt;/div&gt;\n
+                \n
+                \n
+                &lt;div&gt;\n
+                    &lt;p class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400"&gt;\n
+                        &lt;svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /&gt;&lt;/svg&gt;\n
+                        Status Akses Dokumen\n
+                    &lt;/p&gt;\n
+                    &lt;p class="mt-2 text-sm font-bold text-emerald-600"&gt;\n
+                        Publikasi Terbuka\n
+                    &lt;/p&gt;\n
+                &lt;/div&gt;\n
+            &lt;/div&gt;\n
+\n
+            &lt;!-- ABSTRAK --&gt;\n
+            &lt;div class="mb-10 relative z-10"&gt;\n
+                &lt;h2 class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2"&gt;\n
+                    &lt;svg class="w-4 h-4 text-gundar-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /&gt;&lt;/svg&gt;\n
+                    Abstrak Penulisan\n
+                &lt;/h2&gt;\n
+                &lt;p class="leading-[1.8] text-slate-600 whitespace-pre-line text-[15px] sm:text-base text-justify font-medium"&gt;\n
+                    A study on recommendation systems using deep learning.\n
+                &lt;/p&gt;\n
+            &lt;/div&gt;\n
+\n
+            &lt;!-- KATA KUNCI &amp; TOPIK --&gt;\n
+            &lt;div class="mb-10 flex flex-col gap-8 sm:flex-row border-t border-slate-100 pt-8 relative z-10"&gt;\n
+                                &lt;div class="flex-1"&gt;\n
+                    &lt;h3 class="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400"&gt;Kata Kunci&lt;/h3&gt;\n
+                    &lt;div class="flex flex-wrap gap-2"&gt;\n
+                                                    &lt;span class="rounded-lg bg-slate-50 border border-slate-200/60 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100 cursor-default"&gt;\n
+                                recommendation\n
+                            &lt;/span&gt;\n
+                                                    &lt;span class="rounded-lg bg-slate-50 border border-slate-200/60 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100 cursor-default"&gt;\n
+                                deep learning\n
+                            &lt;/span&gt;\n
+                                            &lt;/div&gt;\n
+                &lt;/div&gt;\n
+                \n
+                            &lt;/div&gt;\n
+\n
+            &lt;!-- DAFTAR DOKUMEN (FILE PDF) --&gt;\n
+            &lt;div class="relative z-10 border-t border-slate-100 pt-8"&gt;\n
+                &lt;h2 class="mb-6 text-xs font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-2"&gt;\n
+                    &lt;svg class="w-4 h-4 text-gundar-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /&gt;&lt;/svg&gt;\n
+                    Dokumen Tersedia\n
+                &lt;/h2&gt;\n
+                \n
+                                    &lt;div class="rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-10 text-center flex flex-col items-center"&gt;\n
+                        &lt;svg class="w-12 h-12 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /&gt;&lt;/svg&gt;\n
+                        &lt;p class="text-sm text-slate-500 font-bold"&gt;Belum ada lampiran file yang diunggah untuk karya ilmiah ini.&lt;/p&gt;\n
+                    &lt;/div&gt;\n
+                            &lt;/div&gt;\n
+        &lt;/article&gt;\n
+\n
+        &lt;!-- KOTAK REKOMENDASI ILMU TERKAIT --&gt;\n
+        &lt;div class="space-y-12"&gt;\n
+            \n
+            \n
+                            &lt;div&gt;\n
+                    &lt;h2 class="mb-5 flex items-center gap-3 text-xs font-black uppercase tracking-[0.2em] text-slate-900"&gt;\n
+                        &lt;div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600"&gt;\n
+                            &lt;svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /&gt;&lt;/svg&gt;\n
+                        &lt;/div&gt;\n
+                        Karya Ilmiah Terkait\n
+                    &lt;/h2&gt;\n
+                    &lt;div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"&gt;\n
+                                                                                    &lt;a href="http://localhost/publication/2" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1"&gt;\n
+                                    &lt;div&gt;\n
+                                        &lt;p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2"&gt;Artikel Jurnal&lt;/p&gt;\n
+                                        &lt;h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors"&gt;Related Recommendation Article&lt;/h3&gt;\n
+                                        &lt;p class="mt-2 text-xs text-slate-500"&gt;Penulis Terkait&lt;/p&gt;\n
+                                    &lt;/div&gt;\n
+                                    &lt;div class="mt-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400"&gt;\n
+                                        &lt;span&gt;Mirip secara konten&lt;/span&gt;\n
+                                        &lt;span&gt;2026&lt;/span&gt;\n
+                                    &lt;/div&gt;\n
+                                &lt;/a&gt;\n
+                                                                        &lt;/div&gt;\n
+                &lt;/div&gt;\n
+            \n
+            \n
+            \n
+            \n
+            \n
+            \n
+            \n
+            \n
+            \n
+        &lt;/div&gt;\n
+\n
+        &lt;!-- BLOK MODAL SITASI (Dipindah ke luar article, sebelum tutup main) --&gt;\n
+        &lt;div x-data="{ openCitation: false, copied: '' }"\n
+             @open-citation-modal.window="openCitation = true"&gt;\n
+            \n
+            &lt;!-- Modal Background dengan efek Kaca --&gt;\n
+            &lt;div x-cloak x-show="openCitation" \n
+                 x-transition:enter="transition ease-out duration-300"\n
+                 x-transition:enter-start="opacity-0 backdrop-blur-none"\n
+                 x-transition:enter-end="opacity-100 backdrop-blur-sm"\n
+                 x-transition:leave="transition ease-in duration-200"\n
+                 x-transition:leave-start="opacity-100 backdrop-blur-sm"\n
+                 x-transition:leave-end="opacity-0 backdrop-blur-none"\n
+                 class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"\n
+                 @keydown.escape.window="openCitation = false"&gt;\n
+                \n
+                &lt;!-- Modal Box --&gt;\n
+                &lt;div @click.away="openCitation = false" \n
+                     x-transition:enter="transition ease-out duration-300"\n
+                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"\n
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"\n
+                     x-transition:leave="transition ease-in duration-200"\n
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"\n
+                     x-transition:leave-end="opacity-0 translate-y-4 scale-95"\n
+                     class="w-full max-w-lg p-6 sm:p-8 bg-white rounded-3xl shadow-2xl border border-slate-100 relative"&gt;\n
+                    \n
+                    &lt;div class="flex items-center justify-between pb-4 border-b border-slate-100"&gt;\n
+                        &lt;h3 class="text-xl font-black text-slate-800"&gt;Sitasi Karya Ilmiah&lt;/h3&gt;\n
+                        &lt;button @click="openCitation = false" type="button" class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition-colors"&gt;\n
+                            &lt;svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /&gt;&lt;/svg&gt;\n
+                        &lt;/button&gt;\n
+                    &lt;/div&gt;\n
+\n
+                    &lt;div class="mt-6 space-y-6 text-left"&gt;\n
+                        &lt;!-- APA 7th --&gt;\n
+                        &lt;div&gt;\n
+                            &lt;div class="flex items-center justify-between mb-2"&gt;\n
+                                &lt;span class="text-xs font-black text-slate-400 uppercase tracking-widest"&gt;APA (7th Edition)&lt;/span&gt;\n
+                                &lt;button @click="\n
+                                            navigator.clipboard.writeText($refs.apaText.innerText);\n
+                                            copied = 'APA';\n
+                                            setTimeout(() =&gt; copied = '', 2000);\n
+                                        " \n
+                                        type="button"\n
+                                        class="flex items-center gap-1.5 text-xs font-bold text-gundar-primary hover:text-[#8743ad] transition-colors"&gt;\n
+                                    &lt;svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /&gt;&lt;/svg&gt;\n
+                                    &lt;span x-text="copied === 'APA' ? 'Tersalin!' : 'Salin'"&gt;&lt;/span&gt;\n
+                                &lt;/button&gt;\n
+                            &lt;/div&gt;\n
+                            &lt;div x-ref="apaText" class="p-4 bg-slate-50 rounded-xl text-slate-700 border border-slate-200 font-mono text-sm leading-relaxed selection:bg-purple-200 break-words whitespace-normal break-all max-h-32 overflow-y-auto custom-scrollbar"&gt;\n
+                                Target, P.. (2026). Deep Learning For Recommendation Systems [Skripsi / Tesis / Disertasi, Repository Test].\n
+                            &lt;/div&gt;\n
+                        &lt;/div&gt;\n
+\n
+                        &lt;!-- IEEE --&gt;\n
+                        &lt;div&gt;\n
+                            &lt;div class="flex items-center justify-between mb-2"&gt;\n
+                                &lt;span class="text-xs font-black text-slate-400 uppercase tracking-widest"&gt;IEEE&lt;/span&gt;\n
+                                &lt;button @click="\n
+                                            navigator.clipboard.writeText($refs.ieeeText.innerText);\n
+                                            copied = 'IEEE';\n
+                                            setTimeout(() =&gt; copied = '', 2000);\n
+                                        " \n
+                                        type="button"\n
+                                        class="flex items-center gap-1.5 text-xs font-bold text-gundar-primary hover:text-[#8743ad] transition-colors"&gt;\n
+                                    &lt;svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /&gt;&lt;/svg&gt;\n
+                                    &lt;span x-text="copied === 'IEEE' ? 'Tersalin!' : 'Salin'"&gt;&lt;/span&gt;\n
+                                &lt;/button&gt;\n
+                            &lt;/div&gt;\n
+                            &lt;div x-ref="ieeeText" class="p-4 bg-slate-50 rounded-xl text-slate-700 border border-slate-200 font-mono text-sm leading-relaxed selection:bg-purple-200 break-words whitespace-normal break-all max-h-32 overflow-y-auto custom-scrollbar"&gt;\n
+                                P. Target, &amp;quot;Deep Learning For Recommendation Systems,&amp;quot; Skripsi / Tesis / Disertasi, Repository Test, 2026.\n
+                            &lt;/div&gt;\n
+                        &lt;/div&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+            &lt;/div&gt;\n
+        &lt;/div&gt; &lt;!-- Akhir Blok Modal --&gt;\n
+\n
+    &lt;/main&gt;\n
+    &lt;/div&gt;\r\n
+\r\n
+    &lt;!-- PANGGIL FOOTER (PARTIALS) --&gt;\r\n
+    &lt;footer class="mt-16 bg-gradient-to-b from-white to-slate-50 border-t border-slate-100"&gt;\r\n
+    &lt;div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8"&gt;\r\n
+        &lt;div class="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr]"&gt;\r\n
+            &lt;div&gt;\r\n
+                &lt;div class="flex items-center gap-3 mb-5"&gt;\r\n
+                    &lt;div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gundar-primary text-white shadow-sm"&gt;\r\n
+                        &lt;span class="text-sm font-black uppercase tracking-wider"&gt;UG&lt;/span&gt;\r\n
+                    &lt;/div&gt;\r\n
+                    &lt;h3 class="text-xl font-black text-gundar-dark tracking-tight"&gt;RepoIlmiah.&lt;/h3&gt;\r\n
+                &lt;/div&gt;\r\n
+                &lt;p class="max-w-sm text-sm leading-relaxed text-slate-500"&gt;\r\n
+                    Pusat repositori digital terintegrasi untuk mengelola dan mendistribusikan publikasi akademik, skripsi, dan riset mahasiswa Universitas Gunadarma secara sistematis.\r\n
+                &lt;/p&gt;\r\n
+            &lt;/div&gt;\r\n
+            &lt;div&gt;\r\n
+                &lt;h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-900 mb-5"&gt;Layanan Pengguna&lt;/h3&gt;\r\n
+                &lt;ul class="space-y-3.5 text-sm font-medium text-slate-500"&gt;\r\n
+                    &lt;li&gt;&lt;a href="http://localhost" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Pencarian Dokumen&lt;/a&gt;&lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="http://localhost/student/login" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Portal Mahasiswa&lt;/a&gt;&lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="http://localhost/bookmarks" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Daftar Bacaan Anda&lt;/a&gt;&lt;/li&gt;\r\n
+                &lt;/ul&gt;\r\n
+            &lt;/div&gt;\r\n
+            &lt;div&gt;\r\n
+                &lt;h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-900 mb-5"&gt;Manajemen Sistem&lt;/h3&gt;\r\n
+                &lt;ul class="space-y-3.5 text-sm font-medium text-slate-500"&gt;\r\n
+                    &lt;li&gt;\r\n
+                        &lt;a href="/admin" class="group flex items-center gap-2 hover:text-gundar-accent transition-colors"&gt;\r\n
+                            &lt;span class="p-1.5 rounded-md bg-slate-100 group-hover:bg-gundar-accent/10 transition-colors"&gt;\r\n
+                                &lt;svg class="h-3.5 w-3.5 text-slate-400 group-hover:text-gundar-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"&gt;&lt;/path&gt;&lt;/svg&gt;\r\n
+                            &lt;/span&gt;\r\n
+                            Akses Administrator\r\n
+                        &lt;/a&gt;\r\n
+                    &lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="#" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Panduan Unggah Mandiri&lt;/a&gt;&lt;/li&gt;\r\n
+                    &lt;li&gt;&lt;a href="#" class="hover:text-gundar-primary hover:translate-x-1 transition-all inline-block"&gt;Kebijakan Privasi&lt;/a&gt;&lt;/li&gt;\r\n
+                &lt;/ul&gt;\r\n
+            &lt;/div&gt;\r\n
+        &lt;/div&gt;\r\n
+        &lt;div class="mt-16 border-t border-slate-200/60 pt-8 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-4"&gt;\r\n
+            &lt;p class="text-xs font-medium text-slate-400"&gt;\r\n
+                &amp;copy; 2026 Universitas Gunadarma. Hak cipta dilindungi undang-undang.\r\n
+            &lt;/p&gt;\r\n
+            &lt;div class="flex gap-4"&gt;\r\n
+                &lt;span class="text-xs font-bold text-slate-300"&gt;v2.0.0&lt;/span&gt;\r\n
+            &lt;/div&gt;\r\n
+        &lt;/div&gt;\r\n
+    &lt;/div&gt;\r\n
+&lt;/footer&gt;\r\n
+&lt;/body&gt;\r\n
+&lt;/html&gt;' [UTF-8](length: 29820) contains "Rekomendasi Serupa" [ASCII](length: 18).
+&#13;
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+C:\laragon\www\repository\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:711
+C:\laragon\www\repository\tests\Feature\ExampleTest.php:443</failure>
+          <system-out>﻿</system-out>
+        </testcase>
+        <testcase name="test_a_download_is_only_available_when_explicitly_allowed" file="C:\laragon\www\repository\tests\Feature\ExampleTest.php" line="447" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="0.077925">
+          <system-out>﻿</system-out>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

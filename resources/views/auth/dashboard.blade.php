@@ -9,7 +9,7 @@
         <div class="mb-10 text-center lg:text-left flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
                 <p class="text-[11px] font-black uppercase tracking-[0.28em] text-gundar-primary mb-2">Area Mahasiswa</p>
-                <h1 class="text-3xl font-black text-gundar-dark sm:text-4xl md:text-5xl">Dashboard Profil.</h1>
+                <h1 class="text-3xl font-black text-gundar-dark sm:text-4xl md:text-5xl">Profil Saya</h1>
                 <p class="mt-4 text-base text-slate-500 max-w-xl">
                     Kelola informasi akun, lihat pratinjau aktivitas, dan pantau topik kajian favorit Anda.
                 </p>
@@ -133,7 +133,64 @@
                         </div>
                     @endif
                 </div>
-                
+
+                <!-- Widget: Analitik Personal -->
+                <div class="rounded-[32px] border border-white/60 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-4 mb-5">
+                        <svg class="w-5 h-5 text-gundar-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <h2 class="text-base font-black text-slate-800">Analitik Personal</h2>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="rounded-3xl border border-slate-100 bg-slate-50/70 p-4">
+                            <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Bookmark Anda</p>
+                            <p class="mt-3 text-3xl font-black text-gundar-dark">{{ $totalBookmarks }}</p>
+                            <p class="mt-2 text-sm text-slate-500">Jumlah dokumen yang sudah disimpan.</p>
+                        </div>
+
+                        <div class="rounded-3xl border border-slate-100 bg-slate-50/70 p-4">
+                            <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Metode Populer</p>
+                            <div class="mt-3 space-y-2 text-sm text-slate-700">
+                                @if($popularMethods->isEmpty())
+                                    <p class="text-slate-400 italic">Belum ada data metode.</p>
+                                @else
+                                    @foreach($popularMethods as $method)
+                                        <p>• {{ $method }}</p>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Topik Terfavorit dari Bookmark</p>
+                        @if($topBookmarkedTopics->isEmpty())
+                            <p class="mt-3 text-sm text-slate-400 italic">Belum ada topik bookmark yang cukup untuk analisis.</p>
+                        @else
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                @foreach($topBookmarkedTopics as $topic)
+                                    <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600">{{ $topic->name }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="mt-5">
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Trending Publikasi</p>
+                        @if($trendingPublications->isEmpty())
+                            <p class="mt-3 text-sm text-slate-400 italic">Belum ada publikasi trending saat ini.</p>
+                        @else
+                            <ul class="mt-3 space-y-3">
+                                @foreach($trendingPublications as $publication)
+                                    <li class="rounded-2xl border border-slate-100 bg-white p-3">
+                                        <a href="{{ route('publications.show', $publication) }}" class="text-sm font-bold text-slate-900 hover:text-gundar-primary transition">{{ $publication->title }}</a>
+                                        <p class="text-xs text-slate-500 mt-1">{{ $publication->views_count ?? 0 }} dilihat • {{ $publication->type_label }}</p>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
             </section>
         </div>
     </main>

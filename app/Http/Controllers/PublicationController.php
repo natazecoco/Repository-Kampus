@@ -7,6 +7,7 @@ use App\Models\PublicationFile;
 use App\Models\Recommendation;
 use App\Models\Topic;
 use App\Models\TopicDictionary;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -25,11 +26,12 @@ class PublicationController extends Controller
         $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
 
-        $personalizedRecommendations = collect();
-        if ($request->user()) {
-            $preferredTopicIds = $request->user()->topicPreferences()->pluck('topic_id');
-            $bookmarkedPublicationIds = $request->user()->bookmarks()->pluck('publication_id');
+        $user = $request->user();
+        $preferredTopicIds = $user ? $user->topicPreferences()->pluck('topic_id') : collect();
+        $bookmarkedPublicationIds = $user ? $user->bookmarks()->pluck('publication_id') : collect();
 
+        $personalizedRecommendations = collect();
+        if ($user) {
             $candidateQuery = Publication::with(['container', 'topics'])
                 ->whereNotIn('id', $bookmarkedPublicationIds)
                 ->where(function ($q) use ($preferredTopicIds, $bookmarkedPublicationIds) {
@@ -38,7 +40,23 @@ class PublicationController extends Controller
                 });
 
             if ($preferredTopicIds->isNotEmpty()) {
-                $personalizedRecommendations = $candidateQuery->limit(4)->get();
+                $personalizedRecommendations = $candidateQuery->limit(4)->get()->map(function (Publication $publication) use ($user, $preferredTopicIds): Publication {
+                    $publication->recommendation_reasons = $this->buildRecommendationReasons($publication, null, $user, $preferredTopicIds);
+
+                    return $publication;
+                });
+            }
+
+            if ($personalizedRecommendations->isEmpty()) {
+                $personalizedRecommendations = Publication::with(['container', 'topics'])
+                    ->orderByDesc('views_count')
+                    ->orderByDesc('created_at')
+                    ->limit(4)
+                    ->get()->map(function (Publication $publication) use ($user, $preferredTopicIds): Publication {
+                        $publication->recommendation_reasons = $this->buildRecommendationReasons($publication, null, $user, $preferredTopicIds);
+
+                        return $publication;
+                    });
             }
         }
 
@@ -89,7 +107,11 @@ class PublicationController extends Controller
         $publications = $query->paginate(12)->appends($request->only(['search', 'topic', 'method', 'type', 'year']));
 
         foreach ($publications as $pub) {
-            $pub->highlighted_abstract = $this->highlightKeyword($pub->abstract, $search);
+            // Keep a full highlighted version (for detail view) and a
+            // plain truncated preview (for list cards) to avoid HTML
+            // tag stripping removing highlight spans in the preview.
+            $pub->highlighted_abstract_full = $this->highlightKeyword($pub->abstract, $search);
+            $pub->abstract_preview = \Illuminate\Support\Str::limit(strip_tags($pub->abstract ?? ''), 160);
         }
 
         $topics = Topic::withCount('publications')->active()->orderBy('sort_order')->orderBy('name')->get();
@@ -140,13 +162,29 @@ class PublicationController extends Controller
         $publication->load(['container', 'files', 'topics']);
 
         $recommendations = Recommendation::where('publication_id', $publication->id)
-                            ->with('recommendedPublication.topics')
-                            ->orderByDesc('similarity_score')
-                            ->get();
+            ->with(['recommendedPublication.topics', 'recommendedPublication.container'])
+            ->orderByDesc('similarity_score')
+            ->get()
+            ->map(function (Recommendation $recommendation) use ($publication) {
+                $recommendedPublication = $recommendation->recommendedPublication;
+
+                if (! $recommendedPublication) {
+                    return null;
+                }
+
+                $recommendedPublication->recommendation_reasons = $this->buildRecommendationReasons($recommendedPublication, $publication);
+
+                return (object) [
+                    'recommendedPublication' => $recommendedPublication,
+                    'similarity_score' => (float) $recommendation->similarity_score,
+                    'knowledge_overlap' => $recommendedPublication->topics->pluck('id')->intersect($publication->topics->pluck('id'))->count(),
+                ];
+            })
+            ->filter()
+            ->values();
 
         if ($recommendations->isEmpty()) {
-            $candidatePublications = Publication::query()
-                ->where('id', '!=', $publication->id)
+            $candidatePublications = Publication::where('id', '!=', $publication->id)
                 ->with(['topics', 'container'])
                 ->latest()
                 ->limit(10)
@@ -168,6 +206,8 @@ class PublicationController extends Controller
                     $score += 1;
                 }
 
+                $candidate->recommendation_reasons = $this->buildRecommendationReasons($candidate, $publication);
+
                 return (object) [
                     'recommendedPublication' => $candidate,
                     'similarity_score' => $score,
@@ -175,7 +215,8 @@ class PublicationController extends Controller
                 ];
             })->filter(fn ($item) => $item->similarity_score > 0)
               ->sortByDesc('similarity_score')
-              ->take(10);
+              ->take(10)
+              ->values();
         }
 
         $similarRecommendations = $recommendations->sortByDesc('similarity_score')->take(3);
@@ -229,6 +270,43 @@ class PublicationController extends Controller
             'similarMethods', 
             'advancedReadings'
         ));
+    }
+
+    private function buildRecommendationReasons(Publication $publication, ?Publication $context = null, ?User $user = null, $preferredTopicIds = null): array
+    {
+        $reasons = [];
+
+        if ($context) {
+            $sharedTopicCount = $publication->topics->pluck('id')->intersect($context->topics->pluck('id'))->count();
+            if ($sharedTopicCount > 0) {
+                $reasons[] = 'Topik serupa';
+            }
+
+            if ($context->research_method && $publication->research_method && $context->research_method === $publication->research_method) {
+                $reasons[] = 'Metode sama';
+            }
+
+            if ($context->type && $publication->type && $context->type === $publication->type) {
+                $reasons[] = 'Jenis dokumen sama';
+            }
+        }
+
+        if ($user && $preferredTopicIds && $preferredTopicIds->isNotEmpty()) {
+            $sharedPreferredTopics = $publication->topics->pluck('id')->intersect($preferredTopicIds)->count();
+            if ($sharedPreferredTopics > 0) {
+                $reasons[] = 'Berdasarkan topik favoritmu';
+            }
+        }
+
+        if (($publication->views_count ?? 0) >= 50 || $publication->files->sum('downloads_count') >= 20) {
+            $reasons[] = 'Populer di repository';
+        }
+
+        if ($reasons === []) {
+            $reasons[] = 'Relevan untuk dibaca';
+        }
+
+        return array_slice(array_unique($reasons), 0, 2);
     }
 
     public function downloadFile(Request $request, Publication $publication, PublicationFile $file)

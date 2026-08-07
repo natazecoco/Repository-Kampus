@@ -286,16 +286,24 @@
                         <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
-                        Karya Ilmiah Terkait
+                        Rekomendasi Serupa
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($similarRecommendations->take(3) as $item)
                             @if($pub = $item->recommendedPublication ?? null)
-                                <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
+                                <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-[24px] border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
                                     <div>
                                         <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
                                         <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
                                         <p class="mt-2 text-xs text-slate-500">{{ $pub->author }}</p>
+                                        @php $reasonList = $pub->recommendation_reasons ?? []; @endphp
+                                        @if(! empty($reasonList))
+                                            <div class="mt-3 flex flex-wrap gap-2">
+                                                @foreach($reasonList as $reason)
+                                                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">{{ $reason }}</span>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="mt-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                                         <span>Mirip secara konten</span>

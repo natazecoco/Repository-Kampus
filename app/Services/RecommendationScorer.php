@@ -122,6 +122,9 @@ class RecommendationScorer
 
             $rawScore += $this->documentTypeBonus($target, $candidate);
             $rawScore += $this->recencyBonus($candidate);
+            $rawScore += $this->popularityBonus($candidate);
+            $rawScore += $this->keywordOverlapBonus($target, $candidate);
+            $rawScore += $this->methodBonus($target, $candidate);
             $rawScore += $this->accessibilityBonus($candidate);
 
             // [PERBAIKAN] Normalisasi akhir agar skor selalu dicap dalam batas 0.0 sampai 1.0 (0 - 100%)
@@ -233,6 +236,50 @@ class RecommendationScorer
         }
 
         return 0.03;
+    }
+
+    private function popularityBonus(Publication $candidate): float
+    {
+        $views = (int) ($candidate->views_count ?? 0);
+        $downloads = (int) $candidate->files()->sum('downloads_count');
+        $bookmarkCount = $candidate->bookmarks()->count();
+
+        $score = ($views / 1800) + ($downloads / 300) + ($bookmarkCount * 0.02);
+
+        return min(0.25, max(0.0, $score));
+    }
+
+    private function keywordOverlapBonus(Publication $target, Publication $candidate): float
+    {
+        $targetKeywords = $this->normalizeKeywords($target->keywords);
+        $candidateKeywords = $this->normalizeKeywords($candidate->keywords);
+
+        if ($targetKeywords === [] || $candidateKeywords === []) {
+            return 0.0;
+        }
+
+        $overlap = count(array_intersect($targetKeywords, $candidateKeywords));
+        return min(0.18, $overlap * 0.06);
+    }
+
+    private function methodBonus(Publication $target, Publication $candidate): float
+    {
+        if (blank($target->research_method) || blank($candidate->research_method)) {
+            return 0.0;
+        }
+
+        return $target->research_method === $candidate->research_method ? 0.08 : 0.0;
+    }
+
+    private function normalizeKeywords($keywords): array
+    {
+        if (is_array($keywords)) {
+            $items = $keywords;
+        } else {
+            $items = preg_split('/[,;\s]+/', (string) $keywords) ?: [];
+        }
+
+        return array_values(array_unique(array_filter(array_map('strtolower', array_map('trim', $items)))));
     }
 
     private function expandTopicContextIds(array $topicIds): array

@@ -1,0 +1,2 @@
+﻿PHPUnit 12.5.26 by Sebastian Bergmann and contributors.
+Unknown option "--no-tty". Most similar options are --log-otr, --no-output, --all, --covers, --debug

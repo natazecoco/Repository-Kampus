@@ -52,15 +52,29 @@
                 <!-- Rekomendasi Personal -->
                 @auth
                     @if($personalizedRecommendations->isNotEmpty())
-                        <div class="mb-8 rounded-3xl bg-gundar-primary/5 p-6 border border-gundar-primary/10 transition duration-300 hover:shadow-sm">
-                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gundar-primary">Rekomendasi untukmu</h3>
-                            <p class="mt-1 text-xs text-slate-500">Berdasarkan dokumen tersimpan dan riwayat topik.</p>
-                            
+                        <div class="mb-8 rounded-[28px] border border-gundar-primary/10 bg-gradient-to-br from-gundar-primary/8 to-white p-6 shadow-[0_8px_30px_rgb(118,58,151,0.06)]">
+                            <div class="flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gundar-primary">Rekomendasi untukmu</h3>
+                                    <p class="mt-1 text-sm text-slate-500">Berdasarkan topik favorit, dokumen yang kamu simpan, dan popularitas repository.</p>
+                                </div>
+                                <span class="rounded-full bg-white/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Personal</span>
+                            </div>
+
                             <div class="mt-4 grid gap-4 sm:grid-cols-2">
                                 @foreach($personalizedRecommendations as $item)
-                                    <a href="{{ route('publications.show', $item) }}" class="group block bg-white p-4 rounded-2xl border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgb(118,58,151,0.08)] transition-all duration-300 hover:-translate-y-1">
-                                        <h4 class="text-sm font-bold text-gundar-dark leading-tight group-hover:text-gundar-primary transition line-clamp-2">{{ $item->title }}</h4>
+                                    @php $reasonList = $item->recommendation_reasons ?? []; @endphp
+                                    <a href="{{ route('publications.show', $item) }}" class="group block rounded-[24px] border border-slate-200 bg-white/90 p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-gundar-primary/30 hover:shadow-[0_10px_32px_rgba(118,58,151,0.08)]">
+                                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gundar-primary">Direkomendasikan</p>
+                                        <h4 class="mt-2 text-sm font-bold leading-tight text-gundar-dark transition group-hover:text-gundar-primary line-clamp-2">{{ $item->title }}</h4>
                                         <p class="mt-2 text-xs text-slate-500">{{ $item->author }}</p>
+                                        @if(! empty($reasonList))
+                                            <div class="mt-3 flex flex-wrap gap-2">
+                                                @foreach($reasonList as $reason)
+                                                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">{{ $reason }}</span>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </a>
                                 @endforeach
                             </div>
@@ -148,6 +162,23 @@
                         @if($search || $activeTopic || (isset($methodFilter) && $methodFilter !== '') || (isset($typeFilter) && $typeFilter !== '') || (isset($yearFilter) && $yearFilter !== ''))
                             <a href="{{ route('home') }}" class="text-[10px] font-semibold uppercase tracking-[0.16em] text-gundar-accent hover:text-orange-600 hover:underline transition-colors">Reset</a>
                         @endif
+                    </div>
+                </div>
+
+                <div class="mb-6 rounded-[24px] border border-slate-200 bg-white/80 p-4 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hasil saat ini</p>
+                            <p class="text-sm font-semibold text-slate-700">{{ number_format($publications->total()) }} publikasi ditemukan</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            @if($search)
+                                <span class="rounded-full bg-gundar-primary/10 px-3 py-1 text-[10px] font-semibold text-gundar-primary">Kata kunci: {{ $search }}</span>
+                            @endif
+                            @if($methodFilter)
+                                <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold text-slate-600">Metode: {{ $methodFilter }}</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
 

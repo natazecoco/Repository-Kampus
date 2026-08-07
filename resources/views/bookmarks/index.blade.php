@@ -8,7 +8,7 @@
         <!-- HEADER HALAMAN -->
         <div class="mb-10 text-center">
             <p class="text-[11px] font-black uppercase tracking-[0.28em] text-gundar-primary mb-2">Reading Shelf</p>
-            <h1 class="text-3xl font-black text-gundar-dark sm:text-4xl md:text-5xl">Koleksi Bacaan Anda.</h1>
+            <h1 class="text-3xl font-black text-gundar-dark sm:text-4xl md:text-5xl">Daftar Bacaan Saya</h1>
             <p class="mt-4 text-base text-slate-500 max-w-xl mx-auto font-medium">
                 Kumpulan publikasi ilmiah yang Anda simpan untuk dibaca atau diunduh kembali nanti.
             </p>

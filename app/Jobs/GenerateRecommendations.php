@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Publication;
 use App\Models\Recommendation;
+use App\Models\Topic;
 use App\Services\RecommendationScorer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,7 +28,21 @@ class GenerateRecommendations implements ShouldQueue
         $target = $this->publication;
         
         // 1. Ambil semua ID Topik yang dimiliki oleh skripsi target
+        //    Expand juga konteks taksonomi (parent & children) agar pre-filtering
+        //    tidak melewatkan kandidat yang relevan berada di level anak.
         $topicIds = $target->topics->pluck('id')->toArray();
+
+        // Expand topic IDs to include their parent and children to improve prefilter recall
+        if (! empty($topicIds)) {
+            $related = Topic::whereIn('id', $topicIds)->with('parent', 'children')->get();
+            foreach ($related as $t) {
+                $topicIds[] = $t->parent_id ?? null;
+                foreach ($t->children as $c) {
+                    $topicIds[] = $c->id;
+                }
+            }
+            $topicIds = array_values(array_unique(array_filter($topicIds)));
+        }
 
         // 2. PRE-FILTERING: Jangan ambil semua isi database!
         // Ambil skripsi yang minimal punya 1 kesamaan logis (Topik, Metode, Penulis, atau Tipe)

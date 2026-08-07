@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Publication;
+use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -58,7 +61,40 @@ class StudentAuthController extends Controller
         $bookmarks = $user->bookmarks()->with(['publication.container', 'publication.topics'])->latest()->get();
         $preferredTopics = $user->topicPreferences()->with('topic')->get();
 
-        return view('auth.dashboard', compact('user', 'bookmarks', 'preferredTopics'));
+        $totalBookmarks = $bookmarks->count();
+
+        $topBookmarkedTopics = Topic::select('topics.id', 'topics.name', DB::raw('count(*) as bookmark_count'))
+            ->join('publication_topic', 'topics.id', '=', 'publication_topic.topic_id')
+            ->join('bookmarks', 'publication_topic.publication_id', '=', 'bookmarks.publication_id')
+            ->where('bookmarks.user_id', $user->id)
+            ->groupBy('topics.id', 'topics.name')
+            ->orderByDesc('bookmark_count')
+            ->limit(5)
+            ->get();
+
+        $trendingPublications = Publication::with('container')
+            ->orderByDesc('views_count')
+            ->orderByDesc('created_at')
+            ->limit(3)
+            ->get();
+
+        $popularMethods = Publication::whereNotNull('research_method')
+            ->where('research_method', '!=', '')
+            ->select('research_method', DB::raw('count(*) as total'))
+            ->groupBy('research_method')
+            ->orderByDesc('total')
+            ->limit(3)
+            ->pluck('research_method');
+
+        return view('auth.dashboard', compact(
+            'user',
+            'bookmarks',
+            'preferredTopics',
+            'totalBookmarks',
+            'topBookmarkedTopics',
+            'trendingPublications',
+            'popularMethods',
+        ));
     }
 
     public function updateProfile(Request $request)

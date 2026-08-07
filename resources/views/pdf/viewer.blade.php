@@ -98,7 +98,7 @@
                 <h2 class="text-[11px] font-black uppercase tracking-widest text-slate-500">Struktur Dokumen</h2>
             </div>
             <div class="flex-1 overflow-y-auto p-3 space-y-1 no-scrollbar">
-                @foreach($publication->files as $documentFile)
+                @foreach($files as $documentFile)
                     <a href="{{ route('publications.viewer', ['publication' => $publication, 'file' => $documentFile]) }}" 
                        class="block rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 {{ $documentFile->is($file) ? 'bg-gundar-primary/10 text-gundar-primary shadow-sm border border-gundar-primary/20' : 'text-slate-600 hover:bg-slate-50 hover:text-gundar-dark' }}">
                         <div class="flex items-start gap-3">
