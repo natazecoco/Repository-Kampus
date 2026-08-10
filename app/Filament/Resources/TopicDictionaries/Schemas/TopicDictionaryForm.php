@@ -12,9 +12,17 @@ class TopicDictionaryForm
         return $schema
             ->components([
                 TextInput::make('keyword')
-                    ->required(),
+                    ->label('Kata kunci')
+                    ->placeholder('Contoh: machine learning, Laravel, atau sistem rekomendasi')
+                    ->helperText('Istilah yang dicari pada judul, keyword, dan abstrak publikasi.')
+                    ->required()
+                    ->maxLength(255),
                 TextInput::make('target_topic')
-                    ->required(),
+                    ->label('Topik tujuan')
+                    ->placeholder('Contoh: Machine Learning atau Web Development')
+                    ->helperText('Nama topik yang akan ditempelkan ketika kata kunci terdeteksi.')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 }

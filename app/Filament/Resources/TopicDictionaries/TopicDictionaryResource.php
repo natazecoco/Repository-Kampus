@@ -23,6 +23,12 @@ class TopicDictionaryResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Repository';
 
+    protected static ?string $navigationLabel = 'Kamus Topik';
+
+    protected static ?string $modelLabel = 'Kamus Topik';
+
+    protected static ?string $pluralModelLabel = 'Kamus Topik';
+
     protected static ?string $recordTitleAttribute = 'keyword';
 
     public static function form(Schema $schema): Schema

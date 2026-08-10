@@ -123,7 +123,7 @@ class Publication extends Model
     {
         return match ($this->type) {
             'thesis' => 'Dokumen Akademik',
-            'scientific_paper' => 'Artikel Ilmiah',
+            'scientific_paper' => 'Penulisan Ilmiah',
             'article' => 'Artikel Jurnal',
             'book' => 'Buku',
             'proceeding' => 'Prosiding',

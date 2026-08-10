@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Publications\Schemas;
 
 use App\Models\Publication;
+use App\Services\ResearchMethodDetector;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -22,31 +23,13 @@ class PublicationForm
     public static function configure(Schema $schema): Schema
     {
         $detectResearchMethod = function (Get $get, Set $set) {
+            $title = (string) ($get('title') ?? '');
             $keywordsData = $get('keywords');
             $keywordsString = is_array($keywordsData) ? implode(' ', $keywordsData) : (string) ($keywordsData ?? '');
-            
-            $keywords = strtolower($keywordsString);
-            $abstract = strtolower((string) ($get('abstract') ?? ''));
+            $abstract = (string) ($get('abstract') ?? '');
 
-            $methods = config('research.methods', []);
-
-            $detectedMethod = null;
-
-            foreach ($methods as $key => $label) {
-                if (Str::contains($keywords, $key)) {
-                    $detectedMethod = $label;
-                    break;
-                }
-            }
-
-            if (! $detectedMethod) {
-                foreach ($methods as $key => $label) {
-                    if (Str::contains($abstract, $key)) {
-                        $detectedMethod = $label;
-                        break;
-                    }
-                }
-            }
+            $detector = app(ResearchMethodDetector::class);
+            $detectedMethod = $detector->detect($title, $keywordsString, $abstract);
 
             if ($detectedMethod && empty($get('research_method'))) {
                 $set('research_method', $detectedMethod);

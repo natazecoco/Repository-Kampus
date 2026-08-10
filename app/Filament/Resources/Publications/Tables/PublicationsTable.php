@@ -7,9 +7,12 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Models\Publication;
 
 class PublicationsTable
 {
@@ -26,22 +29,31 @@ class PublicationsTable
                     ->sortable()
                     ->limit(50),
                 TextColumn::make('author')
-                    ->searchable(),
-                TextColumn::make('year'),
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('year')
+                    ->sortable(),
                 TextColumn::make('type')
+                    ->label('Jenis Publikasi')
                     ->badge()
+                    ->formatStateUsing(fn (?string $state): string => Publication::TYPE_LABELS[$state] ?? ucfirst((string) $state))
+                    ->sortable()
                     ->color(fn (string $state): string => match ($state) {
                         'thesis' => 'primary',
+                        'scientific_paper' => 'info',
                         'article' => 'success',
                         'book' => 'warning',
                         default => 'gray',
                     }),
                 TextColumn::make('keywords')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->limit(50),
                 TextColumn::make('files_count')
                     ->counts('files')
                     ->label('Jumlah Dokumen')
                     ->badge()
+                    ->sortable()
                     ->color('success'),
                 IconColumn::make('admin_completion_state.is_complete')
                     ->label('Kelengkapan')
@@ -67,7 +79,39 @@ class PublicationsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                
+                SelectFilter::make('type')
+                    ->label('Jenis Publikasi')
+                    ->options(Publication::TYPE_LABELS),
+                SelectFilter::make('container_id')
+                    ->label('Container')
+                    ->relationship('container', 'name')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('year')
+                    ->label('Tahun')
+                    ->options(fn (): array => Publication::query()
+                        ->whereNotNull('year')
+                        ->orderByDesc('year')
+                        ->pluck('year', 'year')
+                        ->mapWithKeys(fn ($year): array => [(string) $year => (string) $year])
+                        ->all()),
+                SelectFilter::make('research_method')
+                    ->label('Metode Riset')
+                    ->options(fn (): array => Publication::query()
+                        ->whereNotNull('research_method')
+                        ->where('research_method', '!=', '')
+                        ->distinct()
+                        ->orderBy('research_method')
+                        ->pluck('research_method', 'research_method')
+                        ->all())
+                    ->searchable(),
+                TernaryFilter::make('has_files')
+                    ->label('Berkas Publikasi')
+                    ->queries(
+                        true: fn ($query) => $query->has('files'),
+                        false: fn ($query) => $query->doesntHave('files'),
+                        blank: fn ($query) => $query,
+                    ),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([

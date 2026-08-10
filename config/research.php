@@ -111,7 +111,6 @@ return [
         
         'research and development'         => 'Research and Development (R&D)',
         'penelitian dan pengembangan'      => 'Research and Development (R&D)',
-        'r&d'                              => 'Research and Development (R&D)',
         'model 4d'                         => 'R&D (Model 4D)',
         'model addie'                      => 'R&D (Model ADDIE)',
         'model borg and gall'              => 'R&D (Borg & Gall)',

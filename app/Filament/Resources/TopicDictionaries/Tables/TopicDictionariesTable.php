@@ -15,9 +15,13 @@ class TopicDictionariesTable
         return $table
             ->columns([
                 TextColumn::make('keyword')
-                    ->searchable(),
+                    ->label('Kata kunci')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('target_topic')
-                    ->searchable(),
+                    ->label('Topik tujuan')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
