@@ -13,6 +13,8 @@
 
         <div class="flex items-center gap-3 sm:gap-6">
             <a href="{{ route('home') }}" class="hidden text-sm font-bold text-slate-800 hover:text-gundar-primary transition-colors sm:block">Beranda</a>
+
+            <a href="{{ route('search') }}" class="hidden text-sm font-semibold text-slate-500 hover:text-gundar-primary transition-colors sm:block">Eksplorasi</a>
             
             <a href="{{ route('bookmarks.index') }}" class="hidden group flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-amber-500 transition-colors sm:flex">
                 <svg class="w-4 h-4 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /></svg>

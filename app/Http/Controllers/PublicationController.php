@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\Storage;
 
 class PublicationController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Halaman khusus hasil pencarian, filter, dan eksplorasi dokumen.
+     */
+    public function search(Request $request)
     {
         $search = trim((string) $request->input('search'));
         $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
-        
         $methodFilter = trim((string) $request->input('method', ''));
         $typeFilter = trim((string) $request->input('type', ''));
         $yearFilter = trim((string) $request->input('year', ''));
@@ -26,69 +28,14 @@ class PublicationController extends Controller
         $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
 
-        $user = $request->user();
-        $preferredTopicIds = $user ? $user->topicPreferences()->pluck('topic_id') : collect();
-        $bookmarkedPublicationIds = $user ? $user->bookmarks()->pluck('publication_id') : collect();
-
-        $personalizedRecommendations = collect();
-        if ($user) {
-            $candidateQuery = Publication::with(['container', 'topics'])
-                ->whereNotIn('id', $bookmarkedPublicationIds)
-                ->where(function ($q) use ($preferredTopicIds, $bookmarkedPublicationIds) {
-                    $q->whereHas('topics', fn ($topicQuery) => $topicQuery->whereIn('topics.id', $preferredTopicIds))
-                      ->orWhereIn('id', $bookmarkedPublicationIds);
-                });
-
-            if ($preferredTopicIds->isNotEmpty()) {
-                $personalizedRecommendations = $candidateQuery->limit(4)->get()->map(function (Publication $publication) use ($user, $preferredTopicIds): Publication {
-                    $publication->recommendation_reasons = $this->buildRecommendationReasons($publication, null, $user, $preferredTopicIds);
-
-                    return $publication;
-                });
-            }
-
-            if ($personalizedRecommendations->isEmpty()) {
-                $personalizedRecommendations = Publication::with(['container', 'topics'])
-                    ->orderByDesc('views_count')
-                    ->orderByDesc('created_at')
-                    ->limit(4)
-                    ->get()->map(function (Publication $publication) use ($user, $preferredTopicIds): Publication {
-                        $publication->recommendation_reasons = $this->buildRecommendationReasons($publication, null, $user, $preferredTopicIds);
-
-                        return $publication;
-                    });
-            }
-        }
-
         if ($search !== '') {
             $semanticTerms = $this->expandSearchTerms($search);
             $query->search($search, $semanticTerms);
         }
 
-        if ($search !== '') {
-            $query->orderByRaw(
-                "CASE " .
-                "WHEN LOWER(title) LIKE ? THEN 6 " .
-                "WHEN LOWER(keywords) LIKE ? THEN 5 " .
-                "WHEN LOWER(abstract) LIKE ? THEN 4 " .
-                "WHEN LOWER(author) LIKE ? THEN 3 " .
-                "ELSE 0 END DESC",
-                [
-                    "%{$search}%",
-                    "%{$search}%",
-                    "%{$search}%",
-                    "%{$search}%",
-                ]
-            );
-        }
-
-        $query->orderByDesc('views_count')
-            ->orderByDesc('created_at');
-
         if ($topicSlug !== '') {
             $query->whereHas('topics', function ($topicQuery) use ($topicSlug): void {
-                $topicQuery->where('slug', $topicSlug)
-                    ->orWhere('name', $topicSlug);
+                $topicQuery->where('slug', $topicSlug)->orWhere('name', $topicSlug);
             });
         }
 
@@ -104,21 +51,12 @@ class PublicationController extends Controller
             $query->where('year', $yearFilter);
         }
 
-        $publications = $query->paginate(12)->appends($request->only(['search', 'topic', 'method', 'type', 'year']));
+        $publications = $query->latest()->paginate(12)->appends($request->query());
 
         foreach ($publications as $pub) {
-            // Keep a full highlighted version (for detail view) and a
-            // plain truncated preview (for list cards) to avoid HTML
-            // tag stripping removing highlight spans in the preview.
             $pub->highlighted_abstract_full = $this->highlightKeyword($pub->abstract, $search);
             $pub->abstract_preview = \Illuminate\Support\Str::limit(strip_tags($pub->abstract ?? ''), 160);
         }
-
-        $topics = Topic::withCount('publications')->active()->orderBy('sort_order')->orderBy('name')->get();
-        $activeTopic = $topicSlug !== ''
-            ? Topic::where('slug', $topicSlug)->orWhere('name', $topicSlug)->first()
-            : null;
-        $taxonomyTopics = $topics->whereNull('parent_id');
 
         $availableMethods = Publication::whereNotNull('research_method')
             ->where('research_method', '!=', '')
@@ -134,13 +72,10 @@ class PublicationController extends Controller
 
         $typeOptions = Publication::typeFilterOptions();
 
-        return view('index', compact(
-            'publications', 
-            'search', 
-            'topics', 
-            'activeTopic', 
-            'personalizedRecommendations', 
-            'taxonomyTopics', 
+        return view('search', compact(
+            'publications',
+            'search',
+            'topicSlug',
             'semanticTerms',
             'availableMethods',
             'methodFilter',
@@ -151,6 +86,61 @@ class PublicationController extends Controller
         ));
     }
 
+    /**
+     * Halaman Beranda (Discovery & Showcase Repository).
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        $preferredTopicIds = $user ? $user->topicPreferences()->pluck('topic_id') : collect();
+        $bookmarkedPublicationIds = $user ? $user->bookmarks()->pluck('publication_id') : collect();
+
+        // 1. Rekomendasi Personal (Untuk User yang Login)
+        $personalizedRecommendations = collect();
+        if ($user && $preferredTopicIds->isNotEmpty()) {
+            $personalizedRecommendations = Publication::with(['container', 'topics', 'files'])
+                ->whereNotIn('id', $bookmarkedPublicationIds)
+                ->whereHas('topics', fn ($q) => $q->whereIn('topics.id', $preferredTopicIds))
+                ->latest()
+                ->limit(4)
+                ->get()
+                ->map(function (Publication $publication) use ($user, $preferredTopicIds) {
+                    $publication->recommendation_reasons = $this->buildRecommendationReasons($publication, null, $user, $preferredTopicIds);
+                    return $publication;
+                });
+        }
+
+        // 2. Publikasi Populer (Berdasarkan Views)
+        $popularPublications = Publication::with(['container', 'topics', 'files'])
+            ->orderByDesc('views_count')
+            ->limit(4)
+            ->get();
+
+        // 3. Publikasi Terbaru Murni (Berdasarkan created_at)
+        $latestPublications = Publication::with(['container', 'topics', 'files'])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        // 4. Data Taksonomi & Topik Populer
+        $topics = Topic::withCount('publications')->active()->get();
+        $popularTopics = $topics->sortByDesc('publications_count')->take(6)->values();
+        $taxonomyTopics = Topic::whereNull('parent_id')->with('children')->active()->get();
+        $totalPublicationsCount = Publication::count();
+
+        return view('index', compact(
+            'personalizedRecommendations',
+            'popularPublications',
+            'latestPublications',
+            'popularTopics',
+            'taxonomyTopics',
+            'totalPublicationsCount'
+        ));
+    }
+
+    /**
+     * Halaman Detail Publikasi & Rekomendasi Terkait.
+     */
     public function show(Publication $publication)
     {
         $viewKey = 'publication_viewed_' . $publication->id;
@@ -357,7 +347,6 @@ class PublicationController extends Controller
         $terms = array_values(array_filter($terms));
         $expanded = [];
 
-        // [KODE BARU] Ambil dari Database & Cache selama 24 jam (86400 detik)
         $synonyms = Cache::remember('topic_dictionary_mappings', 86400, function () {
             return TopicDictionary::all()
                 ->groupBy('target_topic')

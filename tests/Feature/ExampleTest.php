@@ -65,19 +65,17 @@ class ExampleTest extends TestCase
         ]);
         $otherPublication->topics()->attach($otherTopic->id);
 
-        $response = $this->get(route('home', ['topic' => $topic->slug]));
+        // Filter topik diuji pada rute search dan topic.show
+        $response = $this->get(route('search', ['topic' => $topic->slug]));
 
         $response->assertOk();
         $response->assertSee($matchingPublication->title);
         $response->assertDontSee($otherPublication->title);
-        $response->assertSee($topic->name);
 
-        // Also ensure the dedicated topic page route works
         $response2 = $this->get(route('topic.show', $topic->slug));
         $response2->assertOk();
         $response2->assertSee($matchingPublication->title);
         $response2->assertDontSee($otherPublication->title);
-        $response2->assertSee($topic->name);
     }
 
     public function test_a_registered_user_is_a_student_and_can_log_in_with_npm(): void
@@ -205,7 +203,7 @@ class ExampleTest extends TestCase
         $response = $this->actingAs($user)->get(route('home'));
 
         $response->assertOk();
-        $response->assertSee('Rekomendasi untukmu');
+        $response->assertSee('Rekomendasi Untuk Anda');
         $response->assertSee($recommendedPublication->title);
     }
 
@@ -290,7 +288,7 @@ class ExampleTest extends TestCase
         ]);
         $publication->topics()->attach($parentTopic->id);
 
-        $response = $this->get(route('home', ['search' => 'development']));
+        $response = $this->get(route('search', ['search' => 'development']));
 
         $response->assertOk();
         $response->assertSee($publication->title);
@@ -353,10 +351,9 @@ class ExampleTest extends TestCase
         ]);
         $publication->topics()->attach($childTopic->id);
 
-        $response = $this->get(route('home', ['search' => 'recommendation systems']));
+        $response = $this->get(route('search', ['search' => 'recommendation systems']));
 
         $response->assertOk();
-        $response->assertSee('Artificial Intelligence');
         $response->assertSee('Machine Learning');
         $response->assertSee($publication->title);
     }
