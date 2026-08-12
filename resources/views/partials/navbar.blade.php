@@ -1,4 +1,4 @@
-<div class="fixed top-4 left-0 right-0 z-50 px-4">
+<div class="fixed left-0 right-0 top-4 z-50 px-4" x-data="{ menuOpen: false }">
     <!-- Navbar Glassmorphism -->
     <nav class="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between gap-2 sm:gap-4 rounded-full border border-white/60 bg-white/70 px-4 sm:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-all">
         <div class="flex items-center gap-2 sm:gap-3">
@@ -11,12 +11,12 @@
             </a>
         </div>
 
-        <div class="flex items-center gap-3 sm:gap-6">
-            <a href="{{ route('home') }}" class="hidden text-sm font-bold text-slate-800 hover:text-gundar-primary transition-colors sm:block">Beranda</a>
+        <div class="hidden items-center gap-3 sm:flex sm:gap-6">
+            <a href="{{ route('home') }}" class="text-sm font-bold transition-colors {{ request()->routeIs('home') ? 'text-gundar-primary' : 'text-slate-500 hover:text-gundar-primary' }}">Beranda</a>
 
-            <a href="{{ route('search') }}" class="hidden text-sm font-semibold text-slate-500 hover:text-gundar-primary transition-colors sm:block">Eksplorasi</a>
+            <a href="{{ route('search') }}" class="text-sm font-bold transition-colors {{ request()->routeIs('search', 'topic.show') ? 'text-gundar-primary' : 'text-slate-500 hover:text-gundar-primary' }}">Eksplorasi</a>
             
-            <a href="{{ route('bookmarks.index') }}" class="hidden group flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-amber-500 transition-colors sm:flex">
+            <a href="{{ route('bookmarks.index') }}" class="group flex items-center gap-1.5 text-sm font-bold transition-colors {{ request()->routeIs('bookmarks.index') ? 'text-amber-600' : 'text-slate-500 hover:text-amber-500' }}">
                 <svg class="w-4 h-4 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /></svg>
                 Koleksi Saya
             </a>
@@ -41,5 +41,22 @@
                 </form>
             @endauth
         </div>
+
+        <button type="button" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white/80 text-slate-600 shadow-sm sm:hidden" title="Buka menu">
+            <svg x-show="!menuOpen" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <svg x-cloak x-show="menuOpen" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
     </nav>
+
+    <div x-cloak x-show="menuOpen" x-transition @click.outside="menuOpen = false" class="mx-auto mt-3 max-w-6xl rounded-2xl border border-white/70 bg-white/95 p-3 shadow-lg backdrop-blur-xl sm:hidden">
+        <a href="{{ route('home') }}" class="block rounded-xl px-3 py-2.5 text-sm font-bold {{ request()->routeIs('home') ? 'bg-gundar-primary/10 text-gundar-primary' : 'text-slate-700' }}">Beranda</a>
+        <a href="{{ route('search') }}" class="block rounded-xl px-3 py-2.5 text-sm font-bold {{ request()->routeIs('search', 'topic.show') ? 'bg-gundar-primary/10 text-gundar-primary' : 'text-slate-700' }}">Eksplorasi</a>
+        <a href="{{ route('bookmarks.index') }}" class="block rounded-xl px-3 py-2.5 text-sm font-bold {{ request()->routeIs('bookmarks.index') ? 'bg-amber-50 text-amber-700' : 'text-slate-700' }}">Koleksi Saya</a>
+        @guest
+            <div class="mt-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+                <a href="{{ route('student.login') }}" class="rounded-xl px-3 py-2.5 text-center text-sm font-bold text-slate-600">Masuk</a>
+                <a href="{{ route('student.register') }}" class="rounded-xl bg-slate-900 px-3 py-2.5 text-center text-sm font-bold text-white">Daftar</a>
+            </div>
+        @endguest
+    </div>
 </div>

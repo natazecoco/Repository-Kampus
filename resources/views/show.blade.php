@@ -42,13 +42,6 @@
                     <span class="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
                         {{ $publication->year }}
                     </span>
-                    <!-- Badge Metode Riset -->
-                    @if($publication->research_method)
-                        <a href="{{ route('home', ['method' => $publication->research_method]) }}" class="inline-flex items-center gap-1.5 rounded-md bg-purple-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-gundar-primary border border-purple-100 hover:bg-gundar-primary hover:text-white transition-colors">
-                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
-                            {{ $publication->research_method }}
-                        </a>
-                    @endif
                 </div>
 
                 <!-- Baris Statistik View & Download (Dengan SVG Heroicons) -->
@@ -73,7 +66,7 @@
                         <p class="mt-1 text-lg font-bold text-slate-800">{{ $publication->author }}</p>
                         <p class="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-slate-500">
                             <span class="h-2 w-2 rounded-full bg-gundar-primary"></span>
-                            {{ $publication->metadata_summary['category'] ?? 'Dokumen Akademik' }} • {{ $publication->metadata_summary['document_type'] ?? $publication->type_label }}
+                            {{ $publication->container ? $publication->container->name : 'Universitas Gunadarma' }}
                         </p>
                     </div>
                     
@@ -129,7 +122,7 @@
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
                             Metode Riset
                         </p>
-                        <a href="{{ route('home', ['method' => $publication->research_method]) }}" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-gundar-primary hover:text-orange-500 transition-colors">
+                        <a href="{{ route('search', ['method' => $publication->research_method]) }}" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-gundar-primary hover:text-orange-500 transition-colors">
                             {{ $publication->research_method }}
                         </a>
                     </div>
@@ -172,9 +165,12 @@
                     <h3 class="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Kata Kunci</h3>
                     <div class="flex flex-wrap gap-2">
                         @foreach(explode(',', $publication->keywords) as $keyword)
-                            <span class="rounded-lg bg-slate-50 border border-slate-200/60 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100 cursor-default">
-                                {{ trim($keyword) }}
-                            </span>
+                            @php $keywordValue = trim($keyword); @endphp
+                            @if($keywordValue !== '')
+                                <a href="{{ route('search', ['search' => $keywordValue]) }}" class="rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm transition hover:border-gundar-primary/30 hover:bg-gundar-primary/5 hover:text-gundar-primary">
+                                    {{ $keywordValue }}
+                                </a>
+                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -186,7 +182,7 @@
                     <div class="flex flex-wrap gap-2.5">
                         @foreach($publication->topics as $topic)
                             <div class="inline-flex items-center gap-1.5 rounded-lg bg-gundar-primary/5 pl-3 pr-1.5 py-1 border border-gundar-primary/10">
-                                <a href="{{ route('home', ['search' => $topic->name]) }}" class="text-xs font-bold text-gundar-primary hover:text-orange-500 transition-colors">
+                                <a href="{{ route('search', ['topic' => $topic->slug]) }}" class="text-xs font-bold text-gundar-primary hover:text-orange-500 transition-colors">
                                     {{ $topic->name }}
                                 </a>
                                 @auth
@@ -291,25 +287,7 @@
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($similarRecommendations->take(3) as $item)
                             @if($pub = $item->recommendedPublication ?? null)
-                                <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-[24px] border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
-                                    <div>
-                                        <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
-                                        <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                        <p class="mt-2 text-xs text-slate-500">{{ $pub->author }}</p>
-                                        @php $reasonList = $pub->recommendation_reasons ?? []; @endphp
-                                        @if(! empty($reasonList))
-                                            <div class="mt-3 flex flex-wrap gap-2">
-                                                @foreach($reasonList as $reason)
-                                                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">{{ $reason }}</span>
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="mt-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                                        <span>Mirip secara konten</span>
-                                        <span>{{ $pub->year ?? 'N/A' }}</span>
-                                    </div>
-                                </a>
+                                @include('partials.publication-item', ['pub' => $pub, 'compact' => true])
                             @endif
                         @endforeach
                     </div>
@@ -327,16 +305,7 @@
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($bookReferences->take(3) as $pub)
-                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50/50 to-white p-5 transition-all duration-300 hover:border-amber-400/50 hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)] hover:-translate-y-1">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0013 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path></svg>
-                                        <p class="text-[9px] font-black uppercase tracking-widest text-amber-600">{{ $pub->type_label }}</p>
-                                    </div>
-                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-amber-600 line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                    <p class="mt-2 text-xs text-slate-500">Buku referensi yang membahas fondasi teori</p>
-                                </div>
-                            </a>
+                            @include('partials.publication-item', ['pub' => $pub, 'compact' => true])
                         @endforeach
                     </div>
                 </div>
@@ -353,13 +322,7 @@
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($advancedReadings->take(3) as $pub)
-                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
-                                <div>
-                                    <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
-                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                    <p class="mt-2 text-xs text-slate-500">Membahas cabang ilmu yang lebih spesifik</p>
-                                </div>
-                            </a>
+                            @include('partials.publication-item', ['pub' => $pub, 'compact' => true])
                         @endforeach
                     </div>
                 </div>
@@ -376,13 +339,7 @@
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($similarMethods->take(3) as $pub)
-                            <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
-                                <div>
-                                    <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
-                                    <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                    <p class="mt-2 text-xs text-slate-500">Inspirasi penerapan metode riset yang sama</p>
-                                </div>
-                            </a>
+                            @include('partials.publication-item', ['pub' => $pub, 'compact' => true])
                         @endforeach
                     </div>
                 </div>
@@ -398,15 +355,9 @@
                         Rekomendasi Tambahan
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($complementaryRecommendations->take(3) as $item)
+                        @foreach($complementaryRecommendations->take(3)git as $item)
                             @if($pub = $item->recommendedPublication ?? null)
-                                <a href="{{ route('publications.show', $pub) }}" class="group flex flex-col justify-between block rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-gundar-primary/30 hover:shadow-[0_8px_30px_rgba(118,58,151,0.06)] hover:-translate-y-1">
-                                    <div>
-                                        <p class="text-[9px] font-black uppercase tracking-widest text-gundar-primary mb-2">{{ $pub->type_label }}</p>
-                                        <h3 class="text-sm font-bold leading-snug text-slate-800 group-hover:text-gundar-primary line-clamp-3 transition-colors">{{ $pub->title }}</h3>
-                                        <p class="mt-2 text-xs text-slate-500">Memiliki irisan topik kajian</p>
-                                    </div>
-                                </a>
+                                @include('partials.publication-item', ['pub' => $pub, 'compact' => true])
                             @endif
                         @endforeach
                     </div>

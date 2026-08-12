@@ -21,9 +21,10 @@ class PublicationController extends Controller
     {
         $search = trim((string) $request->input('search'));
         $topicSlug = trim((string) ($request->input('topic') ?? $request->route('slug') ?? ''));
-        $methodFilter = trim((string) $request->input('method', ''));
         $typeFilter = trim((string) $request->input('type', ''));
         $yearFilter = trim((string) $request->input('year', ''));
+        $yearFromFilter = trim((string) $request->input('year_from', ''));
+        $yearToFilter = trim((string) $request->input('year_to', ''));
 
         $query = Publication::with(['container', 'files', 'topics']);
         $semanticTerms = [];
@@ -39,15 +40,19 @@ class PublicationController extends Controller
             });
         }
 
-        if ($methodFilter !== '') {
-            $query->where('research_method', $methodFilter);
-        }
-
         if ($typeFilter !== '') {
             $query->where('type', $typeFilter);
         }
 
-        if ($yearFilter !== '') {
+        if ($yearFromFilter !== '' || $yearToFilter !== '') {
+            if ($yearFromFilter !== '' && $yearToFilter !== '') {
+                $query->whereBetween('year', [$yearFromFilter, $yearToFilter]);
+            } elseif ($yearFromFilter !== '') {
+                $query->where('year', '>=', $yearFromFilter);
+            } elseif ($yearToFilter !== '') {
+                $query->where('year', '<=', $yearToFilter);
+            }
+        } elseif ($yearFilter !== '') {
             $query->where('year', $yearFilter);
         }
 
@@ -57,12 +62,6 @@ class PublicationController extends Controller
             $pub->highlighted_abstract_full = $this->highlightKeyword($pub->abstract, $search);
             $pub->abstract_preview = \Illuminate\Support\Str::limit(strip_tags($pub->abstract ?? ''), 160);
         }
-
-        $availableMethods = Publication::whereNotNull('research_method')
-            ->where('research_method', '!=', '')
-            ->distinct()
-            ->orderBy('research_method')
-            ->pluck('research_method');
 
         $availableYears = Publication::whereNotNull('year')
             ->where('year', '!=', '')
@@ -77,8 +76,6 @@ class PublicationController extends Controller
             'search',
             'topicSlug',
             'semanticTerms',
-            'availableMethods',
-            'methodFilter',
             'typeFilter',
             'yearFilter',
             'availableYears',
@@ -209,17 +206,36 @@ class PublicationController extends Controller
               ->values();
         }
 
-        $similarRecommendations = $recommendations->sortByDesc('similarity_score')->take(3);
+        $similarRecommendations = $recommendations->sortByDesc('similarity_score')->take(3)->values();
 
-        $complementaryRecommendations = $recommendations->filter(function ($item) {
-            return $item->knowledge_overlap > 0;
-        })->take(3);
+        $shownPublicationIds = $similarRecommendations
+            ->pluck('recommendedPublication.id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $complementaryRecommendations = $recommendations
+            ->filter(function ($item) {
+                return $item->knowledge_overlap > 0;
+            })
+            ->reject(function ($item) use ($shownPublicationIds) {
+                return $shownPublicationIds->contains($item->recommendedPublication->id);
+            })
+            ->take(3)
+            ->values();
+
+        $shownPublicationIds = $shownPublicationIds
+            ->merge($complementaryRecommendations->pluck('recommendedPublication.id'))
+            ->filter()
+            ->unique()
+            ->values();
 
         $parentTopicIds = $publication->topics->pluck('parent_id')->filter()->unique();
         $allRelevantTopicIds = $publication->topics->pluck('id')->merge($parentTopicIds)->unique();
         
         // KHUSUS BUKU: Cari buku yang memiliki irisan dengan topik saat ini atau topik induknya
         $bookReferences = Publication::where('id', '!=', $publication->id)
+            ->whereNotIn('id', $shownPublicationIds)
             ->where('type', 'book')
             ->whereHas('topics', function ($q) use ($allRelevantTopicIds) {
                 $q->whereIn('topics.id', $allRelevantTopicIds);
@@ -229,7 +245,14 @@ class PublicationController extends Controller
             ->limit(3)
             ->get();
 
+        $shownPublicationIds = $shownPublicationIds
+            ->merge($bookReferences->pluck('id'))
+            ->filter()
+            ->unique()
+            ->values();
+
         $similarMethods = Publication::where('id', '!=', $publication->id)
+            ->whereNotIn('id', $shownPublicationIds)
             ->where(function ($q) use ($publication) {
                 if (!empty($publication->research_method)) {
                     $q->where('research_method', $publication->research_method);
@@ -241,9 +264,16 @@ class PublicationController extends Controller
             ->limit(3)
             ->get();
 
+        $shownPublicationIds = $shownPublicationIds
+            ->merge($similarMethods->pluck('id'))
+            ->filter()
+            ->unique()
+            ->values();
+
         $publicationTopicIds = $publication->topics->pluck('id');
         $childTopicIds = Topic::whereIn('parent_id', $publicationTopicIds)->pluck('id');
         $advancedReadings = Publication::where('id', '!=', $publication->id)
+            ->whereNotIn('id', $shownPublicationIds)
             ->whereHas('topics', function ($q) use ($childTopicIds) {
                 $q->whereIn('id', $childTopicIds);
             })
