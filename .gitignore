@@ -25,3 +25,19 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Test / debug artefacts (auto-generated)
+phpunit_failures*.txt
+phpunit_feature_output.txt
+phpunit_failures_parsed.txt
+feature_testdox.txt
+test-result.txt
+test_failures.txt
+repo_test_output.txt
+output.txt
+debug_register_output.txt
+failing_docs.txt
+konteks*.txt
+feature_testdox.txt
+# local run logs
+*.log
