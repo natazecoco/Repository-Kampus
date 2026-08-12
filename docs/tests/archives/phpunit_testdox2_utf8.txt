@@ -1,0 +1,60 @@
+﻿PHPUnit 12.5.26 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.5.8
+Configuration: C:\laragon\www\repository\phpunit.xml
+
+∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐∩╗┐Time: 00:03.974, Memory: 80.00 MB
+
+[4mExample (Tests\Feature\Example)[0m
+[32m Γ£ö [0mThe application returns a successful response
+[32m Γ£ö [0mHome page can filter publications by topic
+[32m Γ£ö [0mA registered user is a student and can log in with npm
+[32m Γ£ö [0mOnly administrators can access the filament panel
+[32m Γ£ö [0mAuthenticated user can view their bookmarks page
+[32m Γ£ö [0mHome page shows bookmark action for authenticated users
+[32m Γ£ö [0mHome page shows personalized recommendations for authenticated users
+[32m Γ£ö [0mRecommendations can use topic hierarchy for knowledge based scoring
+[32m Γ£ö [0mSearch can expand queries using topic hierarchy
+[32m Γ£ö [0mAuthenticated student can open their dashboard and update profile
+[32m Γ£ö [0mHome page can show topic hierarchy and semantic related results
+[32m Γ£ö [0mDocument access respects visibility and download permissions
+[32m Γ£ö [0mPublication detail page shows related recommendations when none are precomputed
+[32m Γ£ö [0mA download is only available when explicitly allowed
+
+[4mExample (Tests\Unit\Example)[0m
+[32m Γ£ö [0mThat true is true
+
+[4mPublication File (Tests\Unit\PublicationFile)[0m
+[32m Γ£ö [0mVisibility label defaults
+[32m Γ£ö [0mCan be viewed by admin
+[32m Γ£ö [0mCan be viewed by authenticated user when authenticated visibility
+[32m Γ£ö [0mCannot be viewed by guest when authenticated visibility
+[32m Γ£ö [0mCan be downloaded only when allow download true and viewable
+[32m Γ£ö [0mVisibility helpers return expected values
+
+[4mPublication Metadata (Tests\Unit\PublicationMetadata)[0m
+[32m Γ£ö [0mMetadata summary returns standardized document information
+[32m Γ£ö [0mAdmin completion state reports missing required sections
+[32m Γ£ö [0mType filter options include document categories for homepage filters
+
+[4mPublication Required Sections (Tests\Unit\PublicationRequiredSections)[0m
+[32m Γ£ö [0mRequired sections for thesis contains expected keys
+[32m Γ£ö [0mMissing required sections from array detects missing
+[32m Γ£ö [0mRequired for article is full document
+
+[4mScan Publications Command (Tests\Feature\ScanPublicationsCommand)[0m
+[32m Γ£ö [0mIt detects research method and dispatches recommendation job
+[32m Γ£ö [0mIt prioritizes a development method in the title over a technology term
+[32m Γ£ö [0mShort aliases do not match inside unrelated words
+
+[4mTopic Dictionary (Tests\Unit\TopicDictionary)[0m
+[32m Γ£ö [0mSaving topic dictionary forgets cached mappings
+
+[4mTopic Merge (Tests\Unit\TopicMerge)[0m
+[32m Γ£ö [0mMerge moves publications and deletes source
+
+[4mTopic Undo Merge (Tests\Unit\TopicUndoMerge)[0m
+[32m Γ£ö [0mUndo merge restores topic active and restores publication relations
+
+[30;42mOK (33 tests, 101 assertions)[0m
+{"tool":"phpunit","result":"passed","tests":33,"passed":33,"assertions":101,"duration_ms":3975}
