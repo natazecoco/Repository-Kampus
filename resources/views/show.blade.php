@@ -355,7 +355,7 @@
                         Rekomendasi Tambahan
                     </h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($complementaryRecommendations->take(3)git as $item)
+                        @foreach($complementaryRecommendations->take(3) as $item)
                             @if($pub = $item->recommendedPublication ?? null)
                                 @include('partials.publication-item', ['pub' => $pub, 'compact' => true])
                             @endif
