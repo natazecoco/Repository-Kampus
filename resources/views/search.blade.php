@@ -205,12 +205,12 @@
                 </div>
             </div>
 
-            <!-- NOTIFIKASI PENCARIAN CERDAS (SEMANTIC) -->
+            <!-- NOTIFIKASI PERLUASAN ISTILAH BERBASIS KAMUS TOPIK -->
             @if($search && !empty($semanticTerms))
                 <div class="mb-6 rounded-2xl bg-indigo-50/60 border border-indigo-100 p-4 text-xs sm:text-sm text-indigo-900 flex items-start gap-3">
                     <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-200 text-indigo-800 font-bold">i</span>
                     <p class="leading-relaxed">
-                        <span class="font-bold">Pencarian Semantik Aktif:</span> Pencarian juga mencocokkan istilah terkait: 
+                        <span class="font-bold">Perluasan Istilah Aktif:</span> Pencarian juga mencocokkan istilah terkait menurut kamus topik (alias kata): 
                         <span class="font-semibold text-indigo-700">{{ implode(', ', $semanticTerms) }}</span>.
                     </p>
                 </div>

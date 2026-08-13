@@ -21,7 +21,7 @@
         </h1>
         
         <p class="mx-auto mt-5 max-w-2xl text-base sm:text-lg text-slate-500 font-medium leading-relaxed">
-            Akses perpustakaan digital terintegrasi. Temukan referensi riset, jurnal, dan skripsi dengan pencarian cerdas berbasis semantik.
+            Akses perpustakaan digital terintegrasi. Temukan referensi riset, jurnal, dan skripsi dengan perluasan istilah berbasis kamus topik.
         </p>
 
         <!-- SEARCH BAR LANGSUNG MENGARAH KE /SEARCH -->
